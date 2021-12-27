@@ -25,7 +25,6 @@ jobs:
           fetch-depth: "0"
       - name: Setup environment
         run: |
-          mkdir -p ${{env.PREVIEW_PATH}}/$(dirname ${{github.head_ref}})
 
           git config user.name "Preview Action"
           git config user.email "notifications+thesis@ysndr.de"
@@ -39,6 +38,8 @@ jobs:
             git merge origin/main
             git checkout -
           fi
+
+          mkdir -vp ${{env.PREVIEW_PATH}}/$(dirname ${{github.head_ref}})
 
       - name: Compile Chapter ${{github.head_ref}}
         if: ${{ startsWith(github.head_ref, 'chapter/') }}
