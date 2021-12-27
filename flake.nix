@@ -9,6 +9,17 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
       writing = writing-tools.packages.${system};
+
+
+
+      compile-all = pkgs.writeShellScriptBin "compile-thesis" ''
+        pandoc $(cat ./toc.txt) -o "$@"
+      '';
+
+      compile-chapter-preview = pkgs.writeShellScriptBin "compile-chapter-preview" ''
+        pandoc $1 -o "''${@:2}"
+      '';
+
     in {
       devShell = pkgs.mkShell {
         nativeBuildInputs = [ pkgs.bashInteractive ];
@@ -28,7 +39,10 @@
               ];
               extraPackages = [ pkgs.graphviz ];
               pythonExtra = p: [ p.pygraphviz p.psutil ];
-            }) ];
+            })
+            compile-all
+            compile-chapter-preview
+            ];
       };
     });
 }

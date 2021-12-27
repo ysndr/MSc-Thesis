@@ -1,0 +1,104 @@
+name: "Build and push preview"
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: 
+      - main
+
+concurrency: preview
+
+env:
+  PREVIEW_PATH: "./previews"
+  PREVIEW_BRANCH: "preview"
+
+jobs:
+  build:
+    name: Build Preview
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Nix
+      uses: cachix/install-nix-action@v15
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Setup environment
+      run: |
+        mkdir -p "$PREVIEW_PATH"/chapter
+        
+        git config user.name "Preview Action"
+        git config user.email "notifications+thesis@ysndr.de"
+
+        # create PREVIEW_BRANCH branch if not exists
+        if [[ ! $(git rev-parse --verify origin/"$PREVIEW_BRANCH") ]]; then
+          git branch "$PREVIEW_BRANCH" origin/main
+        else
+          # update PREVIEW_BRANCH to match main again if it does exist
+          git checkout ${{env.PREVIEW_BRANCH}}
+          git merge origin/main
+          git checkout -
+        fi
+
+       
+
+    - name: Compile Chapter ${{github.head_ref}}
+      if: ${{ startsWith(github.head_ref, 'chapter/') }}
+      run: |
+        nix develop --impure -c \
+            compile-chapter-preview ${{github.head_ref}}.md ${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf
+    
+    - name: Archive ${{github.head_ref}}
+      if: ${{ startsWith(github.head_ref, 'chapter/') }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: chapter-plain
+        path: ${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf
+            
+    - name: Prepare preview branch
+      run: |
+        git switch ${{env.PREVIEW_BRANCH}}
+        git merge --squash origin/${{github.head_ref}}
+        git commit --no-edit || echo "No files changed" 
+
+    - name: Compile document preview
+      if: ${{ startsWith(github.head_ref, 'chapter/') }}
+      run: |
+        nix develop --impure -c compile-thesis ${{env.PREVIEW_PATH}}/latest.pdf
+
+    - name: Archive document preview
+      if: ${{ startsWith(github.head_ref, 'chapter/') }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: preview-complete
+        path: $PREVIEW_PATH/latest.pdf
+    
+
+    # other changes to the document not on chapter branches will be deployed as preview
+    # of the full docuemtn
+    - name: Compile PR preview
+      if: ${{ !startsWith(github.head_ref, 'chapter/') }}
+      run: |
+        nix develop --impure -c compile-thesis ${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf
+
+    - name: Archive PR preview
+      if: ${{ !startsWith(github.head_ref, 'chapter/') }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: preview-complete
+        path: ${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf
+    
+    - name: Commit and push to branch
+      run: |
+        git add ${{env.PREVIEW_PATH}}
+        git commit -m "Build single and combined preview for \"${{github.head_ref}}\"" -m ${{github.sha}}
+        git push -u origin ${{env.PREVIEW_BRANCH}}
+
+    - name: Create comment
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: "${{github.event.number}}"
+        body: |
+          Uploaded preview of this chapter and the full document [preview branch](/${{github.repository}}/tree/${{env.PREVIEW_BRANCH}}/${{env.PREVIEW_PATH}})
+          
+          **Preview:** [${{github.head_ref}}](/${{github.repository}}/tree/${{env.PREVIEW_BRANCH}}/${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf)
