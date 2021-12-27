@@ -1,0 +1,6 @@
+./chapter/introduction.md
+./chapter/background.md
+./chapter/related-work.md
+./chapter/methodology.md
+./chapter/evaluation.md
+./chapter/discussion.md
