@@ -3,27 +3,29 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.writing-tools.url = "github:ysndr/writing-tools";
-  inputs.writing-tools.inputs.nixpkgs.follows = "nixpkgs";  
+  inputs.writing-tools.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = { self, nixpkgs, flake-utils, writing-tools }:
-    flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      writing = writing-tools.packages.${system};
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        writing = writing-tools.packages.${system};
 
 
 
-      compile-all = pkgs.writeShellScriptBin "compile-thesis" ''
-        pandoc $(cat ./toc.txt) -o "$@"
-      '';
+        compile-all = pkgs.writeShellScriptBin "compile-thesis" ''
+          pandoc $(cat ./toc.txt) -o "$@"
+        '';
 
-      compile-chapter-preview = pkgs.writeShellScriptBin "compile-chapter-preview" ''
-        pandoc $1 -o "''${@:2}"
-      '';
+        compile-chapter-preview = pkgs.writeShellScriptBin "compile-chapter-preview" ''
+          pandoc $1 -o "''${@:2}"
+        '';
 
-    in {
-      devShell = pkgs.mkShell {
-        nativeBuildInputs = [ pkgs.bashInteractive ];
-        buildInputs = [ 
+      in
+      {
+        devShell = pkgs.mkShell {
+          nativeBuildInputs = [ pkgs.bashInteractive ];
+          buildInputs = [
             writing.latex
             (writing.pandoc.override {
               filters = [
@@ -42,7 +44,7 @@
             })
             compile-all
             compile-chapter-preview
-            ];
-      };
-    });
+          ];
+        };
+      });
 }

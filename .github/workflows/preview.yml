@@ -56,14 +56,20 @@ jobs:
 
       - name: Prepare preview branch
         run: |
+          git add ${{env.PREVIEW_PATH}}
           git stash push
           git switch ${{env.PREVIEW_BRANCH}}
-          git merge --squash origin/${{github.head_ref}}
+          git merge --squash origin/${{github.head_ref}} -Xtheirs
           if [[ ${{ startsWith(github.head_ref, 'chapter/') }} ]]; then
-            git commit --no-edit || echo "No files changed"
+            if [[ -z $(git diff --cached --exit-code) ]]; then
+              echo "No files changed"
+            else
+              git commit --no-edit 
+            fi
           else
             echo "Non chapter branch, not committing proposed changes"
           fi
+          git checkout stash -- ${{env.PREVIEW_PATH}}
 
       - name: Compile document preview
         if: ${{ startsWith(github.head_ref, 'chapter/') }}
@@ -75,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: preview-complete
-          path: $PREVIEW_PATH/latest.pdf
+          path: ${{env.PREVIEW_PATH}}/latest.pdf
 
       # other changes to the document not on chapter branches will be deployed as preview
       # of the full docuemtn
@@ -93,9 +99,8 @@ jobs:
 
       - name: Commit and push to branch
         run: |
-          git stash pop
           git add ${{env.PREVIEW_PATH}}
-          git commit -m "Build single and combined preview for \"${{github.head_ref}}\"" -m ${{github.sha}}
+          git commit -m "Build single and combined preview for \"${{github.head_ref}}\"" -m ${{github.sha}} || echo "No files changed"
           git push -u origin ${{env.PREVIEW_BRANCH}}
 
       - name: Create comment
