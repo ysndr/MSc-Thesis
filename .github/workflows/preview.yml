@@ -58,7 +58,11 @@ jobs:
         run: |
           git switch ${{env.PREVIEW_BRANCH}}
           git merge --squash origin/${{github.head_ref}}
-          git commit --no-edit || echo "No files changed"
+          if [[ ${{ startsWith(github.head_ref, 'chapter/') }} ]]; then
+            git commit --no-edit || echo "No files changed"
+          else
+            echo "Non chapter branch, not committing proposed changes"
+          fi
 
       - name: Compile document preview
         if: ${{ startsWith(github.head_ref, 'chapter/') }}
