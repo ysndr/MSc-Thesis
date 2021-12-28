@@ -56,6 +56,7 @@ jobs:
 
       - name: Prepare preview branch
         run: |
+          git stash push
           git switch ${{env.PREVIEW_BRANCH}}
           git merge --squash origin/${{github.head_ref}}
           if [[ ${{ startsWith(github.head_ref, 'chapter/') }} ]]; then
@@ -92,6 +93,7 @@ jobs:
 
       - name: Commit and push to branch
         run: |
+          git stash pop
           git add ${{env.PREVIEW_PATH}}
           git commit -m "Build single and combined preview for \"${{github.head_ref}}\"" -m ${{github.sha}}
           git push -u origin ${{env.PREVIEW_BRANCH}}
