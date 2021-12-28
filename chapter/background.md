@@ -18,6 +18,14 @@ If supported by both server and client, the LSP now supports more than 24 langua
 ### Rationale
 
 Since its release, the LSP has grown to be supported by a multitude of languages and editors[@langservers @lsp-website].
+In fact the LSP solves an important problem.
+Traditionally, language support has been a responsibility and selling point for IDE providers. The possible business value of language features incentivized specialized (proprietary) software [haskellformac, jetbrains, xcode, visual studio].
+While this leads to deep integration of the supported languages, users often face a lock-in into certain platforms as availability of integration varies.
+Language integration in IDEs requires the development of separate extensions using the target platform's API and programming language of choice.
+In effect, reusing code for language integration is almost impossible.
+
+This is especially difficult for emerging languages, with possibly limited development resources to be put towards the development of language tooling.
+Research that shows available tooling to be of great importance for the selection of a programming language [cite] suggests a similarly significant influence on the adoption of new languages.
 
 
 ### Commands and Notifications
