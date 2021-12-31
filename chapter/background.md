@@ -26,7 +26,7 @@ As the former approach offers a greater business value, especially for proprieta
 Problematically, this results in less choice for developers and possible lock-in into products less favorable but unique in their features for a certain language.
 The latter approach was taken by most text editors which in turn offered only limited support for any language.
 
-Looking at popularity statistics[^https://web.archive.org/web/20160625140610/https://pypl.github.io/IDE.html] shows that except Vim and Sublime Text, both exceptional general text editors, the top 10 most popular IDEs were indeed specialized products.
+Looking at popularity statistics^[https://web.archive.org/web/20160625140610/https://pypl.github.io/IDE.html] shows that except Vim and Sublime Text, both exceptional general text editors, the top 10 most popular IDEs were indeed specialized products.
 The fact that some IDEs are offering support for more languages through (third-party) extensions, due to the missing standards and incompatible implementing languages/APIs, does not suffice to solve the initial problem that developing any sort of language support requires redundant resources.
 
 This is especially difficult for emerging languages, with possibly limited development resources to be put towards the development of language tooling.
