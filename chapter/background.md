@@ -37,6 +37,44 @@ Language servers are programs that implement a set of IDE features for one langu
 
 ### JSON-RPC
 
+JSON-RPC (v2) [@json-rpc] is a JOSN based lightweight transport independent remote procedure call protocol used by the LSP to communicate between language server and client.
+
+The protocol specifies the general format of messages exchanges as well as different kinds of messages.
+The following snippet [#lst:json-rpc-req] shows the schema for request messages.
+
+`"jsonrpc" : "2.0"`
+ ~ A fixed value format indicator
+
+`"method"`
+ ~ The name of the procedure called on the server 
+ ~ May not start with `rpc.` which is an indicator for internal messages
+
+`"params"`
+ ~ An optional set of parameters passed to the executed method.
+ ~ Parameters can be passed as a list of arguments or as a named dictionary.
+
+`"id"`
+ ~ A (unique) identifier for the current message
+ ~ Used to answer client requests
+ ~ Messages without an `id` are considered to be *Notifications* 
+
+The main distinction in JSON-RPC are *Requests* and *Notifications*.
+Requests are messages with an `id`, which have to be responded to by the server.
+Notifications are messages for which the client does not need a confirmation for.
+As such servers have to process but may not answer on Notifications.
+
+
+```{.json #lst:json-rpc-req caption="JSON-RPC Request"}}
+// Requests
+{ 
+  "jsonrpc": "2.0"
+, "method": String
+, "params": List | Object 
+, "id": Number | String | Null 
+}
+```
+
+
 
 ### Commands and Notifications
 
