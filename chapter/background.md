@@ -128,8 +128,9 @@ Nickel [@nickel], the language targeted by the language server detailed in this 
 Static configuration languages such as XML[@xml], JSON[@json], or YAML[@yaml] are language specifications defining how to textually represent structural data used to configure parameters of a program^[some of the named languages may have been designed as a data interchange format which is absolutely compatible with also acting as a configuration language].
 Applications of configuration languages are ubiquitous especially in the vicinity of software development. While XML and JSON are often used by package managers [@npm, @maven, @composer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@travis, @ghaction, @gitlab-runner] or machine configurations in software defined networks such as Kubernetes and docker compose.
 
-Such static formats come with several advantages over manual program configuration backed by databases.
-Most strikingly, the textual representation allows inspection of a configuration without the need of a separate tool but a text editor, can be parsed more easily due to the generally simple syntax and be version controlled using VCS software like Git.
+Such static formats are used due to some significant advantages compared to other formats.
+Most strikingly, the textual representation allows inspection of a configuration without the need of a separate tool but a text editor and be version controlled using VCS software like Git.
+This is well understood as being preferable over databases or other binary formats.^[This is especially exemplified by Linux configurations (files in `/etc`) and MacOS where *some* `*.plist` files are XML or JSON-like].
 
 ## Infrastructure as Code
 
