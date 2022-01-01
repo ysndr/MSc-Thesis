@@ -42,6 +42,16 @@ JSON-RPC (v2) [@json-rpc] is a JOSN based lightweight transport independent remo
 The protocol specifies the general format of messages exchanges as well as different kinds of messages.
 The following snippet [#lst:json-rpc-req] shows the schema for request messages.
 
+```{.typescript #lst:json-rpc-req caption="JSON-RPC Request"}
+// Requests
+{ 
+  "jsonrpc": "2.0"
+, "method": String
+, "params": List | Object 
+, "id": Number | String | Null 
+}
+```
+
 `"jsonrpc" : "2.0"`
  ~ A fixed value format indicator
 
@@ -59,22 +69,36 @@ The following snippet [#lst:json-rpc-req] shows the schema for request messages.
  ~ Messages without an `id` are considered to be *Notifications* 
 
 The main distinction in JSON-RPC are *Requests* and *Notifications*.
-Requests are messages with an `id`, which have to be responded to by the server.
-Notifications are messages for which the client does not need a confirmation for.
-As such servers have to process but may not answer on Notifications.
+Messages with an `id` field present are considered *requests*.
+Servers have to respond to requests with a message referencing the same `id` as well as a result, i.e. data or error.
+If the client does not require a response, it can omit the `id` field sending a *notification*, which servers cannot respond to, with the effect that clients cannot know the effect nor the reception of the message.
 
+Responses as shown in [#lst:json-rpc-res], have to be sent by servers answering to any request.
+The `id` field has to match the one corresponding request message.
+If the called procedure was successful, its return value is encoded under the `return` key, while errors occuring during the call are recorded under the `error` key.
+Errors are represented as objects specifying the error kind using an error `code` and providing a human-readable descriptive `message` as well as optionally any procedure defined `data`.
 
-```{.json #lst:json-rpc-req caption="JSON-RPC Request"}}
-// Requests
+```{.typescript #lst:json-rpc-res caption="JSON-RPC Response and Error"}
+// Responses
 { 
   "jsonrpc": "2.0"
-, "method": String
-, "params": List | Object 
-, "id": Number | String | Null 
+  "result": any
+  "error": Error
+, "id": Number | String | Null
+}
+
+// Error
+{
+    "code": Integer,
+    "message": String,
+    "data": any
 }
 ```
 
+Clients can choose to batch requests and send a list of request or notification objects.
+The server should respond with a list of results matching each request, yet is free to process requests concurrently.
 
+JSON-RPC only specifies a message protocol, hence the transport method can be freely chosen by the application. 
 
 ### Commands and Notifications
 
