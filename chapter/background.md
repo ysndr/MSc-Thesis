@@ -64,7 +64,7 @@ Notifications are messages for which the client does not need a confirmation for
 As such servers have to process but may not answer on Notifications.
 
 
-```{.json #lst:json-rpc-req caption="JSON-RPC Request"}}
+```{.typescript #lst:json-rpc-req caption="JSON-RPC Request"}
 // Requests
 { 
   "jsonrpc": "2.0"
