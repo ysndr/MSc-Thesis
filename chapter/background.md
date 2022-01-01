@@ -40,7 +40,7 @@ Language servers are programs that implement a set of IDE features for one langu
 JSON-RPC (v2) [@json-rpc] is a JOSN based lightweight transport independent remote procedure call protocol used by the LSP to communicate between language server and client.
 
 The protocol specifies the general format of messages exchanges as well as different kinds of messages.
-The following snippet [#lst:json-rpc-req] shows the schema for request messages.
+The following snippet [@lst:json-rpc-req] shows the schema for request messages.
 
 ```{.typescript #lst:json-rpc-req caption="JSON-RPC Request"}
 // Requests
@@ -73,7 +73,7 @@ Messages with an `id` field present are considered *requests*.
 Servers have to respond to requests with a message referencing the same `id` as well as a result, i.e. data or error.
 If the client does not require a response, it can omit the `id` field sending a *notification*, which servers cannot respond to, with the effect that clients cannot know the effect nor the reception of the message.
 
-Responses as shown in [#lst:json-rpc-res], have to be sent by servers answering to any request.
+Responses as shown in [@lst:json-rpc-res], have to be sent by servers answering to any request.
 The `id` field has to match the one corresponding request message.
 If the called procedure was successful, its return value is encoded under the `return` key, while errors occuring during the call are recorded under the `error` key.
 Errors are represented as objects specifying the error kind using an error `code` and providing a human-readable descriptive `message` as well as optionally any procedure defined `data`.
@@ -101,6 +101,9 @@ The server should respond with a list of results matching each request, yet is f
 JSON-RPC only specifies a message protocol, hence the transport method can be freely chosen by the application. 
 
 ### Commands and Notifications
+
+The LSP build on top of the JSON-RPC protocol described in the previous subsection.
+
 
 #### File Notification
 
