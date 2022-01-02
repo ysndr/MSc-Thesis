@@ -11,9 +11,9 @@ The second part is dedicated to Nickel, elaborating on the context and use-cases
 ## Language Server Protocol
 
 Language servers are today's standard of integrating support for programming languages into code editors.
-Initially developed by Microsoft for the use with their polyglot editor Visual Studio Code[^https://code.visualstudio.com/] before being released to the public in 2016 by Microsoft, RedHat and Codeenvy, the LSP decouples language analysis and provision of IDE-like features from the environment used to write.
+Initially developed by Microsoft for the use with their polyglot editor Visual Studio Code^[https://code.visualstudio.com/] before being released to the public in 2016 by Microsoft, RedHat and Codeenvy, the LSP decouples language analysis and provision of IDE-like features from the environment used to write.
 Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], it allows developers of editors and languages to work independently on the support for new languages.
-If supported by both server and client, the LSP now supports more than 24 language features[^https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, hover information, resolution of type and variable definitions, controlling document highlighting, formatting and more.
+If supported by both server and client, the LSP now supports more than 24 language features^[https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, hover information, resolution of type and variable definitions, controlling document highlighting, formatting and more.
 
 ### Motivation
 
@@ -37,7 +37,7 @@ Language servers are programs that implement a set of IDE features for one langu
 
 ### JSON-RPC
 
-JSON-RPC (v2) [@json-rpc] is a JOSN based lightweight transport independent remote procedure call protocol used by the LSP to communicate between language server and client.
+JSON-RPC (v2) [@json-rpc] is a JSON based lightweight transport independent remote procedure call protocol used by the LSP to communicate between language server and client.
 
 The protocol specifies the general format of messages exchanges as well as different kinds of messages.
 The following snippet [@lst:json-rpc-req] shows the schema for request messages.
@@ -75,7 +75,7 @@ If the client does not require a response, it can omit the `id` field sending a 
 
 Responses as shown in [@lst:json-rpc-res], have to be sent by servers answering to any request.
 The `id` field has to match the one corresponding request message.
-If the called procedure was successful, its return value is encoded under the `return` key, while errors occuring during the call are recorded under the `error` key.
+If the called procedure was successful, its return value is encoded under the `return` key, while errors occurring during the call are recorded under the `error` key.
 Errors are represented as objects specifying the error kind using an error `code` and providing a human-readable descriptive `message` as well as optionally any procedure defined `data`.
 
 ```{.typescript #lst:json-rpc-res caption="JSON-RPC Response and Error"}
@@ -145,6 +145,8 @@ Alternatively to generating configurations using high level languages, this dema
 Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such intermediate languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
 
 ## Infrastructure as Code
+
+
 
 <!-- TODO: Keep? -->
 ### Software defined Networks
