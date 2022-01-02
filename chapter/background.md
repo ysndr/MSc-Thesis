@@ -130,7 +130,19 @@ Applications of configuration languages are ubiquitous especially in the vicinit
 
 Such static formats are used due to some significant advantages compared to other formats.
 Most strikingly, the textual representation allows inspection of a configuration without the need of a separate tool but a text editor and be version controlled using VCS software like Git.
-This is well understood as being preferable over databases or other binary formats.^[This is especially exemplified by Linux configurations (files in `/etc`) and MacOS where *some* `*.plist` files are XML or JSON-like].
+For software configuration this is well understood as being preferable over databases or other binary formats. Linux service configurations (files in `/etc`) and MacOS `*.plist` files which can be serialized as XML or a JSON-like format, especially exemplify that claim.
+
+Yet, despite these formats being simple to parse and widely supported [@json], their static nature rules out any dynamic content such as generated fields, functions and the possibility to factorize and reuse.
+Moreover, content validation has to be developed separately, which led to the design of complementary schema specification languages like json-schema [@json-schema] or XSD [@xsd].
+
+These qualities require an evaluated language.
+In fact, some applications make heavy use of config files written in the native programming language which gives them access to language features and existing analysis tools.
+Examples include JavaScript frameworks such as webpack [@webpack] or Vue [@vue] and python package management using `setuptools`[@setuptools].
+
+Despite this, not all languages serve as a configuration language, e.g. compiled languages and some domains require language agnostic formats.
+For particularly complex products, both language independence and advanced features are desirable.
+Alternatively to generating configurations using high level languages, this demand is addressed by more domain specific languages.
+Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such intermediate languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
 
 ## Infrastructure as Code
 
