@@ -108,6 +108,6 @@ jobs:
         with:
           issue-number: "${{github.event.number}}"
           body: |
-            Uploaded preview of this chapter and the full document [preview branch](/${{github.repository}}/tree/${{env.PREVIEW_BRANCH}}/${{env.PREVIEW_PATH}})
+            Uploaded preview of this chapter and the full document [preview branch](https://github.com/${{github.repository}}/tree/${{env.PREVIEW_BRANCH}}/${{env.PREVIEW_PATH}})
 
-            **Preview:** [${{github.head_ref}}](/${{github.repository}}/tree/${{env.PREVIEW_BRANCH}}/${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf)
+            **Preview:** [${{github.head_ref}}](https://github.com/${{github.repository}}/tree/${{env.PREVIEW_BRANCH}}/${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf)
