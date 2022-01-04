@@ -144,12 +144,73 @@ For particularly complex products, both language independence and advanced featu
 Alternatively to generating configurations using high level languages, this demand is addressed by more domain specific languages.
 Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such intermediate languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
 
-## Infrastructure as Code
+### Infrastructure as Code
 
+A prime example for the application of configuration languages are IaaS^[Infrastructure as a Service] products.
+These solutions arise highly complex solutions with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling.
+Although the primary interaction with those systems is imperative, maintaining entire applications' or company's environments manually comes with obvious drawbacks.
 
+Changing and undoing changes to existing networks requires intricate knowledge about its topology which in turn has to be meticulously documented as a significant risk for *config drift*.
+Beyond that, interacting with a system through its imperative interfaces demands qualified skills of specialized engineers.
 
-<!-- TODO: Keep? -->
-### Software defined Networks
+The concept of "Infrastructure as Code" (*IaC*) serves the DevOps principle of overcoming the need for dedicated teams for *Dev*elvopent and *Op*erations, by allowing to declaratively specify the dependencies, topology and virtual resources.
+Today various tools with different scopes make it easy to provision complex networks, in a reproducible way.
+That is setting up the same environment automatically and independently.
+Optimally, different environments for testing, staging and production can be derived from a common base and changes to configurations are atomic.
+
+As a notable instance, the Nix[@nix] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@nixops].
+
+To get an idea of how this would look like, [@lst:nixops-rproxy] shows the configuration for a deployment of the Git based wiki server Gollum[@gollum] behind a nginx reverseproxy on the AWS network.
+Although targeting AWS, Nix itself is platform-agnostic and NixOps supports different backends through various plugins.
+Configurations like this are abstractions over many manual steps and the Nix language employed in this example allows for even higher level turing-complete interaction with configurations.
+
+```{.nix #lst:nixops-rproxy caption="Example NixOps deployment to AWS"}
+{
+  network.description = "Gollum server and reverse proxy";
+  defaults = 
+    { config, pkgs, ... }:
+    {
+      deployment.targetEnv = "ec2";
+      deployment.ec2.accessKeyId = "AKIA...";
+      deployment.ec2.keyPair = "...";
+      deployment.ec2.privateKey = "...";
+      deployment.ec2.securityGroups = pkgs.lib.mkDefault [ "default" ];
+      deployment.ec2.region = pkgs.lib.mkDefault "eu-west-1";
+      deployment.ec2.instanceType = pkgs.lib.mkDefault "t2.large";
+    };
+
+  gollum =
+    { config, pkgs, ... }:
+    {
+      services.gollum = {
+        enable = true;
+        port = 40273;
+      };
+      networking.firewall.allowedTCPPorts = [ config.services.gollum.port ];
+    };
+
+  reverseproxy =
+    { config, pkgs, nodes, ... }:
+    let
+      gollumPort = nodes.gollum.config.services.gollum.port;
+    in
+    {
+
+      deployment.ec2.instanceType = "t1.medium";
+
+      services.nginx = {
+        enable = true;
+        virtualHosts."wiki.example.net".locations."/" = {
+          proxyPass = "http://gollum:${toString gollumPort}";
+        };
+      };
+      networking.firewall.allowedTCPPorts = [ 80 ];
+    };
+}
+```
+
+Similarly, tools like Terraform[@terraform], or Chef[@chef] use their own DSLs and integrate with most major cloud providers.
+The popularity of these products^[https://trends.google.com/trends/explore?date=2012-01-01%202022-01-01&q=%2Fg%2F11g6bg27fp,CloudFormation], beyond all, highlights the importance of expressive configuration formats and their industry value.
 
 ## Nickel
 
