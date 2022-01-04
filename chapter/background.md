@@ -11,19 +11,18 @@ The second part is dedicated to Nickel, elaborating on the context and use-cases
 ## Language Server Protocol
 
 Language servers are today's standard of integrating support for programming languages into code editors.
-Initially developed by Microsoft for the use with their polyglot editor Visual Studio Code^[https://code.visualstudio.com/] before being released to the public in 2016 by Microsoft, RedHat and Codeenvy, the LSP decouples language analysis and provision of IDE-like features from the environment used to write.
-Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], it allows developers of editors and languages to work independently on the support for new languages.
-If supported by both server and client, the LSP now supports more than 24 language features^[https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, hover information, resolution of type and variable definitions, controlling document highlighting, formatting and more.
+Initially developed by Microsoft for the use with their polyglot editor Visual Studio Code^[https://code.visualstudio.com/] before being released to the public in 2016 by Microsoft, RedHat and Codeenvy, the LSP decouples language analysis and provision of IDE-like features from the editor.
+Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], the protocol allows developers of editors and languages to work independently on the support for new languages.
+If supported by both server and client, the LSP now supports more than 24 language features^[https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, code navigation facilities, contextual information such as types or documentation, formatting, and more
 
 ### Motivation
 
 Since its release, the LSP has grown to be supported by a multitude of languages and editors[@langservers @lsp-website], solving a long-standing problem with traditional IDEs.
 
-Before the inception of language servers, it was the development platforms' individual responsibility to implement specialized features for any language of interest.
-This effectively causes a $M \times N$ where $M$ editors have to implement support for $N$ languages.
-Under the constraint of limited resources editors had to position themselves on a spectrum between specializing on integrated support for a certain subset of languages and being generic over the language, providing only limited support.
-As the former approach offers a greater business value, especially for proprietary products, most professional IDEs gravitate towards excellent (and exclusive) support for single major languages. For example, XCode and Visual Studio for the native languages for Apple and Microsoft Products respectively as well as JetBrains' IntelliJ platform and RedHat's Eclipse.
-Problematically, this results in less choice for developers and possible lock-in into products less favorable but unique in their features for a certain language.
+Before the inception of language servers, it was the editors' individual responsibility to implement specialized features for any language of interest.
+Under the constraint of limited resources, editors had to position themselves on a spectrum between specializing on integrated support for a certain subset of languages and being generic over the language providing only limited support.
+As the former approach offers a greater business value, especially for proprietary products most professional IDEs gravitate towards excellent (and exclusive) support for single major languages, i.e. XCode and Visual Studio for the native languages for Apple and Microsoft Products respectively as well as JetBrains' IntelliJ platform and RedHat's Eclipse.
+Problematically, this results in less choice for developers and possible lock-in into products subjectively less favored but unique in their features for a certain language.
 The latter approach was taken by most text editors which in turn offered only limited support for any language.
 
 Popularity statistics^[https://web.archive.org/web/20160625140610/https://pypl.github.io/IDE.html] shows that except Vim and Sublime Text, both exceptional general text editors, the top 10 most popular IDEs were indeed specialized products.
@@ -52,30 +51,13 @@ The following snippet [@lst:json-rpc-req] shows the schema for request messages.
 }
 ```
 
-`"jsonrpc" : "2.0"`
- ~ A fixed value format indicator
-
-`"method"`
- ~ The name of the procedure called on the server 
- ~ May not start with `rpc.` which is an indicator for internal messages
-
-`"params"`
- ~ An optional set of parameters passed to the executed method.
- ~ Parameters can be passed as a list of arguments or as a named dictionary.
-
-`"id"`
- ~ A (unique) identifier for the current message
- ~ Used to answer client requests
- ~ Messages without an `id` are considered to be *Notifications* 
-
 The main distinction in JSON-RPC are *Requests* and *Notifications*.
 Messages with an `id` field present are considered *requests*.
 Servers have to respond to requests with a message referencing the same `id` as well as a result, i.e. data or error.
 If the client does not require a response, it can omit the `id` field sending a *notification*, which servers cannot respond to, with the effect that clients cannot know the effect nor the reception of the message.
 
 Responses as shown in [@lst:json-rpc-res], have to be sent by servers answering to any request.
-The `id` field has to match the one corresponding request message.
-If the called procedure was successful, its return value is encoded under the `return` key, while errors occurring during the call are recorded under the `error` key.
+Any result or error of an operation is explicitly encoded in the response.
 Errors are represented as objects specifying the error kind using an error `code` and providing a human-readable descriptive `message` as well as optionally any procedure defined `data`.
 
 ```{.typescript #lst:json-rpc-res caption="JSON-RPC Response and Error"}
@@ -85,13 +67,6 @@ Errors are represented as objects specifying the error kind using an error `code
   "result": any
   "error": Error
 , "id": Number | String | Null
-}
-
-// Error
-{
-    "code": Integer,
-    "message": String,
-    "data": any
 }
 ```
 
@@ -142,7 +117,7 @@ Examples include JavaScript frameworks such as webpack [@webpack] or Vue [@vue] 
 Despite this, not all languages serve as a configuration language, e.g. compiled languages and some domains require language agnostic formats.
 For particularly complex products, both language independence and advanced features are desirable.
 Alternatively to generating configurations using high level languages, this demand is addressed by more domain specific languages.
-Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such intermediate languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
+Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such domain specific languages (DSL), that offer varying support for string interpolation, (strict) typing, functions and validation.
 
 ### Infrastructure as Code
 
@@ -211,6 +186,10 @@ Configurations like this are abstractions over many manual steps and the Nix lan
 
 Similarly, tools like Terraform[@terraform], or Chef[@chef] use their own DSLs and integrate with most major cloud providers.
 The popularity of these products^[https://trends.google.com/trends/explore?date=2012-01-01%202022-01-01&q=%2Fg%2F11g6bg27fp,CloudFormation], beyond all, highlights the importance of expressive configuration formats and their industry value.
+
+Finally, descriptive data formats for cloud configurations allow mitigating security risks through static analysis.
+Yet, as recently as spring 2020 and still more than a year later dossiers of Palo Alto Networks' security department Unit 42 show [@pa2020H1, ps2021H2] show that a majority of public projects uses insecure configurations.
+This suggests that techniques[@aws-cloud-formation-security-tests] to automatically check templates are not actively employed, and points out the importance of evaluated configuration languages which can implement passive approaches to security analysis.
 
 ## Nickel
 
