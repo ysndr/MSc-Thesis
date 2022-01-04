@@ -11,9 +11,9 @@ The second part is dedicated to Nickel, elaborating on the context and use-cases
 ## Language Server Protocol
 
 Language servers are today's standard of integrating support for programming languages into code editors.
-Initially developed by Microsoft for the use with their polyglot editor Visual Studio Code^[https://code.visualstudio.com/] before being released to the public in 2016 by Microsoft, RedHat and Codeenvy, the LSP decouples language analysis and provision of IDE-like features from the environment used to write.
-Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], it allows developers of editors and languages to work independently on the support for new languages.
-If supported by both server and client, the LSP now supports more than 24 language features^[https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, hover information, resolution of type and variable definitions, controlling document highlighting, formatting and more.
+Initially developed by Microsoft for the use with their polyglot editor Visual Studio Code^[https://code.visualstudio.com/] before being released to the public in 2016 by Microsoft, RedHat and Codeenvy, the LSP decouples language analysis and provision of IDE-like features from the editor.
+Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], the protocol allows developers of editors and languages to work independently on the support for new languages.
+If supported by both server and client, the LSP now supports more than 24 language features^[https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, code navigation facilities, contextual information such as types or documentation, formatting, and more
 
 ### Motivation
 
