@@ -117,7 +117,7 @@ Examples include JavaScript frameworks such as webpack [@webpack] or Vue [@vue] 
 Despite this, not all languages serve as a configuration language, e.g. compiled languages and some domains require language agnostic formats.
 For particularly complex products, both language independence and advanced features are desirable.
 Alternatively to generating configurations using high level languages, this demand is addressed by more domain specific languages.
-Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such intermediate languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
+Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such domain specific languages (DSL), that offer varying support for string interpolation, (strict) typing, functions and validation.
 
 ### Infrastructure as Code
 
