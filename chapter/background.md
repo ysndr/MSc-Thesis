@@ -32,7 +32,9 @@ This is especially difficult for emerging languages, with possibly limited devel
 Consequently, community efforts of languages any size vary in scope, feature completeness and availability.
 
 The Language Server Protocol aims to solve this issue by specifying a JSON-RPC[^Remote Procedure Call] API that editors (clients) can use to communicate with language servers.
-Language servers are programs that implement a set of IDE features for one language and exposing access to these features through the LSP, allowing to focus development resources to a single project, hence reducing the required work to bring language features of $N$ languages from $M \times N$ to $N$.
+Language servers are programs that implement a set of IDE features for one language and exposing access to these features through the LSP, allowing to focus development resources to a single project that is above all unrelated to editor-native APIs for analytics processing code representation and GUI integration.
+Consequently, now only a single implementation of a language server is required, instead of one for each editor and editor maintainers can concentrate on offering the best possible LSP client support to their product independent of the language.
+
 
 ### JSON-RPC
 
