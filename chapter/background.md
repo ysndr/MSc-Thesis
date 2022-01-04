@@ -187,6 +187,10 @@ Configurations like this are abstractions over many manual steps and the Nix lan
 Similarly, tools like Terraform[@terraform], or Chef[@chef] use their own DSLs and integrate with most major cloud providers.
 The popularity of these products^[https://trends.google.com/trends/explore?date=2012-01-01%202022-01-01&q=%2Fg%2F11g6bg27fp,CloudFormation], beyond all, highlights the importance of expressive configuration formats and their industry value.
 
+Finally, descriptive data formats for cloud configurations allow mitigating security risks through static analysis.
+Yet, as recently as spring 2020 and still more than a year later dossiers of Palo Alto Networks' security department Unit 42 show [@pa2020H1, ps2021H2] show that a majority of public projects uses insecure configurations.
+This suggests that techniques[@aws-cloud-formation-security-tests] to automatically check templates are not actively employed, and points out the importance of evaluated configuration languages which can implement passive approaches to security analysis.
+
 ## Nickel
 
 ### Gradual typing
