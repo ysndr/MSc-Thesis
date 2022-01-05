@@ -1,0 +1,4 @@
+variables:
+  papersize: a4
+
+top-level-division: chapter
