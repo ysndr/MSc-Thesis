@@ -9,7 +9,28 @@ Finally, in [@sec:lsp-server] the implementation of current LSP features is disc
 
 ## Nickel AST
 
+
+Nickel's Syntax tree is a single sum type, i.e. an enumeration of node types.
+Each enumeration variant may refer to child nodes, representing a branch or hold terminal values in which case it is considered a leaf of the tree.
+Additionally, nodes are parsed and represented, wrapped in another structure that encodes the span of the node and all its potential children.
+
 ### Basic Elements
+
+The data types of the Nickel language are closely related to JSON
+On the leaf level, Nickel defines `Boolean`, `Number`, `String` and `Null` types
+In addition to that the language implements native support for `Enum` values.
+
+Completing JSON compatibility, `List` and `Record` types are present as well.
+Records on a syntax level are HashMaps, uniquely associating an identifier with a sub-node. 
+
+These data types constitute a static subset of Nickel which allows writing JSON compatible expressions as shown in [@lst:nickel-static].
+
+```{.nickel #lst:nickel-static caption="Example of a static Nickel expression"}
+{
+    list = [ 1, "string", null],
+    "enum value" = `Value 
+} 
+```
 
 ### Meta Information
 
