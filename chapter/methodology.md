@@ -85,8 +85,51 @@ strict digraph {
 ```
 
 
+### Nested Record Access
 
-### Static access
+Nickel supports the referencing of variables which are represented as `Var` nodes that are resolved during runtime.
+With records bound to a variable, a method to access elements inside that record is required.
+The access of record members is represented using a special set of AST nodes depending on whether the member name requires an evaluation in which case resolution is deferred to the evaluation pass.
+While the latter prevents static analysis of any deeper element by the LSP, `StaticAccess` can be used to resolve any intermediate reference.
+
+Notably Nickel represents static access chains in inverse order as unary operations which in turn puts the terminal `Var` node as a leaf in the tree.
+Graphically, [@fig:nickel-static-access] shows the representation of the static access perfomed in [@lst:nickel-static-access] with the rest of the tree omitted.
+
+```{.nickel #lst:nickel-static-access caption="Nickel static access"}
+let x = {
+  y = {
+    z = 1;
+  }
+} in x.y.z
+```
+
+
+```{.graphviz #fig:nickel-static-access caption="AST of typed expression" height=6cm}
+strict digraph { 
+  graph [fontname = "Fira Code"];
+  node [fontname = "Fira Code", margin=0.25];
+  edge [fontname = "Fira Code"];
+
+  rankdir="TD"
+
+  let [label = "Let", color="grey"]
+  rec [label = "omitted", color="grey", style="dashed", shape="box"]
+
+  x [label = "Var('x')"]
+  unop_x_y [label = ".", shape = "triangle", margin=0.066]
+  y [label = "StaticAccess('y')"]
+  unop_y_z [label = ".", shape = "triangle", margin=0.066]
+  z [label = "StaticAccess('z')"]
+
+
+  let -> rec
+  let -> unop_y_z
+  unop_y_z -> unop_x_y
+  unop_y_z -> z
+  unop_x_y -> y
+  unop_x_y -> x
+}
+```
 
 
 
