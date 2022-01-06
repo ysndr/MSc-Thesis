@@ -67,7 +67,7 @@ let x: Num = 5 in x
 ```
 
 
-```{.graphviz #fig:nickel-meta-typed caption="AST of typed expression"}
+```{.graphviz #fig:nickel-meta-typed caption="AST of typed expression" height=4.5cm}
 strict digraph { 
   graph [fontname = "Fira Code"];
   node [fontname = "Fira Code"];
@@ -135,8 +135,8 @@ strict digraph {
 
 ### Record Shorthand
 
-Nickel supports a shorthand syntax to efficiently define nested records.
-As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand syntax with resolves to the semantically equivalent record defined in [@lst:nickel-record-no-shorthand]
+Nickel supports a shorthand syntax to efficiently define nested records similarly to how nested record fields are accessed.
+As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand syntax which resolves to the semantically equivalent record defined in [@lst:nickel-record-no-shorthand]
 
 ```{.nickel #lst:nickel-record-shorthand caption="Nickel record using shorthand"}
 {
