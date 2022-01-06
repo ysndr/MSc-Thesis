@@ -39,7 +39,53 @@ Building on that Nickel also supports variables and functions which make up the 
 
 ### Meta Information
 
-### Records
+One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
+Complementing type information it is possible to annotate values with contracts and additional meta-data such as documentation, default values and merge priority a special syntax as displayed in [@lst:nickel-meta].
+
+
+```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
+let Contract = { 
+         foo | Num 
+             | doc "I am foo",
+         hello | Str
+               | default = "world"
+       }
+       | doc "Just an example Contract"
+in 
+let value | #Contract = { foo = 9 }
+in value == { foo = 9, hello = "world"} 
+
+> true
+```
+
+Internally, the addition of annotations wraps the annotated term in a `MetaValue` structure, that is creates an artificial tree node that describes its subtree. 
+Concretely, the expression shown in [@lst:nickel-meta-typed] translates to the AST in [@fig:nickel-meta-typed].
+The green `MetaValue` box is a virtual node generated during parsing and not present in the untyped equivalent.
+
+```{.nickel #lst:nickel-meta-typed caption="Example of a typed expression"}
+let x: Num = 5 in x
+```
+
+
+```{.graphviz #fig:nickel-meta-typed caption="AST of typed expression"}
+strict digraph { 
+  graph [fontname = "Fira Code"];
+  node [fontname = "Fira Code"];
+  edge [fontname = "Fira Code"];
+
+  meta [label="MetaValue", color="green", shape="box"]
+  let [label = "Let('x')"]
+  num [label = "Num(5)"]
+  var [label = "Var('x')"]
+
+  meta -> let
+  let -> num
+  let -> var
+}
+```
+
+
+### Recursive Records
 
 ### Static access
 
