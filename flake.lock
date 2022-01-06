@@ -61,11 +61,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1639570988,
-        "narHash": "sha256-rKvRI3yKkj/+jOl4pjdUUUqcdNtL2z/eFBALWQooo0o=",
+        "lastModified": 1641408929,
+        "narHash": "sha256-AwDTUe1ZlJSsaq4CuapMAaaBMzvYqhOILopafoz3Fg0=",
         "owner": "ysndr",
         "repo": "writing-tools",
-        "rev": "9a4464ac36d28cfd0311ae49287abe7eb8631185",
+        "rev": "416877191c48b2c7ddcdd33f5a6b6da60889bfea",
         "type": "github"
       },
       "original": {
