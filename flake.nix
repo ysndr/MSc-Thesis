@@ -27,16 +27,17 @@
             writing.latex
             (writing.pandoc.override {
               filters = [
-                (pkgs.runCommand "pandoc-crossref" { } ''
-                  ln -s ${pkgs.haskellPackages.pandoc-crossref}/bin/pandoc-crossref $out
-                '')
                 (builtins.fetchurl "https://raw.githubusercontent.com/jgm/pandocfilters/f850b22/examples/graphviz.py")
                 (builtins.fetchurl "https://raw.githubusercontent.com/jgm/pandocfilters/f850b22/examples/tikz.py")
                 (pkgs.writeShellScript "pandoc-mermaid" ''
                   MERMAID_BIN=${pkgs.nodePackages.mermaid-cli}/bin/mmdc exec python ${builtins.fetchurl "https://raw.githubusercontent.com/timofurrer/pandoc-mermaid-filter/master/pandoc_mermaid_filter.py"}
                 '')
+                (pkgs.runCommand "pandoc-crossref" { } ''
+                  ln -s ${pkgs.haskellPackages.pandoc-crossref}/bin/pandoc-crossref $out
+                '')
                 # (builtins.fetchurl "https://raw.githubusercontent.com/tomduck/pandoc-fignos/master/pandoc_fignos.py")
               ];
+              citeproc = true;
               extraPackages = [ pkgs.graphviz ];
               pythonExtra = p: [ p.pygraphviz p.psutil ];
             })
