@@ -84,6 +84,46 @@ strict digraph {
 }
 ```
 
+<!-- 
+\Begin{minipage}{.5\textwidth}
+\centering
+
+```{.graphviz #fig:nickel-ast-no-meta}
+strict digraph { 
+  let[label = "Let('x')"]
+  num [label = "Num(5)"]
+  var [label = "Var('x')"]
+
+  let -> num
+  let -> var
+}
+```
+\captionof{figure}{AST of untyped code in Listing: \ref{lst:nickel-meta-untyped}}
+\label{fig:nickel-meta-untyped}
+
+\End{minipage}
+\Begin{minipage}{0.5\textwidth}
+
+
+```{.graphviz}
+strict digraph { 
+  meta [label="MetaValue", color="green", shape="box"]
+  let[label = "Let('x')"]
+  num [label = "Num(5)"]
+  var [label = "Var('x')"]
+
+  meta -> let
+  let -> num
+  let -> var
+}
+```
+
+\captionof{figure}{AST of untyped code in Listing: \ref{lst:nickel-meta-typed}}
+\label{fig:nickel-meta-typed}
+
+\End{minipage}
+
+ -->
 
 ### Nested Record Access
 
@@ -92,8 +132,8 @@ With records bound to a variable, a method to access elements inside that record
 The access of record members is represented using a special set of AST nodes depending on whether the member name requires an evaluation in which case resolution is deferred to the evaluation pass.
 While the latter prevents static analysis of any deeper element by the LSP, `StaticAccess` can be used to resolve any intermediate reference.
 
-Notably Nickel represents static access chains in inverse order as unary operations which in turn puts the terminal `Var` node as a leaf in the tree.
-Graphically, [@fig:nickel-static-access] shows the representation of the static access perfomed in [@lst:nickel-static-access] with the rest of the tree omitted.
+Notably, Nickel represents static access chains in inverse order as unary operations which in turn puts the terminal `Var` node as a leaf in the tree.
+[Figure @fig:nickel-static-access] shows the representation of the static access perfomed in [@lst:nickel-static-access] with the rest of the tree omitted.
 
 ```{.nickel #lst:nickel-static-access caption="Nickel static access"}
 let x = {
@@ -116,17 +156,13 @@ strict digraph {
   rec [label = "omitted", color="grey", style="dashed", shape="box"]
 
   x [label = "Var('x')"]
-  unop_x_y [label = ".", shape = "triangle", margin=0.066]
-  y [label = "StaticAccess('y')"]
-  unop_y_z [label = ".", shape = "triangle", margin=0.066]
-  z [label = "StaticAccess('z')"]
+  unop_x_y [label = ".y", shape = "triangle", margin=0.066]
+  unop_y_z [label = ".z", shape = "triangle", margin=0.066]
 
 
   let -> rec
   let -> unop_y_z
   unop_y_z -> unop_x_y
-  unop_y_z -> z
-  unop_x_y -> y
   unop_x_y -> x
 }
 ```
@@ -158,7 +194,19 @@ As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand
 
 Yet, on a syntax level different Nickel generates a different representation.
 
+
+
+
 ## Linearization
+
+Being a domain specific language, the scope of analyzed Nickel files is expected to be small compared to other general purpose languages.
+NLS therefore takes an *eager approach* to code analysis, resolving all information at once which is then stored in a linear data structure with efficient access to elements.
+This data structure is referred to as *linearization*.
+The term arises from the fact that the linearization is a transformation of the syntax tree into a linear structure which is presented in more detail in [@sec:transfer-from-ast].
+The implementation distinguishes two separate states of the linearization.
+During its construction, the linearization will be in a *building* state, and is eventually post-processed yielding a *completed* state.
+The semantics of these states are defined in [@sec:states], while the post-processing is described separately in [@sec:post-processing].
+Finally, [@sec:resolving-elements] explains how the linearization is accessed.
 
 ### States
 
