@@ -210,7 +210,18 @@ Finally, [@sec:resolving-elements] explains how the linearization is accessed.
 
 ### States
 
-### Distinguished Elements
+At its core the linearization is an array of `LinearizationItem`s which are derived from AST nodes during the linearization process.
+
+Closely related to nodes, `LinearizationItem`s maintain the position of their AST counterpart, as well as its type.
+Unlike in the AST, metadata is directly associated with the element.
+Further deviating from the AST representation, the type of the node and its kind are tracked separately.
+The latter is used to distinguish between declarations of variables, records, record fields and variable usages as well as a wildcard kind for any other kind of structure, such as terminals control flow elements.
+
+As mentioned in the introduction NLS distinguishes a linearization in construction from a finalized one.
+Both states are set apart by the auxiliary data maintained about the linearization items, the ordering of the items themselves and the resolution of their concrete types.
+Additionally, both states implement a different set of methods.
+For the `Building` state the linearization implements several methods used during the transfer of the AST and post-processing routines that defines the state transition into the `Completed` state. 
+
 
 ### Transfer from AST
 
