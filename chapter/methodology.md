@@ -210,17 +210,58 @@ Finally, [@sec:resolving-elements] explains how the linearization is accessed.
 
 ### States
 
-At its core the linearization is an array of `LinearizationItem`s which are derived from AST nodes during the linearization process.
+At its core the linearization in either state is represented by an array of `LinearizationItem`s which are derived from AST nodes during the linearization process as well as state dependent auxiliary structures.
 
 Closely related to nodes, `LinearizationItem`s maintain the position of their AST counterpart, as well as its type.
-Unlike in the AST, metadata is directly associated with the element.
-Further deviating from the AST representation, the type of the node and its kind are tracked separately.
+Unlike in the AST, *metadata* is directly associated with the element.
+Further deviating from the AST representation, the *type* of the node and its *kind* are tracked separately.
 The latter is used to distinguish between declarations of variables, records, record fields and variable usages as well as a wildcard kind for any other kind of structure, such as terminals control flow elements.
 
-As mentioned in the introduction NLS distinguishes a linearization in construction from a finalized one.
-Both states are set apart by the auxiliary data maintained about the linearization items, the ordering of the items themselves and the resolution of their concrete types.
-Additionally, both states implement a different set of methods.
-For the `Building` state the linearization implements several methods used during the transfer of the AST and post-processing routines that defines the state transition into the `Completed` state. 
+The aforementioned separation of linearization states got special attention.
+As the linearization process is integrated with the libraries underlying the Nickel interpreter, it had to be designed to cause minimal overhead during normal execution.
+Hence, the concrete implementation employs type-states[@typestate] to separate both states on a type level and defines generic interfaces that allow for context dependent implementations.
+
+At its base the `Linearization` type is just a transparent wrapper around the particular `LinearizationState` which holds state specific data.
+On top of that NLS defines a `Building` and `Completed` state.
+
+The `Building` state represents an accumulated created incrementally during the linearization process.
+In particular that is a list of `LinearizationItems` of unresolved type ordered as they appear in a depth-first iteration of the AST.
+Note that new elements are exclusively appended such that their `id` field during this phase is equal to the elements position at all time.
+Additionally, the `Building` state maintains the scope structure for every item in a separate mapping.
+
+Once fully built a `Building` instance is post-processed yielding a `Completed` linearization.
+While being defined similar to its origin, the structure is optimized for positional access, affecting the order of the `LinearizationItem`s and requiring an auxiliary mapping for efficient access to items by their `id`.
+Moreover, types of items in the `Completed` linearization will be resolved.
+
+Type definitions of the `Linearization` as well as its type-states `Building` and `Completed` are listed in [@lst:nickel-definition-lineatization;@lst:nls-definition-building-type;@lst:nls-definition-completed-type].
+Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS. 
+
+
+```{.rust #lst:nickel-definition-lineatization caption="Definition of Linearization structure"}
+pub trait LinearizationState {}
+
+pub struct Linearization<S: LinearizationState> {
+    pub state: S,
+}
+```
+
+```{.rust #lst:nls-definition-building-type caption="Type Definition of Building state"}
+pub struct Building {
+    pub linearization: Vec<LinearizationItem<Unresolved>>,
+    pub scope: HashMap<Vec<ScopeId>, Vec<ID>>,
+}
+impl LinearizationState for Building {}
+```
+
+```{.rust #lst:nls-definition-completed-type caption="Type Definition of Completed state" }
+pub struct Completed {
+    pub linearization: Vec<LinearizationItem<Resolved>>,
+    scope: HashMap<Vec<ScopeId>, Vec<usize>>,
+    id_to_index: HashMap<ID, usize>,
+}
+impl LinearizationState for Completed {}
+```
+
 
 
 ### Transfer from AST
