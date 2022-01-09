@@ -221,7 +221,7 @@ The aforementioned separation of linearization states got special attention.
 As the linearization process is integrated with the libraries underlying the Nickel interpreter, it had to be designed to cause minimal overhead during normal execution.
 Hence, the concrete implementation employs type-states[@typestate] to separate both states on a type level and defines generic interfaces that allow for context dependent implementations.
 
-At its base the `Linearization` type is just a transparent wrapper around the particular `LinearizationState` which holds state specific data.
+At its base the `Linearization` type is a transparent smart pointer[@deref-chapter;@smart-pointer-chapter] to the particular `LinearizationState` which holds state specific data.
 On top of that NLS defines a `Building` and `Completed` state.
 
 The `Building` state represents an accumulated created incrementally during the linearization process.
