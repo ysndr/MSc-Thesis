@@ -306,6 +306,33 @@ A queried ID is first looked up in this mapping which yields an index from which
 
 #### Resolving by scope
 
+During the construction from the AST, the syntactic scope of each element is eventually known.
+This allows to map scopes to a list of elements defined in this scope.
+Definitions from higher scopes are not repeated, instead they are calculated on request.
+As scopes are lists of scope fragments, for any given scope the set of referable nodes is determined by unifying IDs of all prefixes of the given scope, then resolving the IDs to elements.
+The Rust implementation is given in [@lst:nls-resolve-scope] below.
+
+```{.rust #lst:nls-resolve-scope caption="Resolution of all items in scope"}
+impl Completed {
+  pub fn get_in_scope(
+    &self,
+    LinearizationItem { scope, .. }: &LinearizationItem<Resolved>,
+  ) -> Vec<&LinearizationItem<Resolved>> {
+    let EMPTY = Vec::with_capacity(0);
+    // all prefix lengths
+    (0..scope.len()) 
+      // concatenate all scopes
+      .flat_map(|end| self.scope.get(&scope[..=end])
+        .unwrap_or(&EMPTY))
+      // resolve items
+      .map(|id| self.get_item(*id))
+      // ignore unresolved items
+      .flatten()
+      .collect()
+  }
+}
+```
+
 ## LSP Server
 
 ### Diagnostics and Caching
