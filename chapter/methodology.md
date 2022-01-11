@@ -243,6 +243,7 @@ pub trait LinearizationState {}
 pub struct Linearization<S: LinearizationState> {
     pub state: S,
 }
+
 ```
 
 ```{.rust #lst:nls-definition-building-type caption="Type Definition of Building state"}
@@ -256,7 +257,7 @@ impl LinearizationState for Building {}
 ```{.rust #lst:nls-definition-completed-type caption="Type Definition of Completed state" }
 pub struct Completed {
     pub linearization: Vec<LinearizationItem<Resolved>>,
-    scope: HashMap<Vec<ScopeId>, Vec<usize>>,
+    scope: HashMap<Vec<ScopeId>, Vec<ID>>,
     id_to_index: HashMap<ID, usize>,
 }
 impl LinearizationState for Completed {}
