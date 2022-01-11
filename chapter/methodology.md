@@ -280,7 +280,7 @@ To find items in this list three preconditions have to hold:
 
 1. Each element has a corresponding span in the source
 2. Items of different files appear ordered by `FileId`
-3. Spans may overlap never intersect.
+3. Two spans are either within the bounds of the other or disjoint.
    $$\text{Item}^2_\text{start} \geq \text{Item}^1_\text{start} \land \text{Item}^2_\text{end} \leq \text{Item}^1_\text{end}$$
 4. Items referring to the spans starting at the same position have to occur in the same order before and after the post-processing. 
    Concretely, this ensures that the tree-induced hierarchy is maintained, more precise elements follow broader ones
