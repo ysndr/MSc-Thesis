@@ -2,21 +2,21 @@
 
 This chapter contains a detailed guide through the various steps and components of the Nickel Language Server (NLS).
 Being written in the same language (Rust[@rust]) as the Nickel interpreter allows NLS to integrate existing components for language analysis.
-Complementary, NLS is tightly coupled to Nickel's Syntax definition.
-Hence, in [@sec:nickel-ast] this chapter will first detail parts of the AST that are of particular interest for the LSP and require special handling.
+Complementary, NLS is tightly coupled to Nickel's syntax definition.
+Hence, [@sec:nickel-ast] will first detail parts of the AST that are of particular interest for the LSP and require special handling.
 Based on that [@sec:linearization] will introduce the main datastructure underlying all higher level LSP interactions and how the AST is transformed into this form.
-Finally, in [@sec:lsp-server] the implementation of current LSP features is discussed on the basis of the previously reviewed compontents.
+Finally, in [@sec:lsp-server] the implementation of current LSP features is discussed on the basis of the previously reviewed components.
 
 ## Nickel AST
 
 
-Nickel's Syntax tree is a single sum type, i.e. an enumeration of node types.
+Nickel's syntax tree is a single sum type, i.e. an enumeration of node types.
 Each enumeration variant may refer to child nodes, representing a branch or hold terminal values in which case it is considered a leaf of the tree.
 Additionally, nodes are parsed and represented, wrapped in another structure that encodes the span of the node and all its potential children.
 
 ### Basic Elements
 
-The data types of the Nickel language are closely related to JSON.
+The primitive values of the Nickel language are closely related to JSON.
 On the leaf level, Nickel defines `Boolean`, `Number`, `String` and `Null`.
 In addition to that the language implements native support for `Enum` values.
 Each of these are terminal leafs in the syntax tree.
@@ -35,7 +35,7 @@ These data types constitute a static subset of Nickel which allows writing JSON 
 
 
 
-Building on that Nickel also supports variables and functions which make up the majority of the AST stem.
+Building on that Nickel also supports variables and functions which make up the majority of the AST.
 
 ### Meta Information
 
@@ -200,7 +200,7 @@ Yet, on a syntax level different Nickel generates a different representation.
 ## Linearization
 
 Being a domain specific language, the scope of analyzed Nickel files is expected to be small compared to other general purpose languages.
-NLS therefore takes an *eager approach* to code analysis, resolving all information at once which is then stored in a linear data structure with efficient access to elements.
+Hence, NLS takes an eager approach to code analysis, resolving all information at once which is then stored in a linear data structure with efficient access to elements.
 This data structure is referred to as *linearization*.
 The term arises from the fact that the linearization is a transformation of the syntax tree into a linear structure which is presented in more detail in [@sec:transfer-from-ast].
 The implementation distinguishes two separate states of the linearization.
