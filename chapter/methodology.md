@@ -267,7 +267,17 @@ impl LinearizationState for Completed {}
 
 ### Transfer from AST
 
-#### Retyping
+#### Metadata
+
+#### Records
+
+#### Static access
+
+#### Integration with Nickel
+
+##### Scope
+
+##### Retyping
 
 ### Post-Processing
 
