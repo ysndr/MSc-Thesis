@@ -213,3 +213,5 @@ impl Completed {
 #### Jump to Definition
 
 #### Show references
+
+#### Symbols
