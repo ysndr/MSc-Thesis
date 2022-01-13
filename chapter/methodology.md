@@ -1,4 +1,4 @@
-# Method
+# Design implementation of NLS 
 
 This chapter contains a detailed guide through the various steps and components of the Nickel Language Server (NLS).
 Being written in the same language (Rust[@rust]) as the Nickel interpreter allows NLS to integrate existing components for language analysis.
