@@ -58,9 +58,10 @@ let webContainer = fun image => {
 
 ## Linearization
 
-Being a domain specific language, the scope of analyzed Nickel files is expected to be small compared to other general purpose languages.
-Hence, NLS takes an eager approach to code analysis, resolving all information at once which is then stored in a linear data structure with efficient access to elements.
-This data structure is referred to as *linearization*.
+The focus of the NLS as presented in this work is to implement a working language server with a comprehensive feature set.
+Prioritizing a sound feature set, NLS takes an eager, non-incremental approach to code analysis, resolving all information at once for each code update (`didChange` and `didOpen` events), assuming that initial Nickel projects remain reasonably small.
+The analysis result is subsequently stored in a linear data structure with efficient access to elements.
+This data structure is referred to in the following as *linearization*.
 The term arises from the fact that the linearization is a transformation of the syntax tree into a linear structure which is presented in more detail in [@sec:transfer-from-ast].
 The implementation distinguishes two separate states of the linearization.
 During its construction, the linearization will be in a *building* state, and is eventually post-processed yielding a *completed* state.
