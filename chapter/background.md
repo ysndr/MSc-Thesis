@@ -193,9 +193,9 @@ Finally, descriptive data formats for cloud configurations allow mitigating secu
 Yet, as recently as spring 2020 and still more than a year later dossiers of Palo Alto Networks' security department Unit 42 show [@pa2020H1, ps2021H2] show that a majority of public projects uses insecure configurations.
 This suggests that techniques[@aws-cloud-formation-security-tests] to automatically check templates are not actively employed, and points out the importance of evaluated configuration languages which can implement passive approaches to security analysis.
 
-## Nickel
+### Nickel
 
 ### Gradual typing
 
-#### Row types
-### Contracts
+##### Row types
+#### Contracts
