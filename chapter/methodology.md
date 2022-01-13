@@ -6,6 +6,43 @@ Complementary, NLS is tightly coupled to Nickel's syntax definition.
 Based on that [@sec:linearization] will introduce the main datastructure underlying all higher level LSP interactions and how the AST described in [@sec:nickel-ast] is transformed into this form.
 Finally, in [@sec:lsp-server] the implementation of current LSP features is discussed on the basis of the previously reviewed components.
 
+## Illustrative example
+
+The example [@lst:nickel-complete-example] shows an illustrative high level configuration of a server.
+Throughout this chapter, different sections about the NSL implementation will refer back to this example.
+
+```{.nickel #lst:nickel-complete-example caption="Nickel example with most features shown"}
+let Port | doc "A contract for a port number" = contracts.from_predicate (fun value =>
+  builtins.is_num value &&
+  value % 1 == 0 &&
+  value >= 0 &&
+  value <= 65535) in
+
+let Container = {
+  image | Str,
+  ports | List #Port,
+} in
+
+let NobernetesConfig = {
+  apiVersion | Str,
+  metadata.name | Str,
+  replicas | #nums.PosNat
+           | doc "The number of replicas"
+           | default = 1,
+  containers | { _ : #Container },
+  
+} in
+
+let name_ = "myApp" in
+
+let metadata_ = {
+    name = name_,
+} in
+
+let webContainer = fun image => {
+  image = image,
+  ports = [ 80, 443 ],
+} in
 
 {
   apiVersion = "1.1.0",
