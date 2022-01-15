@@ -163,7 +163,7 @@ The last requirement is achieved by using a stable sort during the post-processi
 
 The algorithm used is listed in [@lst:nls-resolve-at].
 Given a concrete position, that is a `FileId` and `ByteIndex` in that file, a binary search is used to find the *last* element that *starts* at the given position.
-According to the aforementioned preconditions an element found there is equivalent to being the most concrete element starting at this position.
+According to the aforementioned preconditions an element found there is equivalent to being the most specific element starting at this position.
 In the more frequent case that no element starting at the provided position is found, the search instead yields an index which can be used as a starting point to iterate the linearization *backwards* to find an item with the shortest span containing the queried position.
 Due to the third requirement, this reverse iteration can be aborted once an item's span ends before the query.
 If the search has to be aborted, the query does not have a corresponding `LinearizationItem`.
