@@ -84,12 +84,12 @@ Hence, the concrete implementation employs type-states[@typestate] to separate b
 At its base the `Linearization` type is a transparent smart pointer[@deref-chapter;@smart-pointer-chapter] to the particular `LinearizationState` which holds state specific data.
 On top of that NLS defines a `Building` and `Completed` state.
 
-The `Building` state represents an accumulated created incrementally during the linearization process.
-In particular that is a list of `LinearizationItems` of unresolved type ordered as they appear in a depth-first iteration of the AST.
-Note that new elements are exclusively appended such that their `id` field during this phase is equal to the elements position at all time.
-Additionally, the `Building` state maintains the scope structure for every item in a separate mapping.
+The `Building` state represents a raw linearization.
+In particular that is a list of `LinearizationItems` of unresolved type ordered as they are created through a depth-first iteration of the AST.
+Note that new items are exclusively appended such that their `id` field is equal to the position at all time during this phase.
+Additionally, the `Building` state records all items for each scope in a separate mapping.
 
-Once fully built a `Building` instance is post-processed yielding a `Completed` linearization.
+Once fully built, a `Building` instance is post-processed yielding a `Completed` linearization.
 While being defined similar to its origin, the structure is optimized for positional access, affecting the order of the `LinearizationItem`s and requiring an auxiliary mapping for efficient access to items by their `id`.
 Moreover, types of items in the `Completed` linearization will be resolved.
 
