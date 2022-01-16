@@ -123,6 +123,25 @@ pub struct Completed {
 impl LinearizationState for Completed {}
 ```
 
+### Usage Graph
+
+At the core the linearization is a simple *linear* structure.
+Also, in the general case^[Except single primitive expressions] the linearization is reordered in the post-processing step.
+This makes it impossible to encode relationships of nodes on a structural level.
+Yet, Nickel's support for name binding of variables, functions and in recursive records implies great a necessity for node-to-node relationships to be represented in a representation that aims to work with these relationships.
+On a higher level, tracking both definitions and usages of identifiers yields a directed graph.
+
+There are three main kids of vertices in such a graph.
+**Declarations** are nodes that introduce an identifier, and can be referred to by a set of nods.
+Referral is represented as **Usage** nodes which can either be bound to a declaration or unbound if no corresponding declaration is known.
+In practice Nickel distinguishes simple variable bindings from name binding through record fields in recursive records.
+It also Integrates a **Record** kind to provide deep record destructuring.
+
+During the linearization process this graphical model is recreated on the linear representation of the source.
+Hence, each `LinearizationItem` is associated with one of the aforementioned kinds, encoding its function in the usage graph.
+Nodes of the AST that do not fit in a usage graph, a wildcard kind `Structure` is applied.
+
+<!-- TODO: Add graphics -->
 
 
 ### Transfer from AST
