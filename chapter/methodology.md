@@ -376,6 +376,116 @@ Unfortunately, no types are provided for these by Nickel.
 Examples of let bindings can be found in use in [@lst:nickel-complete-example or @lst:nickel-let-binding]
 
 
+##### Records
+
+
+```{.graphviz #fig:nickel-record caption="A record in Nickel"}
+
+{
+  a = 2,
+  b = {
+    ba = 1
+  }
+}
+
+```
+
+```{.graphviz #fig:nickel-record-ast caption="AST representation of a record"}
+digraph G {
+    node[shape="record", fontname = "Fira Code", fontsize = 9]
+
+    outer [label = "{RecRecord | {<f1> apiVersion | <f2> metadata | <f3>containers}}"]
+    apiVersion [ label = "Str | \"1.1.0\"" ]
+    metadata [label = "Var | metadata_"]
+    containers [ label = "{RecRecord | <f1> \"main container\" }" ]
+    main_container [ label = "{App | { <f1> * | <f2> * }}" ]
+    webContainer [ label = "Var | webContainer" ]
+    image [ label = "Var | image"]
+
+
+    outer:f1 -> apiVersion
+    outer:f2 -> metadata
+    outer:f3 -> containers
+    containers:f1 -> main_container
+    main_container:f1 -> webContainer
+    main_container:f2 -> image
+}
+
+```
+
+Linearizing records proves more difficult.
+In [@sec:graph-representation] the AST representation of Records was discussed.
+As shown by [@fig:nickel-record-ast], Nickel does not have AST nodes dedicated to record fields.
+Instead, it associates field names with values as part of the `Record` node.
+For the language server on the other hand the record field is as important as its value, since it serves as name declaration.
+For that reason NLS distinguishes `Record` and `RecordField` as independent kinds of linearization items.
+
+NLS has to create a separate item for the field and the value.
+That is to maintain similarity to the other binding types.
+It provides a specific and logical span to reference and allows the value to be of another kind, such as a variable usage like shown in the example.
+The language server is bound to process nodes individually.
+Therefore, it can not process record values at the same time as the outer record.
+Yet, record values may reference other fields defined in the same record regardless of the order, as records are recursive by default.
+Consequently, all fields have to be in scope and as such be linearized beforehand.
+While, `RecordField` items are created while processing the record, they can not yet be connected to the value they represent, as the linearizer can not know the `id` of the latter.
+This is because the subtree of each of the fields can be arbitrary large causing an unknown amount of items, and hence intermediate `id`s to be added to the Linearization.
+
+A summary of this can be seen for instance on the linearization of the previously discussed record in [@fig:nls-lin-records].
+Here, record fields are linearized first, pointing to some following location.
+Yet, as the `containers` field value is processed first, the `metadata` field value is offset by a number of fields unknown when the outer record node is processed.
+
+```{.graphviz #fig:nls-lin-records caption="Linearization of a record"}
+digraph G {
+    rankdir = LR;
+    ranksep = 2;
+    nodesep = .5;
+    node[shape="record", fontname = "Fira Code", fontsize = 9]
+
+    lin [ label = "<f1> | <f2> | <f3> | <f4> | <f5> ... | <f6> | <f7> | <f8> ...", width=.1]
+
+    outer [ label = "Record" ]
+    field_apiVersion [label = "RecordField |apiVersion "]
+    field_containers [label="RecordField | containers"]
+    field_Metadata [label = "RecordField | Metadata"]
+    inner [ label = "Record" ]
+    file_main_container [label="RecordField| main_containers"]
+
+
+
+    lin:f1 -> outer
+    outer -> lin:f2 [style = dashed]
+    outer -> lin:f3 [style = dashed]
+    outer -> lin:f4 [style = dashed]
+
+    lin:f2 -> field_apiVersion
+    field_apiVersion -> lin:f5 [style = dashed]
+
+    lin:f6 -> inner
+    inner -> lin:f7 [style = dashed]
+
+    lin:f3 -> field_containers
+    field_containers -> lin:f6 [style = dashed]
+
+    lin:f4 -> field_Metadata
+    field_Metadata-> lin:f8 [style = dashed]
+
+    lin:f7 -> file_main_container
+    file_main_container -> lin:f8 [style = dashed]
+}
+```
+
+To provide the necessary references, NLS makes used of the *scope safe* memory of its `Linearizer` implementation.
+This is possible, because each record value corresponds to its own scope.
+The complete process looks as follows:
+
+1. When registering a record, first the outer `Record` is added to the linearization
+2. This is followed by `RecordField` items for its fields, which at this point do not reference any value.
+3. NLS then stores the `id` of the parent as well as the fields and the offsets of the corresponding items (`n-4` and `[(apiVersion, n-3), (containers, n-2), (metadata, n-1)]` respectively in the example [@fig:nls-lin-records]).
+4. The `scope` method will be called in the same order as the record fields appear.
+   Using this fact, the `scope` method moves the data stored for the next evaluated field into the freshly generated `Linearizer`
+5. **(In the sub-scope)** The linearizer associates the `RecordField` item with the (now known) `id` of the field's value.
+   The cached field data is invalidated such that this process only happens once for each field.
+
 
 ##### Static access
 
