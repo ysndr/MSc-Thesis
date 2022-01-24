@@ -201,6 +201,16 @@ With the example in mind [@lst:nickel-complete-example] contains the defintion o
 Additionally, to keep track of the variables in scope, and iteratively build a usage graph, NLS keeps track of the latest definition of each variable name and which `Declaration` node it refers to.
 
 
+#### General Process
+
+From the perspective of the language server, building a linearization is a completely passive process.
+For each analysis NLS initializes an empty linearization in the `Building` state.
+This linearization is then passed into Nickel's type-checker along a `Linearizer` instance.
+
+Type checking in Nickel is implemented as a complete recursive depth-first preorder traversal of the AST.
+
+
+
 
 
 #### Linearizer
