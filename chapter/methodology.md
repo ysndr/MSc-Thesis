@@ -201,23 +201,47 @@ With the example in mind [@lst:nickel-complete-example] contains the defintion o
 Additionally, to keep track of the variables in scope, and iteratively build a usage graph, NLS keeps track of the latest definition of each variable name and which `Declaration` node it refers to.
 
 
-#### General Process
-
-From the perspective of the language server, building a linearization is a completely passive process.
-For each analysis NLS initializes an empty linearization in the `Building` state.
-This linearization is then passed into Nickel's type-checker along a `Linearizer` instance.
-
-Type checking in Nickel is implemented as a complete recursive depth-first preorder traversal of the AST.
-
-
-
-
-
 #### Linearizer
+
 
 The heart of the linearization the `Linearizer` trait as defined in [@lst:nls-linearizer-trait].
 The `Linearizer` lives in parallel to the `Linearization`.
-Its methods modify on a shared reference to a `Building` `Linearization`
+Its methods modify a shared reference to a `Building` `Linearization`
+
+
+```{.rust #lst:nls-linearizer-trait caption="Interface of linearizer trait"}
+pub trait Linearizer {
+    type Building: LinearizationState + Default;
+    type Completed: LinearizationState + Default;
+    type CompletionExtra;
+
+    fn add_term(
+        &mut self,
+        lin: &mut Linearization<Self::Building>,
+        term: &Term,
+        pos: TermPos,
+        ty: TypeWrapper,
+    )
+
+    fn retype_ident(
+        &mut self,
+        lin: &mut Linearization<Self::Building>,
+        ident: &Ident,
+        new_type: TypeWrapper,
+    )
+
+    fn complete(
+        self,
+        _lin: Linearization<Self::Building>,
+        _extra: Self::CompletionExtra,
+    ) -> Linearization<Self::Completed>
+    where
+        Self: Sized,
+
+    fn scope(&mut self) -> Self;
+}
+```
+
 
 `Linearizer::add_term`
   ~ is used to record a new term, i.e. AST node.
@@ -243,39 +267,62 @@ Its methods modify on a shared reference to a `Building` `Linearization`
 While data stored in the `Linearizer::Building` state will be accessible at any point in the linearization process, the `Linearizer` is considered to be *scope safe*.
 No instance data is propagated back to the outer scopes `Linearizer`.
 Neither have `Linearizer`s of sibling scopes access to each other's data.
+Yet the `scope` method can be implemented to pass arbitrary state down to the scoped instance.
 
 
-```{.rust #lst:nls-linearizer-trait caption="Interface of linearizer trait"}
-pub trait Linearizer {
-    type Building: LinearizationState + Default;
-    type Completed: LinearizationState + Default;
-    type CompletionExtra;
+#### General Process
 
-    fn add_term(
-        &mut self,
-        lin: &mut Linearization<Self::Building>,
-        term: &Term,
-        pos: TermPos,
-        ty: TypeWrapper,
-    )
+From the perspective of the language server, building a linearization is a completely passive process.
+For each analysis NLS initializes an empty linearization in the `Building` state.
+This linearization is then passed into Nickel's type-checker along a `Linearizer` instance.
 
-    fn retype_ident(
-        &mut self,
-        lin: &mut Linearization<Self::Building>,
-        ident: &Ident,
-        new_type: TypeWrapper,
-    ) 
+Type checking in Nickel is implemented as a complete recursive depth-first preorder traversal of the AST.
+As such it could easily be adapted to interact with a `Linearizer` since every node is visited and both type and scope information is available without the additional cost of a separate traversal.
+Moreover, type checking proved optimal to interact with traversal as most transformations of the AST happen afterwards.
 
-    fn complete(
-        self,
-        _lin: Linearization<Self::Building>,
-        _extra: Self::CompletionExtra,
-    ) -> Linearization<Self::Completed>
-    where
-        Self: Sized,
+While the type checking algorithm is complex only a fraction is of importance for the linearization.
+Reducing the type checking function to what is relevant to the linearization process yields [@lst:nickel-tc-abstract].
+Essentially, every term is unconditionally registered by the linearization.
+This is enough to handle a large subset of Nickel.
+In fact, only records, let bindings and function definitions require additional change to enrich identifiers they define with type information.
 
-    fn scope(&mut self) -> Self;
-}
+
+```{.rust #nickel-tc-abstract caption="Abstract type checking function"}
+fn type_check_<L: Linearizer>(
+    lin: &mut Linearization<L::Building>,
+    mut linearizer: L,
+    rt: &RichTerm,
+    ty: TypeWrapper,
+    /* omitted */
+) -> Result<(), TypecheckError> {
+    let RichTerm { term: t, pos } = rt;
+
+    // 1. record a node
+    linearizer.add_term(lin, t, *pos, ty.clone());
+
+    // handling of each term variant
+    // recursively calling `type_check_`
+    //
+    // 2. retype identifiers if needed
+    match t.as_ref() {
+      Term::RecRecord(stat_map, ..) => {
+        for (id, rt) in stat_map {
+          let tyw = binding_type(/* ommitted */);
+          linearizer.retype_ident(lin, id, tyw);
+        }
+      }
+      Term::Fun(ident, _) |
+      Term::FunPattern(Some(ident), _)=> {
+        let src = state.table.fresh_unif_var();
+        linearizer.retype_ident(lin, ident, src.clone());
+      }
+      Term::Let(ident, ..) |
+      Term::LetPattern(Some(ident), ..)=> {
+        let ty_let = binding_type(/* omitted */);
+        linearizer.retype_ident(lin, ident, ty_let.clone());
+      }
+      _ => { /* ommitted */}
+    }
 ```
 
 
