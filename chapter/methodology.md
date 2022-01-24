@@ -287,7 +287,7 @@ This is enough to handle a large subset of Nickel.
 In fact, only records, let bindings and function definitions require additional change to enrich identifiers they define with type information.
 
 
-```{.rust #nickel-tc-abstract caption="Abstract type checking function"}
+```{.rust #lst:nickel-tc-abstract caption="Abstract type checking function"}
 fn type_check_<L: Linearizer>(
     lin: &mut Linearization<L::Building>,
     mut linearizer: L,
@@ -378,7 +378,7 @@ Examples of let bindings can be found in use in [@lst:nickel-complete-example or
 
 ##### Records
 
-```{.nickel #fig:nickel-record caption="A record in Nickel"}
+```{.nickel #lst:nickel-record caption="A record in Nickel"}
 {
   apiVersion = "1.1.0",
   metadata = metadata_,
