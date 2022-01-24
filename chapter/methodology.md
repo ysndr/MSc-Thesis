@@ -203,7 +203,72 @@ Additionally, to keep track of the variables in scope, and iteratively build a u
 
 
 
-### Transfer from AST
+#### Linearizer
+
+The heart of the linearization the `Linearizer` trait as defined in [@lst:nls-linearizer-trait].
+The `Linearizer` lives in parallel to the `Linearization`.
+Its methods modify on a shared reference to a `Building` `Linearization`
+
+`Linearizer::add_term`
+  ~ is used to record a new term, i.e. AST node.
+  ~ It's responsibility is to combine context information stored in the `Linearizer` and concrete information about a node to extend the `Linearization` by appropriate items.
+`Linearizer::retype_ident`
+  ~ is used to update the type information for a current identifier.
+  ~ The reason this method exists is that not all variable definitions have a corresponding AST node but may be part of another node.
+    This is especially apparent with records where the field names part of the record node and as such are linearized with the record but have to be assigned there actual type separately.
+`Linearizer::complete`
+  ~ implements the post-processing necessary to turn a final `Building` linearization into a `Completed` one.
+  ~ Note that the post-processing might depend on additional data
+`Linearizer::scope`
+  ~ returns a new `Linearizer` to be used for a sub-scope of the current one.
+  ~ Multiple calls to this method yield unique instances, each with their own scope.
+  ~ It is the caller's responsibility to call this method whenever a new scope is entered traversing the AST.
+  ~ Notably, the recursive traversal of an AST ensures that scopes are correctly backtracked.
+
+
+
+While data stored in the `Linearizer::Building` state will be accessible at any point in the linearization process, the `Linearizer` is considered to be only *scope safe*.
+No instance data is propagated back to the outer scopes `Linearizer`.
+Neither have `Linearizers` of sibling scopes access to each other's data.
+
+
+```rust{.rust #lst:nls-linearizer-trait caption="Interface of linearizer trait"}
+pub trait Linearizer {
+    type Building: LinearizationState + Default;
+    type Completed: LinearizationState + Default;
+    type CompletionExtra;
+
+    fn add_term(
+        &mut self,
+        lin: &mut Linearization<Self::Building>,
+        term: &Term,
+        pos: TermPos,
+        ty: TypeWrapper,
+    )
+
+    fn retype_ident(
+        &mut self,
+        lin: &mut Linearization<Self::Building>,
+        ident: &Ident,
+        new_type: TypeWrapper,
+    ) 
+
+    fn complete(
+        self,
+        _lin: Linearization<Self::Building>,
+        _extra: Self::CompletionExtra,
+    ) -> Linearization<Self::Completed>
+    where
+        Self: Sized,
+
+    fn scope(&mut self) -> Self;
+}
+```
+
+
+
+
+
 
 #### Metadata
 
