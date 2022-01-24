@@ -177,27 +177,28 @@ Nodes of the AST that do not fit in a usage graph, a wildcard kind `Structure` i
 
 #### Scopes
 
-<!-- how to explain scopes -->
+<!-- TODO: how to explain scopes -->
 
-The Nickel language implements supports scopes with variable shadowing.
+The Nickel language implements lexical scopes with name shadowing.
 
-1. It is not possible to access undeclared variables
-2. Variable names can be defined 
+1. A name can only be referred to after it has been defined
+2. A name can be redefined for a local area
 
 An AST can be used to represent this logic.
-A variable reference always refers to the closest parent node defining the variable.
-Scopes are naturally separated using branching, each branch of a node represents a sub-scope of its parent, i.e. new declarations made in one branch are not visible in the other.
+A variable reference always refers to the closest parent node defining the name.
+Scopes are naturally separated using branching.
+Each branch of a node represents a sub-scope of its parent, i.e. new declarations made in one branch are not visible in the other.
 
-When eliminating the tree structure, scopes have to be maintained in order to provide auto-completion of identifiers and list symbol names.
+When eliminating the tree structure, scopes have to be maintained in order to provide auto-completion of identifiers and list symbol names based on their scope as context.
 Since the bare linear data structure cannot be used to deduce a scope, related metadata has to be tracked separately.
-The NLS tracks scopes both statically, and temporarily during the linearization.
-The language server maintains a register for identifiers defined in every scope. 
+The language server maintains a register for identifiers defined in every scope.
 This register allows NLS to resolve possible completion targets as detailed in [@sec:resolving-by-scope].
 
 For simplicity, scopes are represented by a prefix list.
-Each inner scope appends its `ScopeId` to the existing prefix defining its outer scope.
-Parallel scopes are given unique `ScopeId`s to tell them apart.
-<!-- prefix list? -->
+Whenever a new lexical scope is entered the prefix list of the outer scope is extended by a unique identifier.
+With the example in mind [@lst:nickel-complete-example] contains the defintion of a simple record.
+
+Additionally, to keep track of the variables in scope, and iteratively build a usage graph, NLS keeps track of the latest definition of each variable name and which `Declaration` node it refers to.
 
 
 
