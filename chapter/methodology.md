@@ -123,7 +123,39 @@ pub struct Completed {
 impl LinearizationState for Completed {}
 ```
 
-### Usage Graph
+### Transfer from AST
+
+The NLS project aims to present a transferable architecture that can be adapted for future languages.
+Consequently, NLS faces the challenge of satisfying multiple goals
+
+1. To keep up with the frequent changes to the Nickel language and ensure compatibility at minimal cost, NLS needs to integrate critical functions of Nickel's runtime
+2. Adaptions to Nickel to accommodate the language server should be minimal not to obstruct its development and maintain performance of the runtime.
+<!-- what is more? -->
+
+To accommodate these goals NLS comprises three different parts as shown in [@fig:nls-nickel-structure].
+The `Linearizer` trait acts as an interface between Nickel and the language server.
+NLS implements such a `Linearizer` specialized to Nickel which registers nodes and builds a final linearization.
+As Nickel's type checking implementation was adapted to pass AST nodes to the `Linearizer`.
+During normal operation the overhead induced by the `Linearizer` is minimized using a stub implementation of the trait.
+
+<!-- TODO: caption -->
+```{.graphviz #fig:nls-nickel-structure caption="Interaction of Componenets"}
+digraph {
+  nls [label="NLS"]
+  nickel [label="Nickel"]
+  als [label="Linearizer", shape=box]
+  stub [label="Stub interface"]
+
+  nls ->  nickel  [label="uses"]
+  nls ->  als [label="implements"]
+  stub ->  als [label="implements"]
+  nickel ->  als  [label="uses"]
+  nickel ->  stub  [label="uses"]
+}
+```
+
+
+#### Usage Graph
 
 At the core the linearization is a simple *linear* structure.
 Also, in the general case^[Except single primitive expressions] the linearization is reordered in the post-processing step.
