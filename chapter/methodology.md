@@ -245,7 +245,7 @@ No instance data is propagated back to the outer scopes `Linearizer`.
 Neither have `Linearizers` of sibling scopes access to each other's data.
 
 
-```rust{.rust #lst:nls-linearizer-trait caption="Interface of linearizer trait"}
+```{.rust #lst:nls-linearizer-trait caption="Interface of linearizer trait"}
 pub trait Linearizer {
     type Building: LinearizationState + Default;
     type Completed: LinearizationState + Default;
