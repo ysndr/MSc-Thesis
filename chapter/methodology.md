@@ -201,48 +201,12 @@ With the example in mind [@lst:nickel-complete-example] contains the defintion o
 Additionally, to keep track of the variables in scope, and iteratively build a usage graph, NLS keeps track of the latest definition of each variable name and which `Declaration` node it refers to.
 
 
-#### General Process
-
-From the perspective of the language server, building a linearization is a completely passive process.
-For each analysis NLS initializes an empty linearization in the `Building` state.
-This linearization is then passed into Nickel's type-checker along a `Linearizer` instance.
-
-Type checking in Nickel is implemented as a complete recursive depth-first preorder traversal of the AST.
-
-
-
-
-
 #### Linearizer
+
 
 The heart of the linearization the `Linearizer` trait as defined in [@lst:nls-linearizer-trait].
 The `Linearizer` lives in parallel to the `Linearization`.
-Its methods modify on a shared reference to a `Building` `Linearization`
-
-`Linearizer::add_term`
-  ~ is used to record a new term, i.e. AST node.
-  ~ It's responsibility is to combine context information stored in the `Linearizer` and concrete information about a node to extend the `Linearization` by appropriate items.
-
-`Linearizer::retype_ident`
-  ~ is used to update the type information for a current identifier.
-  ~ The reason this method exists is that not all variable definitions have a corresponding AST node but may be part of another node.
-    This is especially apparent with records where the field names part of the record node and as such are linearized with the record but have to be assigned there actual type separately.
-
-`Linearizer::complete`
-  ~ implements the post-processing necessary to turn a final `Building` linearization into a `Completed` one.
-  ~ Note that the post-processing might depend on additional data
-  
-`Linearizer::scope`
-  ~ returns a new `Linearizer` to be used for a sub-scope of the current one.
-  ~ Multiple calls to this method yield unique instances, each with their own scope.
-  ~ It is the caller's responsibility to call this method whenever a new scope is entered traversing the AST.
-  ~ Notably, the recursive traversal of an AST ensures that scopes are correctly backtracked.
-
-
-
-While data stored in the `Linearizer::Building` state will be accessible at any point in the linearization process, the `Linearizer` is considered to be only *scope safe*.
-No instance data is propagated back to the outer scopes `Linearizer`.
-Neither have `Linearizers` of sibling scopes access to each other's data.
+Its methods modify a shared reference to a `Building` `Linearization`
 
 
 ```{.rust #lst:nls-linearizer-trait caption="Interface of linearizer trait"}
@@ -264,7 +228,7 @@ pub trait Linearizer {
         lin: &mut Linearization<Self::Building>,
         ident: &Ident,
         new_type: TypeWrapper,
-    ) 
+    )
 
     fn complete(
         self,
@@ -279,15 +243,252 @@ pub trait Linearizer {
 ```
 
 
+`Linearizer::add_term`
+  ~ is used to record a new term, i.e. AST node.
+  ~ Its responsibility is to combine context information stored in the `Linearizer` and concrete information about a node to extend the `Linearization` by appropriate items.
+
+`Linearizer::retype_ident`
+  ~ is used to update the type information for a current identifier.
+  ~ The reason this method exists is that not all variable definitions have a corresponding AST node but may be part of another node.
+    This is especially apparent with records where the field names part of the record node and as such are linearized with the record but have to be assigned there actual type separately.
+
+`Linearizer::complete`
+  ~ implements the post-processing necessary to turn a final `Building` linearization into a `Completed` one.
+  ~ Note that the post-processing might depend on additional data
+
+`Linearizer::scope`
+  ~ returns a new `Linearizer` to be used for a sub-scope of the current one.
+  ~ Multiple calls to this method yield unique instances, each with their own scope.
+    It is the caller's responsibility to call this method whenever a new scope is entered traversing the AST.
+  ~ The recursive traversal of an AST implies that scopes are correctly backtracked.
 
 
 
+While data stored in the `Linearizer::Building` state will be accessible at any point in the linearization process, the `Linearizer` is considered to be *scope safe*.
+No instance data is propagated back to the outer scopes `Linearizer`.
+Neither have `Linearizer`s of sibling scopes access to each other's data.
+Yet the `scope` method can be implemented to pass arbitrary state down to the scoped instance.
 
-#### Metadata
 
-#### Records
+#### Linearization Process
 
-#### Static access
+From the perspective of the language server, building a linearization is a completely passive process.
+For each analysis NLS initializes an empty linearization in the `Building` state.
+This linearization is then passed into Nickel's type-checker along a `Linearizer` instance.
+
+Type checking in Nickel is implemented as a complete recursive depth-first preorder traversal of the AST.
+As such it could easily be adapted to interact with a `Linearizer` since every node is visited and both type and scope information is available without the additional cost of a separate traversal.
+Moreover, type checking proved optimal to interact with traversal as most transformations of the AST happen afterwards.
+
+While the type checking algorithm is complex only a fraction is of importance for the linearization.
+Reducing the type checking function to what is relevant to the linearization process yields [@lst:nickel-tc-abstract].
+Essentially, every term is unconditionally registered by the linearization.
+This is enough to handle a large subset of Nickel.
+In fact, only records, let bindings and function definitions require additional change to enrich identifiers they define with type information.
+
+
+```{.rust #nickel-tc-abstract caption="Abstract type checking function"}
+fn type_check_<L: Linearizer>(
+    lin: &mut Linearization<L::Building>,
+    mut linearizer: L,
+    rt: &RichTerm,
+    ty: TypeWrapper,
+    /* omitted */
+) -> Result<(), TypecheckError> {
+    let RichTerm { term: t, pos } = rt;
+
+    // 1. record a node
+    linearizer.add_term(lin, t, *pos, ty.clone());
+
+    // handling of each term variant
+    // recursively calling `type_check_`
+    //
+    // 2. retype identifiers if needed
+    match t.as_ref() {
+      Term::RecRecord(stat_map, ..) => {
+        for (id, rt) in stat_map {
+          let tyw = binding_type(/* omitted */);
+          linearizer.retype_ident(lin, id, tyw);
+        }
+      }
+      Term::Fun(ident, _) |
+      Term::FunPattern(Some(ident), _)=> {
+        let src = state.table.fresh_unif_var();
+        linearizer.retype_ident(lin, ident, src.clone());
+      }
+      Term::Let(ident, ..) |
+      Term::LetPattern(Some(ident), ..)=> {
+        let ty_let = binding_type(/* omitted */);
+        linearizer.retype_ident(lin, ident, ty_let.clone());
+      }
+      _ => { /* omitted */ }
+    }
+```
+
+While registering a node, NLS distinguishes 4 kinds of nodes.
+These are *metadata*, *usage graph* related nodes, i.e. declarations and usages, *static access* of nested record fields, and *general elements* which is every node that does not fall into one of the prior categories.
+
+
+```{.nickel #lst:nickel-simple-expr caption="Exemplary nickel expressions"}
+// atoms
+
+1
+true
+null
+
+// binary operations
+42 * 3
+[ 1, 2, 3 ] @ [ 4, 5]
+
+// if-then-else
+if true then "TRUE :)" else "false :(" 
+
+// string iterpolation
+"#{ "hello" } #{ "world" }!"
+```
+
+##### Structures
+
+In the most common case of general elements, the node is simply registered as a `LinearizationItem` of kind `Structure`.
+This applies for all simple expressions like those exemplified in [@lst:nickel-simple-expr]
+Essentially, any of such nodes turns into a typed span as the remaining information tracked is the item's span and type checker provided type.
+
+```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
+
+// simple bindings
+let name = <expr> in <expr>
+let func = fun arg => <expr> in <expr>
+
+// or with patterns
+let name @ { field, with_default = 2 } = <expr> in <expr>
+let func = fun arg @ { field, with_default = 2 } => 
+  <expr> in 
+  <expr>
+```
+
+##### Declarations
+
+Name bindings are equally simple.
+NLS generates a `Declaration` item for the given identifier and assigns the identifier's position and provided type.
+Additionally, it associates the identifier with the `id` of the created item in its current environment.
+If a binding contains a pattern, NLS creates additional items for each matched element.
+Unfortunately, no types are provided for these by Nickel.
+Examples of let bindings can be found in use in [@lst:nickel-complete-example or @lst:nickel-let-binding]
+
+
+##### Records
+
+```{.nickel #fig:nickel-record caption="A record in Nickel"}
+{
+  apiVersion = "1.1.0",
+  metadata = metadata_,
+  replicas = 3,
+  containers = { 
+    "main container" = webContainer image
+  }
+}
+```
+
+```{.graphviz #fig:nickel-record-ast caption="AST representation of a record"}
+digraph G {
+    node[shape="record", fontname = "Fira Code", fontsize = 9]
+
+    outer [label = "{RecRecord | {<f1> apiVersion | <f2> metadata | <f3>containers}}"]
+    apiVersion [ label = "Str | \"1.1.0\"" ]
+    metadata [label = "Var | metadata_"]
+    containers [ label = "{RecRecord | <f1> \"main container\" }" ]
+    main_container [ label = "{App | { <f1> * | <f2> * }}" ]
+    webContainer [ label = "Var | webContainer" ]
+    image [ label = "Var | image"]
+
+
+    outer:f1 -> apiVersion
+    outer:f2 -> metadata
+    outer:f3 -> containers
+    containers:f1 -> main_container
+    main_container:f1 -> webContainer
+    main_container:f2 -> image
+}
+
+```
+
+Linearizing records proves more difficult.
+In [@sec:graph-representation] the AST representation of Records was discussed.
+As shown by [@fig:nickel-record-ast], Nickel does not have AST nodes dedicated to record fields.
+Instead, it associates field names with values as part of the `Record` node.
+For the language server on the other hand the record field is as important as its value, since it serves as name declaration.
+For that reason NLS distinguishes `Record` and `RecordField` as independent kinds of linearization items.
+
+NLS has to create a separate item for the field and the value.
+That is to maintain similarity to the other binding types.
+It provides a specific and logical span to reference and allows the value to be of another kind, such as a variable usage like shown in the example.
+The language server is bound to process nodes individually.
+Therefore, it can not process record values at the same time as the outer record.
+Yet, record values may reference other fields defined in the same record regardless of the order, as records are recursive by default.
+Consequently, all fields have to be in scope and as such be linearized beforehand.
+While, `RecordField` items are created while processing the record, they can not yet be connected to the value they represent, as the linearizer can not know the `id` of the latter.
+This is because the subtree of each of the fields can be arbitrary large causing an unknown amount of items, and hence intermediate `id`s to be added to the Linearization.
+
+A summary of this can be seen for instance on the linearization of the previously discussed record in [@fig:nls-lin-records].
+Here, record fields are linearized first, pointing to some following location.
+Yet, as the `containers` field value is processed first, the `metadata` field value is offset by a number of fields unknown when the outer record node is processed.
+
+```{.graphviz #fig:nls-lin-records caption="Linearization of a record"}
+digraph G {
+    rankdir = LR;
+    ranksep = 2;
+    nodesep = .5;
+    node[shape="record", fontname = "Fira Code", fontsize = 9]
+
+    lin [ label = "<f1> | <f2> | <f3> | <f4> | <f5> ... | <f6> | <f7> | <f8> ...", width=.1]
+
+    outer [ label = "Record" ]
+    field_apiVersion [label = "RecordField |apiVersion "]
+    field_containers [label="RecordField | containers"]
+    field_Metadata [label = "RecordField | Metadata"]
+    inner [ label = "Record" ]
+    file_main_container [label="RecordField| main_containers"]
+
+
+
+    lin:f1 -> outer
+    outer -> lin:f2 [style = dashed]
+    outer -> lin:f3 [style = dashed]
+    outer -> lin:f4 [style = dashed]
+
+    lin:f2 -> field_apiVersion
+    field_apiVersion -> lin:f5 [style = dashed]
+
+    lin:f6 -> inner
+    inner -> lin:f7 [style = dashed]
+
+    lin:f3 -> field_containers
+    field_containers -> lin:f6 [style = dashed]
+
+    lin:f4 -> field_Metadata
+    field_Metadata-> lin:f8 [style = dashed]
+
+    lin:f7 -> file_main_container
+    file_main_container -> lin:f8 [style = dashed]
+}
+```
+
+To provide the necessary references, NLS makes used of the *scope safe* memory of its `Linearizer` implementation.
+This is possible, because each record value corresponds to its own scope.
+The complete process looks as follows:
+
+1. When registering a record, first the outer `Record` is added to the linearization
+2. This is followed by `RecordField` items for its fields, which at this point do not reference any value.
+3. NLS then stores the `id` of the parent as well as the fields and the offsets of the corresponding items (`n-4` and `[(apiVersion, n-3), (containers, n-2), (metadata, n-1)]` respectively in the example [@fig:nls-lin-records]).
+4. The `scope` method will be called in the same order as the record fields appear.
+   Using this fact, the `scope` method moves the data stored for the next evaluated field into the freshly generated `Linearizer`
+5. **(In the sub-scope)** The linearizer associates the `RecordField` item with the (now known) `id` of the field's value.
+   The cached field data is invalidated such that this process only happens once for each field.
+
+
+##### Static access
+
+##### Metadata
 
 #### Integration with Nickel
 
