@@ -378,16 +378,15 @@ Examples of let bindings can be found in use in [@lst:nickel-complete-example or
 
 ##### Records
 
-
-```{.graphviz #fig:nickel-record caption="A record in Nickel"}
-
+```{.nickel #fig:nickel-record caption="A record in Nickel"}
 {
-  a = 2,
-  b = {
-    ba = 1
+  apiVersion = "1.1.0",
+  metadata = metadata_,
+  replicas = 3,
+  containers = { 
+    "main container" = webContainer image
   }
 }
-
 ```
 
 ```{.graphviz #fig:nickel-record-ast caption="AST representation of a record"}
