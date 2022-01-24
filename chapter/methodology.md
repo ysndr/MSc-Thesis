@@ -270,7 +270,7 @@ Neither have `Linearizer`s of sibling scopes access to each other's data.
 Yet the `scope` method can be implemented to pass arbitrary state down to the scoped instance.
 
 
-#### General Process
+#### Linearization Process
 
 From the perspective of the language server, building a linearization is a completely passive process.
 For each analysis NLS initializes an empty linearization in the `Building` state.
