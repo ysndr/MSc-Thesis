@@ -221,7 +221,7 @@ Its methods modify on a shared reference to a `Building` `Linearization`
 
 `Linearizer::add_term`
   ~ is used to record a new term, i.e. AST node.
-  ~ It's responsibility is to combine context information stored in the `Linearizer` and concrete information about a node to extend the `Linearization` by appropriate items.
+  ~ Its responsibility is to combine context information stored in the `Linearizer` and concrete information about a node to extend the `Linearization` by appropriate items.
 
 `Linearizer::retype_ident`
   ~ is used to update the type information for a current identifier.
@@ -231,18 +231,18 @@ Its methods modify on a shared reference to a `Building` `Linearization`
 `Linearizer::complete`
   ~ implements the post-processing necessary to turn a final `Building` linearization into a `Completed` one.
   ~ Note that the post-processing might depend on additional data
-  
+
 `Linearizer::scope`
   ~ returns a new `Linearizer` to be used for a sub-scope of the current one.
   ~ Multiple calls to this method yield unique instances, each with their own scope.
-  ~ It is the caller's responsibility to call this method whenever a new scope is entered traversing the AST.
-  ~ Notably, the recursive traversal of an AST ensures that scopes are correctly backtracked.
+    It is the caller's responsibility to call this method whenever a new scope is entered traversing the AST.
+  ~ The recursive traversal of an AST implies that scopes are correctly backtracked.
 
 
 
-While data stored in the `Linearizer::Building` state will be accessible at any point in the linearization process, the `Linearizer` is considered to be only *scope safe*.
+While data stored in the `Linearizer::Building` state will be accessible at any point in the linearization process, the `Linearizer` is considered to be *scope safe*.
 No instance data is propagated back to the outer scopes `Linearizer`.
-Neither have `Linearizers` of sibling scopes access to each other's data.
+Neither have `Linearizer`s of sibling scopes access to each other's data.
 
 
 ```{.rust #lst:nls-linearizer-trait caption="Interface of linearizer trait"}
