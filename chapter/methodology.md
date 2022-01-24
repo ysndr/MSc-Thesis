@@ -307,7 +307,7 @@ fn type_check_<L: Linearizer>(
     match t.as_ref() {
       Term::RecRecord(stat_map, ..) => {
         for (id, rt) in stat_map {
-          let tyw = binding_type(/* ommitted */);
+          let tyw = binding_type(/* omitted */);
           linearizer.retype_ident(lin, id, tyw);
         }
       }
@@ -321,7 +321,7 @@ fn type_check_<L: Linearizer>(
         let ty_let = binding_type(/* omitted */);
         linearizer.retype_ident(lin, ident, ty_let.clone());
       }
-      _ => { /* ommitted */}
+      _ => { /* omitted */ }
     }
 ```
 
