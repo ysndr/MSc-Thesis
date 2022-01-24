@@ -222,13 +222,16 @@ Its methods modify on a shared reference to a `Building` `Linearization`
 `Linearizer::add_term`
   ~ is used to record a new term, i.e. AST node.
   ~ It's responsibility is to combine context information stored in the `Linearizer` and concrete information about a node to extend the `Linearization` by appropriate items.
+
 `Linearizer::retype_ident`
   ~ is used to update the type information for a current identifier.
   ~ The reason this method exists is that not all variable definitions have a corresponding AST node but may be part of another node.
     This is especially apparent with records where the field names part of the record node and as such are linearized with the record but have to be assigned there actual type separately.
+
 `Linearizer::complete`
   ~ implements the post-processing necessary to turn a final `Building` linearization into a `Completed` one.
   ~ Note that the post-processing might depend on additional data
+  
 `Linearizer::scope`
   ~ returns a new `Linearizer` to be used for a sub-scope of the current one.
   ~ Multiple calls to this method yield unique instances, each with their own scope.
