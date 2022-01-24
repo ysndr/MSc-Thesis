@@ -325,16 +325,61 @@ fn type_check_<L: Linearizer>(
     }
 ```
 
+While registering a node, NLS distinguishes 4 kinds of nodes.
+These are *metadata*, *usage graph* related nodes, i.e. declarations and usages, *static access* of nested record fields, and *general elements* which is every node that does not fall into one of the prior categories.
+
+
+```{.nickel #lst:nickel-simple-expr caption="Exemplary nickel expressions"}
+// atoms
+
+1
+true
+null
+
+// binary operations
+42 * 3
+[ 1, 2, 3 ] @ [ 4, 5]
+
+// if-then-else
+if true then "TRUE :)" else "false :(" 
+
+// string iterpolation
+"#{ "hello" } #{ "world" }!"
+```
+
+##### Structures
+
+In the most common case of general elements, the node is simply registered as a `LinearizationItem` of kind `Structure`.
+This applies for all simple expressions like those exemplified in [@lst:nickel-simple-expr]
+Essentially, any of such nodes turns into a typed span as the remaining information tracked is the item's span and type checker provided type.
+
+```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
+
+// simple bindings
+let name = <expr> in <expr>
+let func = fun arg => <expr> in <expr>
+
+// or with patterns
+let name @ { field, with_default = 2 } = <expr> in <expr>
+let func = fun arg @ { field, with_default = 2 } => 
+  <expr> in 
+  <expr>
+```
+
+##### Declarations
+
+Name bindings are equally simple.
+NLS generates a `Declaration` item for the given identifier and assigns the identifier's position and provided type.
+Additionally, it associates the identifier with the `id` of the created item in its current environment.
+If a binding contains a pattern, NLS creates additional items for each matched element.
+Unfortunately, no types are provided for these by Nickel.
+Examples of let bindings can be found in use in [@lst:nickel-complete-example or @lst:nickel-let-binding]
 
 
 
+##### Static access
 
-
-#### Metadata
-
-#### Records
-
-#### Static access
+##### Metadata
 
 #### Integration with Nickel
 
