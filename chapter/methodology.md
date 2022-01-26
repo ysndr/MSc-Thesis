@@ -12,11 +12,12 @@ The example [@lst:nickel-complete-example] shows an illustrative high level conf
 Throughout this chapter, different sections about the NSL implementation will refer back to this example.
 
 ```{.nickel #lst:nickel-complete-example caption="Nickel example with most features shown"}
-let Port | doc "A contract for a port number" = contracts.from_predicate (fun value =>
-  builtins.is_num value &&
-  value % 1 == 0 &&
-  value >= 0 &&
-  value <= 65535) in
+let Port | doc "A contract for a port number" = 
+  contracts.from_predicate (fun value =>
+    builtins.is_num value &&
+    value % 1 == 0 &&
+    value >= 0 &&
+    value <= 65535) in
 
 let Container = {
   image | Str,
@@ -44,12 +45,14 @@ let webContainer = fun image => {
   ports = [ 80, 443 ],
 } in
 
+let image = "k8s.gcr.io/#{name_}" in
+
 {
   apiVersion = "1.1.0",
   metadata = metadata_,
   replicas = 3,
   containers = { 
-    "main container" = webContainer  "k8s.gcr.io/#{name_}"
+    "main container" = webContainer image
   }
 } | #NobernetesConfig
 
@@ -103,7 +106,6 @@ pub trait LinearizationState {}
 pub struct Linearization<S: LinearizationState> {
     pub state: S,
 }
-
 ```
 
 ```{.rust #lst:nls-definition-building-type caption="Type Definition of Building state"}
@@ -165,9 +167,9 @@ On a higher level, tracking both definitions and usages of identifiers yields a 
 
 There are three main kids of vertices in such a graph.
 **Declarations** are nodes that introduce an identifier, and can be referred to by a set of nods.
-Referral is represented as **Usage** nodes which can either be bound to a declaration or unbound if no corresponding declaration is known.
-In practice Nickel distinguishes simple variable bindings from name binding through record fields in recursive records.
-It also Integrates a **Record** kind to provide deep record destructuring.
+Referral is represented by **Usage** nodes which can either be bound to a declaration or unbound if no corresponding declaration is known.
+In practice Nickel distinguishes simple variable bindings from name binding through record fields which are resolved during the post-precessing.
+It also Integrates a **Record** and **RecordField** kinds to aid record destructuring.
 
 During the linearization process this graphical model is recreated on the linear representation of the source.
 Hence, each `LinearizationItem` is associated with one of the aforementioned kinds, encoding its function in the usage graph.
@@ -184,9 +186,8 @@ The Nickel language implements lexical scopes with name shadowing.
 1. A name can only be referred to after it has been defined
 2. A name can be redefined for a local area
 
-An AST can be used to represent this logic.
-A variable reference always refers to the closest parent node defining the name.
-Scopes are naturally separated using branching.
+An AST inherently supports this logic.
+A variable reference always refers to the closest parent node defining the name and scopes are naturally separated using branching.
 Each branch of a node represents a sub-scope of its parent, i.e. new declarations made in one branch are not visible in the other.
 
 When eliminating the tree structure, scopes have to be maintained in order to provide auto-completion of identifiers and list symbol names based on their scope as context.
@@ -194,9 +195,8 @@ Since the bare linear data structure cannot be used to deduce a scope, related m
 The language server maintains a register for identifiers defined in every scope.
 This register allows NLS to resolve possible completion targets as detailed in [@sec:resolving-by-scope].
 
-For simplicity, scopes are represented by a prefix list.
-Whenever a new lexical scope is entered the prefix list of the outer scope is extended by a unique identifier.
-With the example in mind [@lst:nickel-complete-example] contains the defintion of a simple record.
+For simplicity, scopes are represented by a prefix list of integers.
+Whenever a new lexical scope is entered the list of the outer scope is extended by a unique identifier.
 
 Additionally, to keep track of the variables in scope, and iteratively build a usage graph, NLS keeps track of the latest definition of each variable name and which `Declaration` node it refers to.
 
@@ -287,7 +287,7 @@ This is enough to handle a large subset of Nickel.
 In fact, only records, let bindings and function definitions require additional change to enrich identifiers they define with type information.
 
 
-```{.rust #nickel-tc-abstract caption="Abstract type checking function"}
+```{.rust #lst:nickel-tc-abstract caption="Abstract type checking function"}
 fn type_check_<L: Linearizer>(
     lin: &mut Linearization<L::Building>,
     mut linearizer: L,
@@ -378,7 +378,7 @@ Examples of let bindings can be found in use in [@lst:nickel-complete-example or
 
 ##### Records
 
-```{.nickel #fig:nickel-record caption="A record in Nickel"}
+```{.nickel #lst:nickel-record caption="A record in Nickel"}
 {
   apiVersion = "1.1.0",
   metadata = metadata_,
@@ -485,6 +485,151 @@ The complete process looks as follows:
 5. **(In the sub-scope)** The linearizer associates the `RecordField` item with the (now known) `id` of the field's value.
    The cached field data is invalidated such that this process only happens once for each field.
 
+##### Variable Usage and Static Record Access
+
+Looking at the AST representation of record destructuring in [@fig:nickel-static-access] shows that accessing inner records involves chains of unary operations *ending* with a reference to a variable binding.
+Each operation encodes one identifier, i.e. field of a referenced record.
+However, to reference the corresponding declaration, the final usage has to be known.
+Therefore, instead of linearizing the intermediate elements directly, the `Linearizer` adds them to a shared stack until the grounding variable reference is reached.
+Whenever a variable usage is linearized, NLS checks the stack for latent destructors.
+If destructors are present, NLS adds `Usage` items for each element on the stack.
+
+Note that record destructors can be used as values of record fields as well and thus refer to other fields of the same record.
+As the `Linearizer` processes the field values sequentially, it is possible that a usage references parts of the record that have not yet been processed making it unavailable for NLS to fully resolve.
+A visualization of this is provided in [@fig:nls-unavailable-rec-record-field]
+For this reason the `Usages` added to the linearization are marked as `Deferred` and will be fully resolved during the post-processing phase as documented in [@sec:resolving-deferred-access].
+In [@fig:ncl-record-access] this is shown visually.
+The `Var` AST node is linearized as a `Resolved` usage node which points to the existing `Declaration` node for the identifier.
+Mind that this could be a `RecordField` too if referred to in a record.
+NLS linearized the trailing access nodes as `Deferred` nodes.
+
+
+
+```{.graphviz #fig:nls-unavailable-rec-record-field caption="Example race condition in recursive records. The field `y.yz` cannot be not be referenced at this point as the `y` branch has yet to be linearized"}
+digraph G {
+    node [shape=record]
+    spline=false
+    /* Entities */
+    record_x [label="Record|\{y,z\}"]
+    field_y [label="Field|y"]
+    field_z [label="Field|z"]
+
+    subgraph {
+    node [shape=record, color=grey, style=dashed]
+    record_y [label="Record|\{yy, yz\}"]
+    field_yy [label="Field|yy"]
+    field_yz [label="Field|yz"]
+    }
+
+    var_z [label = "Usage|y.yz"]
+    
+    hidden [shape=point, width=0, height = 0]
+
+    /* Relationships */
+    record_x -> {field_y, field_z}
+    field_y -> record_y
+    field_z -> var_z
+    record_y -> {field_yy, field_yz} [color=grey]
+    var_z -> field_yz [style=dashed, label="Not resolvable"]
+
+    var_z -> hidden [style=invis]
+
+    {rank=same; field_y; field_z }
+    {rank=same; field_yy; field_yz }
+    {rank=same; record_y; hidden;}
+
+}
+```
+
+```{.graphviz #fig:ncl-record-access caption="Depiction of generated usage nodes for record destructuring"}
+digraph G {
+    node[shape="record", fontname = "Fira Code", fontsize = 9]
+    compound=true;
+    splines="ortho";
+    newrank=true;
+    rankdir = TD;
+    
+
+    subgraph cluster_x {
+        label="AST Nodes"
+       
+        x   [label = "Var | x"]
+        d_y [label = "Access | .y"]
+        d_z [label = "Access | .z"]
+        
+        
+        x->d_y->d_z
+    }
+         
+    subgraph cluster_lin {
+        
+        label = "Linearization items"
+        
+        subgraph cluster_items {  
+          
+          label="Existing Nodes"
+          
+          
+                // hidden
+               {
+                node[group="items"]
+                decl_x  [label = "{Declaration | x}"]
+                rec_x   [label = "{Record | \{y\}}"]
+                
+                field_y [label = "{RecordField | y}"]
+                rec_y   [label = "{Record | \{z\}}"]
+                
+                field_z [label = "{RecordField | z}"]
+                
+               }
+                
+            decl_x  ->
+            rec_x ->
+            field_y ->
+            rec_y ->
+            field_z
+            
+         }
+        
+        subgraph cluster_deferred {
+            label = "Generated Nodes"
+            use_x  [label = "{Resolved | <x> x}"]
+            
+            def_y  [label = "{Deferred | <x> x | <y> y}"]
+            def_z  [label = "{Deferred | <y> y | <z> z}"]
+            
+            
+            def_y-> use_x [constraint=false; ]
+            def_z -> def_y []
+            
+        }     
+    
+       
+    }
+            
+    
+        {rank=same; decl_x; x;}
+        
+        {rank=same; def_y; d_y; rec_x}
+        {rank=same; def_z; d_z; field_y}
+
+  
+        
+        x -> use_x  [constraint = false; ]
+        d_z -> def_z
+        d_y -> def_y 
+        
+        
+        use_x -> decl_x [constraint = false; ]
+        
+        
+        def_y -> decl_x  [style=dashed;]
+        decl_x -> rec_x -> field_y [style=dashed]
+        
+        def_z:z:e -> field_y -> rec_y -> field_z [style=dotted]
+        
+}
+```
 
 ##### Static access
 
