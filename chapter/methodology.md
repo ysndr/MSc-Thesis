@@ -12,11 +12,12 @@ The example [@lst:nickel-complete-example] shows an illustrative high level conf
 Throughout this chapter, different sections about the NSL implementation will refer back to this example.
 
 ```{.nickel #lst:nickel-complete-example caption="Nickel example with most features shown"}
-let Port | doc "A contract for a port number" = contracts.from_predicate (fun value =>
-  builtins.is_num value &&
-  value % 1 == 0 &&
-  value >= 0 &&
-  value <= 65535) in
+let Port | doc "A contract for a port number" = 
+  contracts.from_predicate (fun value =>
+    builtins.is_num value &&
+    value % 1 == 0 &&
+    value >= 0 &&
+    value <= 65535) in
 
 let Container = {
   image | Str,
@@ -44,12 +45,14 @@ let webContainer = fun image => {
   ports = [ 80, 443 ],
 } in
 
+let image = "k8s.gcr.io/#{name_}" in
+
 {
   apiVersion = "1.1.0",
   metadata = metadata_,
   replicas = 3,
   containers = { 
-    "main container" = webContainer  "k8s.gcr.io/#{name_}"
+    "main container" = webContainer image
   }
 } | #NobernetesConfig
 
@@ -103,7 +106,6 @@ pub trait LinearizationState {}
 pub struct Linearization<S: LinearizationState> {
     pub state: S,
 }
-
 ```
 
 ```{.rust #lst:nls-definition-building-type caption="Type Definition of Building state"}
