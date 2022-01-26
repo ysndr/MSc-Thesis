@@ -230,6 +230,45 @@ These data types constitute a static subset of Nickel which allows writing JSON 
 
 Building on that Nickel also supports variables and functions which make up the majority of the AST.
 
+##### Identifiers
+
+The inclusion of Variables to the language, implies some sort of identifiers.
+Such name bindings can be declared in multiple ways, e.g. `let` bindings, function arguments and records.
+The usage of a name is always parsed as a single `Var` node wrapping the identifier.
+Span information of identifiers is preserved by the parser and encoded in the `Ident` type. 
+
+##### Let Bindings and Functions
+
+```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
+
+// simple bindings
+let name = <expr> in <expr>
+let func = fun arg => <expr> in <expr>
+
+// or with patterns
+let name @ { field, with_default = 2 } = <expr> in <expr>
+let func = fun arg @ { field, with_default = 2 } => 
+  <expr> in 
+  <expr>
+```
+
+Let bindings in their simplest form merely bind a name to a value expression and expose the name to the inner expression.
+Hence, the `Let` node contains the binding and links to both implementation and scope subtrees.
+The binding can be a simple name, a pattern or both by naming the pattern as shown in [@lst:nickel-let-binding].
+
+
+```{.nickel #lst:nickel-args-function caption="Parsed representation of functions with multiple arguments"}
+fun first second => first + second
+// ...is parsed as
+fun first =>
+  fun second => first + second
+```
+
+Functions in Nickel are lambda expressions.
+A function with multiple arguments gets broken down into nested functions with a single argument for each argument of the source declaration as seen in [@lst:nickel-args-function].
+Function argument name binding therefore looks the same as in `let` bindings.
+
+
 ##### Meta Information
 
 One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
