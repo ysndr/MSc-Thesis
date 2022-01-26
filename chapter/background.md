@@ -193,9 +193,236 @@ Finally, descriptive data formats for cloud configurations allow mitigating secu
 Yet, as recently as spring 2020 and still more than a year later dossiers of Palo Alto Networks' security department Unit 42 show [@pa2020H1, ps2021H2] show that a majority of public projects uses insecure configurations.
 This suggests that techniques[@aws-cloud-formation-security-tests] to automatically check templates are not actively employed, and points out the importance of evaluated configuration languages which can implement passive approaches to security analysis.
 
-## Nickel
+### Nickel
 
 ### Gradual typing
 
-#### Row types
-### Contracts
+##### Row types
+#### Contracts
+
+
+#### Nickel AST
+
+Nickel's syntax tree is a single sum type, i.e. an enumeration of node types.
+Each enumeration variant may refer to child nodes, representing a branch or hold terminal values in which case it is considered a leaf of the tree.
+Additionally, tree nodes hold information about their position in the underlying code.
+
+##### Basic Elements
+
+The primitive values of the Nickel language are closely related to JSON.
+On the leaf level, Nickel defines `Boolean`, `Number`, `String` and `Null`.
+In addition to that the language implements native support for `Enum` values which are serialized as plain strings.
+Each of these are terminal leafs in the syntax tree.
+
+Completing JSON compatibility, `List` and `Record` constructs are present as well.
+Records on a syntax level are HashMaps, uniquely associating an identifier with a sub-node.
+
+These data types constitute a static subset of Nickel which allows writing JSON compatible expressions as shown in [@lst:nickel-static].
+
+```{.nickel #lst:nickel-static caption="Example of a static Nickel expression"}
+{
+  list = [ 1, "string", null],
+  "some key" = "value"
+} 
+```
+
+
+
+Building on that Nickel also supports variables and functions which make up the majority of the AST.
+
+##### Identifiers
+
+The inclusion of Variables to the language, implies some sort of identifiers.
+Such name bindings can be declared in multiple ways, e.g. `let` bindings, function arguments and records.
+The usage of a name is always parsed as a single `Var` node wrapping the identifier.
+Span information of identifiers is preserved by the parser and encoded in the `Ident` type. 
+
+##### Let Bindings and Functions
+
+```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
+
+// simple bindings
+let name = <expr> in <expr>
+let func = fun arg => <expr> in <expr>
+
+// or with patterns
+let name @ { field, with_default = 2 } = <expr> in <expr>
+let func = fun arg @ { field, with_default = 2 } => 
+  <expr> in 
+  <expr>
+```
+
+Let bindings in their simplest form merely bind a name to a value expression and expose the name to the inner expression.
+Hence, the `Let` node contains the binding and links to both implementation and scope subtrees.
+The binding can be a simple name, a pattern or both by naming the pattern as shown in [@lst:nickel-let-binding].
+
+
+```{.nickel #lst:nickel-args-function caption="Parsed representation of functions with multiple arguments"}
+fun first second => first + second
+// ...is parsed as
+fun first =>
+  fun second => first + second
+```
+
+Functions in Nickel are lambda expressions.
+A function with multiple arguments gets broken down into nested functions with a single argument for each argument of the source declaration as seen in [@lst:nickel-args-function].
+Function argument name binding therefore looks the same as in `let` bindings.
+
+
+##### Meta Information
+
+One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
+Complementing type information, it is possible to annotate values with contracts and additional meta-data such as documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
+
+
+```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
+let Contract = { 
+         foo | Num 
+             | doc "I am foo",
+         hello | Str
+               | default = "world"
+       }
+       | doc "Just an example Contract"
+in 
+let value | #Contract = { foo = 9, }
+in value == { foo = 9, hello = "world", } 
+
+> true
+```
+
+Internally, the addition of annotations wraps the annotated term in a `MetaValue`, an additional tree node which describes its subtree. 
+The expression shown in [@lst:nickel-meta-typed] translates to the AST in [@fig:nickel-meta-typed].
+The green `MetaValue` box is a virtual node generated during parsing and not present in the untyped equivalent.
+
+```{.nickel #lst:nickel-meta-typed caption="Example of a typed expression"}
+let x: Num = 5 in x
+```
+
+
+```{.graphviz #fig:nickel-meta-typed caption="AST of typed expression" height=4.5cm}
+strict digraph { 
+  graph [fontname = "Fira Code"];
+  node [fontname = "Fira Code"];
+  edge [fontname = "Fira Code"];
+
+  meta [label="MetaValue", color="green", shape="box"]
+  let [label = "Let('x')"]
+  num [label = "Num(5)"]
+  var [label = "Var('x')"]
+
+  meta -> let
+  let -> num
+  let -> var
+}
+```
+
+<!-- 
+\Begin{minipage}{.5\textwidth}
+\centering
+
+```{.graphviz #fig:nickel-ast-no-meta}
+strict digraph { 
+  let[label = "Let('x')"]
+  num [label = "Num(5)"]
+  var [label = "Var('x')"]
+
+  let -> num
+  let -> var
+}
+```
+\captionof{figure}{AST of untyped code in Listing: \ref{lst:nickel-meta-untyped}}
+\label{fig:nickel-meta-untyped}
+
+\End{minipage}
+\Begin{minipage}{0.5\textwidth}
+
+
+```{.graphviz}
+strict digraph { 
+  meta [label="MetaValue", color="green", shape="box"]
+  let[label = "Let('x')"]
+  num [label = "Num(5)"]
+  var [label = "Var('x')"]
+
+  meta -> let
+  let -> num
+  let -> var
+}
+```
+
+\captionof{figure}{AST of untyped code in Listing: \ref{lst:nickel-meta-typed}}
+\label{fig:nickel-meta-typed}
+
+\End{minipage}
+
+ -->
+
+##### Nested Record Access
+
+Nickel supports the referencing of variables that are resolved during runtime.
+With records bound to a variable, a method to destruct records is required.
+Nickel restricts field names to strings, 
+
+The access of record fields is represented using a special set of AST nodes depending on whether the field name requires an evaluation in which case resolution is deferred to the evaluation pass.
+While the latter prevents static analysis of any deeper element by the LSP, `StaticAccess` can be used to resolve any intermediate reference.
+
+Notably, Nickel represents static access chains in inverse order as unary operations which in turn puts the terminal `Var` node as a leaf in the tree.
+[Figure @fig:nickel-static-access] shows the representation of the static access perfomed in [@lst:nickel-static-access] with the rest of the tree omitted.
+
+```{.nickel #lst:nickel-static-access caption="Nickel static access"}
+let x = {
+  y = {
+    z = 1,
+  }
+} in x.y.z
+```
+
+
+```{.graphviz #fig:nickel-static-access caption="AST of typed expression" height=6cm}
+strict digraph { 
+  graph [fontname = "Fira Code"];
+  node [fontname = "Fira Code", margin=0.25];
+  edge [fontname = "Fira Code"];
+
+  rankdir="TD"
+
+  let [label = "Let", color="grey"]
+  rec [label = "omitted", color="grey", style="dashed", shape="box"]
+
+  x [label = "Var('x')"]
+  unop_x_y [label = ".y", shape = "triangle", margin=0.066]
+  unop_y_z [label = ".z", shape = "triangle", margin=0.066]
+
+
+  let -> rec
+  let -> unop_y_z
+  unop_y_z -> unop_x_y
+  unop_x_y -> x
+}
+```
+
+
+
+##### Record Shorthand
+
+Nickel supports a shorthand syntax to efficiently define nested records similarly to how nested record fields are accessed.
+As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand syntax which resolves to the semantically equivalent record defined in [@lst:nickel-record-no-shorthand]
+
+```{.nickel #lst:nickel-record-shorthand caption="Nickel record using shorthand"}
+{
+  deeply.nested.record.field = true,
+```
+
+```{.nickel #lst:nickel-record-no-shorthand caption="Nickel record defined explicitly"}
+{
+  deeply = {
+    nested = {
+      record = { 
+        field = true,
+      }
+    }
+  }
+}
+```
+
+Yet, on a syntax level  Nickel generates a different representation.
