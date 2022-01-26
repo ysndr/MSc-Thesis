@@ -485,6 +485,151 @@ The complete process looks as follows:
 5. **(In the sub-scope)** The linearizer associates the `RecordField` item with the (now known) `id` of the field's value.
    The cached field data is invalidated such that this process only happens once for each field.
 
+##### Variable Usage and Static Record Access
+
+Looking at the AST representation of record destructuring in [@fig:nickel-static-access] shows that accessing inner records involves chains of unary operations *ending* with a reference to a variable binding.
+Each operation encodes one identifier, i.e. field of a referenced record.
+However, to reference the corresponding declaration, the final usage has to be known.
+Therefore, instead of linearizing the intermediate elements directly, the `Linearizer` adds them to a shared stack until the grounding variable reference is reached.
+Whenever a variable usage is linearized, NLS checks the stack for latent destructors.
+If destructors are present, NLS adds `Usage` items for each element on the stack.
+
+Note that record destructors can be used as values of record fields as well and thus refer to other fields of the same record.
+As the `Linearizer` processes the field values sequentially, it is possible that a usage references parts of the record that have not yet been processed making it unavailable for NLS to fully resolve.
+A visualization of this is provided in [@fig:nls-unavailable-rec-record-field]
+For this reason the `Usages` added to the linearization are marked as `Deferred` and will be fully resolved during the post-processing phase as documented in [@sec:resolving-deferred-access].
+In [@fig:ncl-record-access] this is shown visually.
+The `Var` AST node is linearized as a `Resolved` usage node which points to the existing `Declaration` node for the identifier.
+Mind that this could be a `RecordField` too if referred to in a record.
+NLS linearized the trailing access nodes as `Deferred` nodes.
+
+
+
+```{.graphviz #fig:nls-unavailable-rec-record-field caption="Example race condition in recursive records. The field `y.yz` cannot be not be referenced at this point as the `y` branch has yet to be linearized"}
+digraph G {
+    node [shape=record]
+    spline=false
+    /* Entities */
+    record_x [label="Record|\{y,z\}"]
+    field_y [label="Field|y"]
+    field_z [label="Field|z"]
+
+    subgraph {
+    node [shape=record, color=grey, style=dashed]
+    record_y [label="Record|\{yy, yz\}"]
+    field_yy [label="Field|yy"]
+    field_yz [label="Field|yz"]
+    }
+
+    var_z [label = "Usage|y.yz"]
+    
+    hidden [shape=point, width=0, height = 0]
+
+    /* Relationships */
+    record_x -> {field_y, field_z}
+    field_y -> record_y
+    field_z -> var_z
+    record_y -> {field_yy, field_yz} [color=grey]
+    var_z -> field_yz [style=dashed, label="Not resolvable"]
+
+    var_z -> hidden [style=invis]
+
+    {rank=same; field_y; field_z }
+    {rank=same; field_yy; field_yz }
+    {rank=same; record_y; hidden;}
+
+}
+```
+
+```{.graphviz #fig:ncl-record-access caption="Depiction of generated usage nodes for record destructuring"}
+digraph G {
+    node[shape="record", fontname = "Fira Code", fontsize = 9]
+    compound=true;
+    splines="ortho";
+    newrank=true;
+    rankdir = TD;
+    
+
+    subgraph cluster_x {
+        label="AST Nodes"
+       
+        x   [label = "Var | x"]
+        d_y [label = "Access | .y"]
+        d_z [label = "Access | .z"]
+        
+        
+        x->d_y->d_z
+    }
+         
+    subgraph cluster_lin {
+        
+        label = "Linearization items"
+        
+        subgraph cluster_items {  
+          
+          label="Existing Nodes"
+          
+          
+                // hidden
+               {
+                node[group="items"]
+                decl_x  [label = "{Declaration | x}"]
+                rec_x   [label = "{Record | \{y\}}"]
+                
+                field_y [label = "{RecordField | y}"]
+                rec_y   [label = "{Record | \{z\}}"]
+                
+                field_z [label = "{RecordField | z}"]
+                
+               }
+                
+            decl_x  ->
+            rec_x ->
+            field_y ->
+            rec_y ->
+            field_z
+            
+         }
+        
+        subgraph cluster_deferred {
+            label = "Generated Nodes"
+            use_x  [label = "{Resolved | <x> x}"]
+            
+            def_y  [label = "{Deferred | <x> x | <y> y}"]
+            def_z  [label = "{Deferred | <y> y | <z> z}"]
+            
+            
+            def_y-> use_x [constraint=false; ]
+            def_z -> def_y []
+            
+        }     
+    
+       
+    }
+            
+    
+        {rank=same; decl_x; x;}
+        
+        {rank=same; def_y; d_y; rec_x}
+        {rank=same; def_z; d_z; field_y}
+
+  
+        
+        x -> use_x  [constraint = false; ]
+        d_z -> def_z
+        d_y -> def_y 
+        
+        
+        use_x -> decl_x [constraint = false; ]
+        
+        
+        def_y -> decl_x  [style=dashed;]
+        decl_x -> rec_x -> field_y [style=dashed]
+        
+        def_z:z:e -> field_y -> rec_y -> field_z [style=dotted]
+        
+}
+```
 
 ##### Static access
 
