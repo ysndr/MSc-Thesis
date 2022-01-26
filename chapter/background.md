@@ -284,8 +284,8 @@ let Contract = {
        }
        | doc "Just an example Contract"
 in 
-let value | #Contract = { foo = 9 }
-in value == { foo = 9, hello = "world"} 
+let value | #Contract = { foo = 9, }
+in value == { foo = 9, hello = "world", } 
 
 > true
 ```
@@ -372,7 +372,7 @@ Notably, Nickel represents static access chains in inverse order as unary operat
 ```{.nickel #lst:nickel-static-access caption="Nickel static access"}
 let x = {
   y = {
-    z = 1;
+    z = 1,
   }
 } in x.y.z
 ```
@@ -410,8 +410,7 @@ As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand
 
 ```{.nickel #lst:nickel-record-shorthand caption="Nickel record using shorthand"}
 {
-  deeply.nested.record.field = true;
-}
+  deeply.nested.record.field = true,
 ```
 
 ```{.nickel #lst:nickel-record-no-shorthand caption="Nickel record defined explicitly"}
@@ -419,11 +418,11 @@ As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand
   deeply = {
     nested = {
       record = { 
-        field = true 
+        field = true,
       }
     }
   }
 }
 ```
 
-Yet, on a syntax level different Nickel generates a different representation.
+Yet, on a syntax level  Nickel generates a different representation.
