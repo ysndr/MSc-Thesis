@@ -521,7 +521,7 @@ The complete process looks as follows:
 3. NLS then stores the `id` of the parent as well as the fields and the offsets of the corresponding items (`n-4` and `[(apiVersion, n-3), (containers, n-2), (metadata, n-1)]` respectively in the example [@fig:nls-lin-records]).
 4. The `scope` method will be called in the same order as the record fields appear.
    Using this fact, the `scope` method moves the data stored for the next evaluated field into the freshly generated `Linearizer`
-5. **(In the sub-scope)** The linearizer associates the `RecordField` item with the (now known) `id` of the field's value.
+5. **(In the sub-scope)** The `Linearizer` associates the `RecordField` item with the (now known) `id` of the field's value.
    The cached field data is invalidated such that this process only happens once for each field.
 
 ##### Variable Usage and Static Record Access
