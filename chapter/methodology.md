@@ -174,7 +174,7 @@ It also Integrates a **Record** and **RecordField** kinds to aid record destruct
 During the linearization process this graphical model is recreated on the linear representation of the source.
 Hence, each `LinearizationItem` is associated with one of the aforementioned kinds, encoding its function in the usage graph.
 
-```rust
+```{.rust #lst:nls-termkind-definition caption="Definition of a linearization items TermKind"}
 pub enum TermKind {
     Declaration(Ident, Vec<ID>),
     Record(HashMap<Ident, ID>),
