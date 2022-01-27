@@ -369,6 +369,8 @@ While registering a node, NLS distinguishes 4 kinds of nodes.
 These are *metadata*, *usage graph* related nodes, i.e. declarations and usages, *static access* of nested record fields, and *general elements* which is every node that does not fall into one of the prior categories.
 
 
+##### Structures
+
 ```{.nickel #lst:nickel-simple-expr caption="Exemplary nickel expressions"}
 // atoms
 
