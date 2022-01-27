@@ -524,7 +524,17 @@ The complete process looks as follows:
 5. **(In the sub-scope)** The `Linearizer` associates the `RecordField` item with the (now known) `id` of the field's value.
    The cached field data is invalidated such that this process only happens once for each field.
 
-##### Variable Usage and Static Record Access
+
+##### Variable Reference
+
+While name declaration can happen in several ways, the usage of a variable is always expressed as a `Var` node wrapping a referenced identifier.
+Registering a name usage is a multi-step process.
+
+First, NLS tries to find the identifier in its scoped aware name registry.
+If the registry does not contain the identifier, NLS will linearize the node as `Unbound`.
+In the case that the registry lookup succeeds, NLS retrieves the referenced `Declaration` or `RecordField`. The `Linearizer` will then add the `Resolved` `Usage` item to the linearization and update the declaration's list of usages.
+
+###### Variable Usage and Static Record Access
 
 Looking at the AST representation of record destructuring in [@fig:nickel-static-access] shows that accessing inner records involves chains of unary operations *ending* with a reference to a variable binding.
 Each operation encodes one identifier, i.e. field of a referenced record.
