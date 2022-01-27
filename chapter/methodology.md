@@ -307,7 +307,36 @@ pub trait Linearizer {
 While data stored in the `Linearizer::Building` state will be accessible at any point in the linearization process, the `Linearizer` is considered to be *scope safe*.
 No instance data is propagated back to the outer scopes `Linearizer`.
 Neither have `Linearizer`s of sibling scopes access to each other's data.
-Yet the `scope` method can be implemented to pass arbitrary state down to the scoped instance.
+Yet, the `scope` method can be implemented to pass arbitrary state down to the scoped instance.
+The scope safe storage of the `Linearizer` implemented by NLS, as seen in [@lst:nls-analyisis-host-definition], stores the scope aware register and scope related data.
+Additionally, it contains fields to allow the linearization of records and record destructuring, as well as metadata ([@sec:records, @sec:variable-usage-and-static-record-access and @sec:metadata])
+
+```rust
+pub struct AnalysisHost {
+    env: Environment,
+    scope: Scope,
+    next_scope_id: ScopeId,
+    meta: Option<MetaValue>,
+    /// Indexing a record will store a reference to the record as
+    /// well as its fields.
+    /// [Self::Scope] will produce a host with a single **`pop`ed**
+    /// Ident. As fields are typechecked in the same order, each
+    /// in their own scope immediately after the record, which
+    /// gives the corresponding record field _term_ to the ident
+    /// useable to construct a vale declaration.
+    record_fields: Option<(usize, Vec<(usize, Ident)>)>,
+    /// Accesses to nested records are recorded recursively.
+    /// ```
+    /// outer.middle.inner -> inner(middle(outer))
+    /// ```
+    /// To resolve those inner fields, accessors (`inner`, `middle`)
+    /// are recorded first until a variable (`outer`). is found.
+    /// Then, access to all nested records are resolved at once.
+    access: Option<Vec<Ident>>,
+}
+```
+
+<!-- TODO: keep comments? will be discussed later -->
 
 
 #### Linearization Process
