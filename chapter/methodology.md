@@ -381,40 +381,27 @@ null
 [ 1, 2, 3 ] @ [ 4, 5]
 
 // if-then-else
-if true then "TRUE :)" else "false :(" 
+if true then "TRUE :)" else "false :("
 
 // string iterpolation
 "#{ "hello" } #{ "world" }!"
 ```
 
-##### Structures
-
 In the most common case of general elements, the node is simply registered as a `LinearizationItem` of kind `Structure`.
 This applies for all simple expressions like those exemplified in [@lst:nickel-simple-expr]
 Essentially, any of such nodes turns into a typed span as the remaining information tracked is the item's span and type checker provided type.
 
-```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
-
-// simple bindings
-let name = <expr> in <expr>
-let func = fun arg => <expr> in <expr>
-
-// or with patterns
-let name @ { field, with_default = 2 } = <expr> in <expr>
-let func = fun arg @ { field, with_default = 2 } => 
-  <expr> in 
-  <expr>
-```
 
 ##### Declarations
 
-Name bindings are equally simple.
-NLS generates a `Declaration` item for the given identifier and assigns the identifier's position and provided type.
-Additionally, it associates the identifier with the `id` of the created item in its current environment.
-If a binding contains a pattern, NLS creates additional items for each matched element.
-Unfortunately, no types are provided for these by Nickel.
-Examples of let bindings can be found in use in [@lst:nickel-complete-example or @lst:nickel-let-binding]
+In case of `let` bindings or function arguments name binding is equally simple.
 
+When the `Let` node is processed, the `Linearizer` generates `Declaration` items for each identifier contained.
+As discussed in [@sec:let-bindings-and-functions] the `Let` node may contain a name binding as well as pattern matches.
+The node's type supplied to the `Linearizer` accords to the value and is therefore applied to the name binding only.
+Additionally, NLS updates its name register with the newly created `Declaration`s.
+
+The same process applies for argument names in function declarations.
 
 ##### Records
 
