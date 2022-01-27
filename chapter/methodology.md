@@ -173,7 +173,47 @@ It also Integrates a **Record** and **RecordField** kinds to aid record destruct
 
 During the linearization process this graphical model is recreated on the linear representation of the source.
 Hence, each `LinearizationItem` is associated with one of the aforementioned kinds, encoding its function in the usage graph.
-Nodes of the AST that do not fit in a usage graph, a wildcard kind `Structure` is applied.
+
+```rust
+pub enum TermKind {
+    Declaration(Ident, Vec<ID>),
+    Record(HashMap<Ident, ID>),
+    RecordField {
+        ident: Ident,
+        record: ID,
+        usages: Vec<ID>,
+        value: Option<ID>,
+    },
+
+    Usage(UsageState),
+
+    Structure,
+}
+
+pub enum UsageState {
+    Unbound,
+    Resolved(ID),
+    Deferred { parent: ID, child: Ident },
+}
+
+```
+
+The `TermKind` type is an enumeration of the discussed cases and defines the role of a `LinearizationItem` in the usage graph.
+
+Variable bindings
+  ~ are linearized using the `Declaration` variant which holds the bound identifier as well as a list of `ID`s corresponding to its `Usage`s.
+
+Records
+  ~ remain similar to their AST representation. The `Record` variant simply maps field names to the linked `RecordField`
+
+Record fields
+  ~ make for to most complicated kind. The `RecordField` kind augments the qualities of a `Declaration` representing an identifier, and tracking its `Usage`s, while also maintaining a link back to its parent `Record` as well as explicitly referencing the value represented.
+
+Variable usages
+  ~ are further specified. `Usage`s that can not be mapped to a declaration are tagged `Unbound` or otherwise `Resolved` to the complementary `Declaration`
+  ~ Record destructuring may require a late resolution as discussed in [@sed:variable-usage-and-static-record-access].
+Other nodes
+  ~ of the AST that do not fit in a usage graph, are linearized as `Structure`.
 
 <!-- TODO: Add graphics -->
 
@@ -383,7 +423,7 @@ Examples of let bindings can be found in use in [@lst:nickel-complete-example or
   apiVersion = "1.1.0",
   metadata = metadata_,
   replicas = 3,
-  containers = { 
+  containers = {
     "main container" = webContainer image
   }
 }
@@ -409,7 +449,6 @@ digraph G {
     main_container:f1 -> webContainer
     main_container:f2 -> image
 }
-
 ```
 
 Linearizing records proves more difficult.
@@ -522,7 +561,7 @@ digraph G {
     }
 
     var_z [label = "Usage|y.yz"]
-    
+
     hidden [shape=point, width=0, height = 0]
 
     /* Relationships */
@@ -548,86 +587,80 @@ digraph G {
     splines="ortho";
     newrank=true;
     rankdir = TD;
-    
+
 
     subgraph cluster_x {
         label="AST Nodes"
-       
+
         x   [label = "Var | x"]
         d_y [label = "Access | .y"]
         d_z [label = "Access | .z"]
-        
-        
+
+
         x->d_y->d_z
     }
-         
+
     subgraph cluster_lin {
-        
+
         label = "Linearization items"
-        
-        subgraph cluster_items {  
-          
+
+        subgraph cluster_items { 
+
           label="Existing Nodes"
-          
-          
+
+
                 // hidden
                {
                 node[group="items"]
                 decl_x  [label = "{Declaration | x}"]
                 rec_x   [label = "{Record | \{y\}}"]
-                
+
                 field_y [label = "{RecordField | y}"]
                 rec_y   [label = "{Record | \{z\}}"]
-                
+
                 field_z [label = "{RecordField | z}"]
-                
+
                }
-                
+
             decl_x  ->
             rec_x ->
             field_y ->
             rec_y ->
             field_z
-            
+
          }
-        
+
         subgraph cluster_deferred {
             label = "Generated Nodes"
             use_x  [label = "{Resolved | <x> x}"]
-            
+
             def_y  [label = "{Deferred | <x> x | <y> y}"]
             def_z  [label = "{Deferred | <y> y | <z> z}"]
-            
-            
+
+
             def_y-> use_x [constraint=false; ]
             def_z -> def_y []
-            
-        }     
-    
-       
-    }
-            
-    
-        {rank=same; decl_x; x;}
-        
-        {rank=same; def_y; d_y; rec_x}
-        {rank=same; def_z; d_z; field_y}
 
-  
-        
+        }    
+
+    }
+
         x -> use_x  [constraint = false; ]
         d_z -> def_z
-        d_y -> def_y 
-        
-        
+        d_y -> def_y
+
+
         use_x -> decl_x [constraint = false; ]
-        
-        
+
+
         def_y -> decl_x  [style=dashed;]
         decl_x -> rec_x -> field_y [style=dashed]
-        
         def_z:z:e -> field_y -> rec_y -> field_z [style=dotted]
-        
+
+
+        {rank=same; decl_x; x;}
+        {rank=same; def_y; d_y; rec_x}
+        {rank=same; def_z; d_z; field_y}
 }
 ```
 
@@ -654,7 +687,7 @@ To find items in this list three preconditions have to hold:
 2. Items of different files appear ordered by `FileId`
 3. Two spans are either within the bounds of the other or disjoint.
    $$\text{Item}^2_\text{start} \geq \text{Item}^1_\text{start} \land \text{Item}^2_\text{end} \leq \text{Item}^1_\text{end}$$
-4. Items referring to the spans starting at the same position have to occur in the same order before and after the post-processing. 
+4. Items referring to the spans starting at the same position have to occur in the same order before and after the post-processing.
    Concretely, this ensures that the tree-induced hierarchy is maintained, more precise elements follow broader ones
 
 This first two properties are an implication of the preceding processes.
@@ -680,7 +713,7 @@ impl Completed {
     let linearization = &self.linearization;
     let item = match linearization
       .binary_search_by_key(
-        locator, 
+        locator,
         |item| (item.pos.src_id, item.pos.start))
       {
         // Found item(s) starting at `locator`
@@ -694,8 +727,8 @@ impl Completed {
         Err(index) => {
           linearization[..index].iter().rfind(|item| {
             // Return the first (innermost) matching item
-            file_id == &item.pos.src_id 
-            && start > &item.pos.start 
+            file_id == &item.pos.src_id
+            && start > &item.pos.start
             && start < &item.pos.end
           })
         }
@@ -727,7 +760,7 @@ impl Completed {
   ) -> Vec<&LinearizationItem<Resolved>> {
     let EMPTY = Vec::with_capacity(0);
     // all prefix lengths
-    (0..scope.len()) 
+    (0..scope.len())
       // concatenate all scopes
       .flat_map(|end| self.scope.get(&scope[..=end])
         .unwrap_or(&EMPTY))
