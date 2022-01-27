@@ -692,11 +692,21 @@ digraph G {
 }
 ```
 
-##### Static access
-
 ##### Metadata
 
-#### Integration with Nickel
+In [@sec:meta-information] was shown that on the syntax level, metadata "wraps" the annotated value.
+Conversely, NLS encodes metadata in the `LinearizationItem` as metadata is intrinsically related to a value.
+NLS therefore has to defer handling of the `MetaValue` node until the processing of the associated value in the succeeding call.
+Like record destructors, NLS temporarily stores this metadata in the `Linearizer`'s memory.
+
+Metadata always precedes its value immediately.
+Thus, whenever a node is linearized, NLS checks whether any latent metadata is stored.
+If there is, it moves it to the value's `LinearizationItem`, clearing the temporary storage.
+
+Although metadata is not linearized as is, contracts encoded in the metadata can however refer to locally bound names.
+Considering that only the annotated value is type-checked and therefore passed to NLS, resolving Usages in contracts requires NLS to separately walk the contract expression.
+Therefore, NLS traverses the AST of expressions used as value annotations.
+In order to avoid interference with the main linearization, contracts are linearized using their own `Linearizer`.
 
 ##### Scope
 
