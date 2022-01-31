@@ -1,4 +1,4 @@
-# Design implementation of NLS 
+# Design implementation of NLS
 
 This chapter contains a detailed guide through the various steps and components of the Nickel Language Server (NLS).
 Being written in the same language (Rust[@rust]) as the Nickel interpreter allows NLS to integrate existing components for language analysis.
@@ -12,7 +12,7 @@ The example [@lst:nickel-complete-example] shows an illustrative high level conf
 Throughout this chapter, different sections about the NSL implementation will refer back to this example.
 
 ```{.nickel #lst:nickel-complete-example caption="Nickel example with most features shown"}
-let Port | doc "A contract for a port number" = 
+let Port | doc "A contract for a port number" =
   contracts.from_predicate (fun value =>
     builtins.is_num value &&
     value % 1 == 0 &&
@@ -31,7 +31,7 @@ let NobernetesConfig = {
            | doc "The number of replicas"
            | default = 1,
   containers | { _ : #Container },
-  
+
 } in
 
 let name_ = "myApp" in
@@ -51,7 +51,7 @@ let image = "k8s.gcr.io/#{name_}" in
   apiVersion = "1.1.0",
   metadata = metadata_,
   replicas = 3,
-  containers = { 
+  containers = {
     "main container" = webContainer image
   }
 } | #NobernetesConfig
@@ -97,7 +97,7 @@ While being defined similar to its origin, the structure is optimized for positi
 Moreover, types of items in the `Completed` linearization will be resolved.
 
 Type definitions of the `Linearization` as well as its type-states `Building` and `Completed` are listed in [@lst:nickel-definition-lineatization;@lst:nls-definition-building-type;@lst:nls-definition-completed-type].
-Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS. 
+Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS.
 
 
 ```{.rust #lst:nickel-definition-lineatization caption="Definition of Linearization structure"}
@@ -212,6 +212,7 @@ Record fields
 Variable usages
   ~ are further specified. `Usage`s that can not be mapped to a declaration are tagged `Unbound` or otherwise `Resolved` to the complementary `Declaration`
   ~ Record destructuring may require a late resolution as discussed in [@sed:variable-usage-and-static-record-access].
+
 Other nodes
   ~ of the AST that do not fit in a usage graph, are linearized as `Structure`.
 
@@ -242,7 +243,6 @@ Additionally, to keep track of the variables in scope, and iteratively build a u
 
 
 #### Linearizer
-
 
 The heart of the linearization the `Linearizer` trait as defined in [@lst:nls-linearizer-trait].
 The `Linearizer` lives in parallel to the `Linearization`.
@@ -604,7 +604,6 @@ digraph G {
     {rank=same; field_y; field_z }
     {rank=same; field_yy; field_yz }
     {rank=same; record_y; hidden;}
-
 }
 ```
 
