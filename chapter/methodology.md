@@ -707,9 +707,6 @@ Considering that only the annotated value is type-checked and therefore passed t
 Therefore, NLS traverses the AST of expressions used as value annotations.
 In order to avoid interference with the main linearization, contracts are linearized using their own `Linearizer`.
 
-##### Scope
-
-##### Retyping
 
 ### Post-Processing
 
