@@ -1,4 +1,4 @@
-# Design implementation of NLS 
+# Design implementation of NLS
 
 This chapter contains a detailed guide through the various steps and components of the Nickel Language Server (NLS).
 Being written in the same language (Rust[@rust]) as the Nickel interpreter allows NLS to integrate existing components for language analysis.
@@ -12,7 +12,7 @@ The example [@lst:nickel-complete-example] shows an illustrative high level conf
 Throughout this chapter, different sections about the NSL implementation will refer back to this example.
 
 ```{.nickel #lst:nickel-complete-example caption="Nickel example with most features shown"}
-let Port | doc "A contract for a port number" = 
+let Port | doc "A contract for a port number" =
   contracts.from_predicate (fun value =>
     builtins.is_num value &&
     value % 1 == 0 &&
@@ -31,7 +31,7 @@ let NobernetesConfig = {
            | doc "The number of replicas"
            | default = 1,
   containers | { _ : #Container },
-  
+
 } in
 
 let name_ = "myApp" in
@@ -51,7 +51,7 @@ let image = "k8s.gcr.io/#{name_}" in
   apiVersion = "1.1.0",
   metadata = metadata_,
   replicas = 3,
-  containers = { 
+  containers = {
     "main container" = webContainer image
   }
 } | #NobernetesConfig
@@ -97,7 +97,7 @@ While being defined similar to its origin, the structure is optimized for positi
 Moreover, types of items in the `Completed` linearization will be resolved.
 
 Type definitions of the `Linearization` as well as its type-states `Building` and `Completed` are listed in [@lst:nickel-definition-lineatization;@lst:nls-definition-building-type;@lst:nls-definition-completed-type].
-Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS. 
+Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS.
 
 
 ```{.rust #lst:nickel-definition-lineatization caption="Definition of Linearization structure"}
@@ -212,6 +212,7 @@ Record fields
 Variable usages
   ~ are further specified. `Usage`s that can not be mapped to a declaration are tagged `Unbound` or otherwise `Resolved` to the complementary `Declaration`
   ~ Record destructuring may require a late resolution as discussed in [@sed:variable-usage-and-static-record-access].
+
 Other nodes
   ~ of the AST that do not fit in a usage graph, are linearized as `Structure`.
 
@@ -242,7 +243,6 @@ Additionally, to keep track of the variables in scope, and iteratively build a u
 
 
 #### Linearizer
-
 
 The heart of the linearization the `Linearizer` trait as defined in [@lst:nls-linearizer-trait].
 The `Linearizer` lives in parallel to the `Linearization`.
@@ -604,7 +604,6 @@ digraph G {
     {rank=same; field_y; field_z }
     {rank=same; field_yy; field_yz }
     {rank=same; record_y; hidden;}
-
 }
 ```
 
@@ -708,11 +707,31 @@ Considering that only the annotated value is type-checked and therefore passed t
 Therefore, NLS traverses the AST of expressions used as value annotations.
 In order to avoid interference with the main linearization, contracts are linearized using their own `Linearizer`.
 
-##### Scope
-
-##### Retyping
 
 ### Post-Processing
+Once the entire AST has been processed NLS modifies the Linearization to make it suitable as an efficient index to serve various LSP commands.
+
+After the post-processing the resulting linearization
+
+1. allows efficient lookup of elements from file locations
+2. maintains an `id` based lookup
+3. links deeply nested record destructors to the correct definitions
+4. provides all available type information utilizing Nickel's typing backend
+
+#### Sorting
+
+Since the linearization is performed in a preorder traversal, processing already happens in the order elements are defined physically.
+Yet, during the linearization the location might be unstable or unknown for different items.
+Record fields for instance are processed in an arbitrary order rather than the order they are defined.
+Moreover, for nested records and record short notations, symbolic `Record` items are created which cannot be mapped to a physical location and are thus placed at the range `[0..=0]` in the beginning of the file.
+Maintaining constant insertion performance and item-referencing require that the linearization is exclusively appended.
+Each of these cases, break the physical linearity of the linearization.
+
+NLS thus defers reordering of items.
+The language server uses a stable sorting algorithm to sort items by their associated span's starting position.
+This way, nesting of items with the same start location is preserved.
+Since several operations require efficient access to elements by `id`, which after the sorting does not correspond to the items index in the linearization, after sorting NLS creates an index mapping `id`s to list indices.
+
 
 ### Resolving Elements
 
