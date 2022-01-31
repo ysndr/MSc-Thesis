@@ -709,6 +709,15 @@ In order to avoid interference with the main linearization, contracts are linear
 
 
 ### Post-Processing
+Once the entire AST has been processed NLS modifies the Linearization to make it suitable as an efficient index to serve various LSP commands.
+
+After the post-processing the resulting linearization
+
+1. allows efficient lookup of elements from file locations
+2. maintains an `id` based lookup
+3. links deeply nested record destructors to the correct definitions
+4. provides all available type information utilizing Nickel's typing backend
+
 
 ### Resolving Elements
 
