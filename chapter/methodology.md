@@ -718,6 +718,20 @@ After the post-processing the resulting linearization
 3. links deeply nested record destructors to the correct definitions
 4. provides all available type information utilizing Nickel's typing backend
 
+#### Sorting
+
+Since the linearization is performed in a preorder traversal, processing already happens in the order elements are defined physically.
+Yet, during the linearization the location might be unstable or unknown for different items.
+Record fields for instance are processed in an arbitrary order rather than the order they are defined.
+Moreover, for nested records and record short notations, symbolic `Record` items are created which cannot be mapped to a physical location and are thus placed at the range `[0..=0]` in the beginning of the file.
+Maintaining constant insertion performance and item-referencing require that the linearization is exclusively appended.
+Each of these cases, break the physical linearity of the linearization.
+
+NLS thus defers reordering of items.
+The language server uses a stable sorting algorithm to sort items by their associated span's starting position.
+This way, nesting of items with the same start location is preserved.
+Since several operations require efficient access to elements by `id`, which after the sorting does not correspond to the items index in the linearization, after sorting NLS creates an index mapping `id`s to list indices.
+
 
 ### Resolving Elements
 
