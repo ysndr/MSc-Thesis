@@ -732,6 +732,27 @@ The language server uses a stable sorting algorithm to sort items by their assoc
 This way, nesting of items with the same start location is preserved.
 Since several operations require efficient access to elements by `id`, which after the sorting does not correspond to the items index in the linearization, after sorting NLS creates an index mapping `id`s to list indices.
 
+#### Resolving deferred access
+
+[Section @sec:variable-usage-and-static-record-access] introduced the `Deferred` type for `Usages`.
+Resolution of usages is deferred if chained destructors are used.
+This is especially important in recursive records where any value may refer to other fields of the record which could still be unresolved.
+
+As seen in [@fig:ncl-record-access], the items generated for each destructor only link to their parent item.
+Yet, the root access is connected to a known declaration.
+Since at this point all records are fully processed NLS is able to resolve destructors iteratively.
+
+First NLS collects all deferred usages in a queue.
+Each usage contains the *`id`* of the parent destructor as well as the *name* of the field itself represents.
+NLS then tries to resolve the base record for the usage by resolving the parent.
+If the value of the parent destructor is not yet known or a deferred usage, NLS will enqueue the destructor once again to be processed again later.
+In practical terms that is after the other fields of a common record.
+In any other case the parent consequently has to point to a record, either directly, through a record field or a variable.
+NLS will then get the `id` of the `RecordField` for the destructors *name* and mark the `Usage` as `Known`
+If no field with that name is present or the parent points to a `Structure` or `Unbound` usage, the destructor cannot be resolved in a meaningful way and will thus be marked `Unbound`.
+
+
+#### Resolving types
 
 ### Resolving Elements
 
