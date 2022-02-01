@@ -582,10 +582,10 @@ digraph G {
     field_z [label="Field|z"]
 
     subgraph {
-    node [shape=record, color=grey, style=dashed]
-    record_y [label="Record|\{yy, yz\}"]
-    field_yy [label="Field|yy"]
-    field_yz [label="Field|yz"]
+      node [shape=record, color=grey, style=dashed]
+      record_y [label="Record|\{yy, yz\}"]
+      field_yy [label="Field|yy"]
+      field_yz [label="Field|yz"]
     }
 
     var_z [label = "Usage|y.yz"]
@@ -634,7 +634,6 @@ digraph G {
         subgraph cluster_items { 
 
           label="Existing Nodes"
-
 
                 // hidden
                {
