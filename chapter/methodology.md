@@ -754,6 +754,13 @@ If no field with that name is present or the parent points to a `Structure` or `
 
 #### Resolving types
 
+<!-- TODO: link to background section -->
+As a necessity for type checking, Nickel generates type variables for any node of the AST which it hands down to the `Linearizer`.
+<!-- TODO: example for types? -->
+In order to provide meaningful information, the Language Server needs to derive concrete types from these variables.
+The required metadata needs to be provided by the type checker.
+
+
 ### Resolving Elements
 
 #### Resolving by position
