@@ -582,10 +582,10 @@ digraph G {
     field_z [label="Field|z"]
 
     subgraph {
-    node [shape=record, color=grey, style=dashed]
-    record_y [label="Record|\{yy, yz\}"]
-    field_yy [label="Field|yy"]
-    field_yz [label="Field|yz"]
+      node [shape=record, color=grey, style=dashed]
+      record_y [label="Record|\{yy, yz\}"]
+      field_yy [label="Field|yy"]
+      field_yz [label="Field|yz"]
     }
 
     var_z [label = "Usage|y.yz"]
@@ -634,7 +634,6 @@ digraph G {
         subgraph cluster_items { 
 
           label="Existing Nodes"
-
 
                 // hidden
                {
@@ -754,6 +753,13 @@ If no field with that name is present or the parent points to a `Structure` or `
 
 #### Resolving types
 
+<!-- TODO: link to background section -->
+As a necessity for type checking, Nickel generates type variables for any node of the AST which it hands down to the `Linearizer`.
+<!-- TODO: example for types? -->
+In order to provide meaningful information, the Language Server needs to derive concrete types from these variables.
+The required metadata needs to be provided by the type checker.
+
+
 ### Resolving Elements
 
 #### Resolving by position
@@ -852,6 +858,18 @@ impl Completed {
 ```
 
 ## LSP Server
+
+[Section @sec:commands-and-notifications] introduced the concept of capabilities in the context of the language server protocol.
+This section describes how NSL uses the linearization described in [@sec:linearization] to implement a comprehensive set of features.
+There are two kinds of capabilities, passive diagnostics and commands.
+
+NLS instructs the LSP client to notify the server once the user opens or modifies a file.
+Each notification contains the complete source code of the file as well as its location.
+NLS subsequently parses and type-checks the file using Nickel's libraries.
+Since Nickel deals with error reporting already, NLS converts any error generated in these processes into [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#diagnostic) items and sends them to the client as server notifications.
+Nickel errors provide detailed information about location of the issue as well as possible details which NLS can include in the Diagnostic items.
+
+As discussed in [@sec:linearization] and , the type-checking yields a `Completed` linearization which implements crucial methods to resolve elements.
 
 ### Diagnostics and Caching
 
