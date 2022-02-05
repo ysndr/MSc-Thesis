@@ -236,8 +236,8 @@ Since the bare linear data structure cannot be used to deduce a scope, related m
 The language server maintains a register for identifiers defined in every scope.
 This register allows NLS to resolve possible completion targets as detailed in [@sec:resolving-by-scope].
 
-For simplicity, scopes are represented by a prefix list of integers.
-Whenever a new lexical scope is entered the list of the outer scope is extended by a unique identifier.
+For simplicity, NLS represents scopes by a prefix list of integers.
+Whenever a new lexical scope is entered, the list of the outer scope is extended by a unique identifier.
 
 Additionally, to keep track of the variables in scope, and iteratively build a usage graph, NLS keeps track of the latest definition of each variable name and which `Declaration` node it refers to.
 
@@ -246,7 +246,7 @@ Additionally, to keep track of the variables in scope, and iteratively build a u
 
 The heart of the linearization the `Linearizer` trait as defined in [@lst:nls-linearizer-trait].
 The `Linearizer` lives in parallel to the `Linearization`.
-Its methods modify a shared reference to a `Building` `Linearization`
+Its methods modify a shared reference to a `Building` `Linearization`.
 
 
 ```{.rust #lst:nls-linearizer-trait caption="Interface of linearizer trait"}
@@ -294,7 +294,7 @@ pub trait Linearizer {
 
 `Linearizer::complete`
   ~ implements the post-processing necessary to turn a final `Building` linearization into a `Completed` one.
-  ~ Note that the post-processing might depend on additional data
+  ~ Note that the post-processing might depend on additional data.
 
 `Linearizer::scope`
   ~ returns a new `Linearizer` to be used for a sub-scope of the current one.
@@ -309,7 +309,7 @@ No instance data is propagated back to the outer scopes `Linearizer`.
 Neither have `Linearizer`s of sibling scopes access to each other's data.
 Yet, the `scope` method can be implemented to pass arbitrary state down to the scoped instance.
 The scope safe storage of the `Linearizer` implemented by NLS, as seen in [@lst:nls-analyisis-host-definition], stores the scope aware register and scope related data.
-Additionally, it contains fields to allow the linearization of records and record destructuring, as well as metadata ([@sec:records, @sec:variable-usage-and-static-record-access and @sec:metadata])
+Additionally, it contains fields to allow the linearization of records and record destructuring, as well as metadata ([@sec:records, @sec:variable-usage-and-static-record-access and @sec:metadata]).
 
 ```rust
 pub struct AnalysisHost {
