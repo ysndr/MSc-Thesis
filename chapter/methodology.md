@@ -236,8 +236,8 @@ Since the bare linear data structure cannot be used to deduce a scope, related m
 The language server maintains a register for identifiers defined in every scope.
 This register allows NLS to resolve possible completion targets as detailed in [@sec:resolving-by-scope].
 
-For simplicity, scopes are represented by a prefix list of integers.
-Whenever a new lexical scope is entered the list of the outer scope is extended by a unique identifier.
+For simplicity, NLS represents scopes by a prefix list of integers.
+Whenever a new lexical scope is entered, the list of the outer scope is extended by a unique identifier.
 
 Additionally, to keep track of the variables in scope, and iteratively build a usage graph, NLS keeps track of the latest definition of each variable name and which `Declaration` node it refers to.
 
@@ -246,7 +246,7 @@ Additionally, to keep track of the variables in scope, and iteratively build a u
 
 The heart of the linearization the `Linearizer` trait as defined in [@lst:nls-linearizer-trait].
 The `Linearizer` lives in parallel to the `Linearization`.
-Its methods modify a shared reference to a `Building` `Linearization`
+Its methods modify a shared reference to a `Building` `Linearization`.
 
 
 ```{.rust #lst:nls-linearizer-trait caption="Interface of linearizer trait"}
@@ -294,7 +294,7 @@ pub trait Linearizer {
 
 `Linearizer::complete`
   ~ implements the post-processing necessary to turn a final `Building` linearization into a `Completed` one.
-  ~ Note that the post-processing might depend on additional data
+  ~ Note that the post-processing might depend on additional data.
 
 `Linearizer::scope`
   ~ returns a new `Linearizer` to be used for a sub-scope of the current one.
@@ -309,7 +309,7 @@ No instance data is propagated back to the outer scopes `Linearizer`.
 Neither have `Linearizer`s of sibling scopes access to each other's data.
 Yet, the `scope` method can be implemented to pass arbitrary state down to the scoped instance.
 The scope safe storage of the `Linearizer` implemented by NLS, as seen in [@lst:nls-analyisis-host-definition], stores the scope aware register and scope related data.
-Additionally, it contains fields to allow the linearization of records and record destructuring, as well as metadata ([@sec:records, @sec:variable-usage-and-static-record-access and @sec:metadata])
+Additionally, it contains fields to allow the linearization of records and record destructuring, as well as metadata ([@sec:records, @sec:variable-usage-and-static-record-access and @sec:metadata]).
 
 ```rust
 pub struct AnalysisHost {
@@ -861,7 +861,9 @@ impl Completed {
 
 [Section @sec:commands-and-notifications] introduced the concept of capabilities in the context of the language server protocol.
 This section describes how NSL uses the linearization described in [@sec:linearization] to implement a comprehensive set of features.
-There are two kinds of capabilities, passive diagnostics and commands.
+NLS implements the most commonly compared capabilities *Code completion*, *Hover* *Jump to def*, *Find references*, *Workspace symbols* and *Diagnostics*.
+
+### Diagnostics and Caching
 
 NLS instructs the LSP client to notify the server once the user opens or modifies a file.
 Each notification contains the complete source code of the file as well as its location.
@@ -869,18 +871,34 @@ NLS subsequently parses and type-checks the file using Nickel's libraries.
 Since Nickel deals with error reporting already, NLS converts any error generated in these processes into [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#diagnostic) items and sends them to the client as server notifications.
 Nickel errors provide detailed information about location of the issue as well as possible details which NLS can include in the Diagnostic items.
 
-As discussed in [@sec:linearization] and , the type-checking yields a `Completed` linearization which implements crucial methods to resolve elements.
+As discussed in [@sec:linearization] and [@sec:resolving-elements] the type-checking yields a `Completed` linearization which implements crucial methods to resolve elements.
+NLS will cache the linearization for each processed file.
+This way it can provide its LSP functions while a file is being edited.
 
-### Diagnostics and Caching
+### Commands
 
-### Capabilities
+Contrary to Diagnostics, which are part of a `Notification` based interaction with the client and thus entirely asynchronous, `Commands` are issued by the client which expects an explicit synchronous answer.
+While servers may report long-running tasks and defer sending eventual results back, user experience urges quick responses.
+NLS achieves the required low latency by leveraging the eagerly built linearization.
+Consequently, the language server implements most `Commands` through a series of searches and lookups of items.
 
 #### Hover
 
+When hovering an item or issuing the corresponding command in text based editors, the LSP client will send a request for element information containing the cursor's *location* in a given *file*.
+Upon request, NLS loads the cached linearization and performs a lookup for a `LinearizationItem` associated with the location using the linearization interface presented in [@sec:resolving-by-position].
+If the linearization contains an appropriate item, NLS serializes the item's type and possible metadata into a response object which is resolves the RPC call.
+Otherwise, NLS signals no item could be found.
+
+#### Jump to Definition and Show references
+
+Similar to *hover* requests, usage graph related commands associate a location in the source with an action.
+NLS first attempts to resolve an item for the requested position using the cached linearization.
+Depending on the command the item must be either a `Usage` or `Declaration`/`RecordField`.
+Given the item is of the correct kind, the language server looks up the referenced declaration or associated usages respectively.
+The stored position of each item is encoded in the LSP defined format and sent to the client.
+In short, usage graph queries perform two lookups to the linearization.
+One for the requested element and another one to retrieve the linked item.
+
 #### Completion
-
-#### Jump to Definition
-
-#### Show references
 
 #### Symbols
