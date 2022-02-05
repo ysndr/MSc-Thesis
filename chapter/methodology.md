@@ -861,7 +861,9 @@ impl Completed {
 
 [Section @sec:commands-and-notifications] introduced the concept of capabilities in the context of the language server protocol.
 This section describes how NSL uses the linearization described in [@sec:linearization] to implement a comprehensive set of features.
-There are two kinds of capabilities, passive diagnostics and commands.
+NLS implements the most commonly compared capabilities *Code completion*, *Hover* *Jump to def*, *Find references*, *Workspace symbols* and *Diagnostics*.
+
+### Diagnostics and Caching
 
 NLS instructs the LSP client to notify the server once the user opens or modifies a file.
 Each notification contains the complete source code of the file as well as its location.
@@ -869,9 +871,10 @@ NLS subsequently parses and type-checks the file using Nickel's libraries.
 Since Nickel deals with error reporting already, NLS converts any error generated in these processes into [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#diagnostic) items and sends them to the client as server notifications.
 Nickel errors provide detailed information about location of the issue as well as possible details which NLS can include in the Diagnostic items.
 
-As discussed in [@sec:linearization] and , the type-checking yields a `Completed` linearization which implements crucial methods to resolve elements.
+As discussed in [@sec:linearization] and [@sec:resolving-elements] the type-checking yields a `Completed` linearization which implements crucial methods to resolve elements.
+NLS will cache the linearization for each processed file.
+This way it can provide its LSP functions while a file is being edited.
 
-### Diagnostics and Caching
 
 ### Capabilities
 
