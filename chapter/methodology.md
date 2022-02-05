@@ -875,15 +875,30 @@ As discussed in [@sec:linearization] and [@sec:resolving-elements] the type-chec
 NLS will cache the linearization for each processed file.
 This way it can provide its LSP functions while a file is being edited.
 
+### Commands
 
-### Capabilities
+Contrary to Diagnostics, which are part of a `Notification` based interaction with the client and thus entirely asynchronous, `Commands` are issued by the client which expects an explicit synchronous answer.
+While servers may report long-running tasks and defer sending eventual results back, user experience urges quick responses.
+NLS achieves the required low latency by leveraging the eagerly built linearization.
+Consequently, the language server implements most `Commands` through a series of searches and lookups of items.
 
 #### Hover
 
+When hovering an item or issuing the corresponding command in text based editors, the LSP client will send a request for element information containing the cursor's *location* in a given *file*.
+Upon request, NLS loads the cached linearization and performs a lookup for a `LinearizationItem` associated with the location using the linearization interface presented in [@sec:resolving-by-position].
+If the linearization contains an appropriate item, NLS serializes the item's type and possible metadata into a response object which is resolves the RPC call.
+Otherwise, NLS signals no item could be found.
+
+#### Jump to Definition and Show references
+
+Similar to *hover* requests, usage graph related commands associate a location in the source with an action.
+NLS first attempts to resolve an item for the requested position using the cached linearization.
+Depending on the command the item must be either a `Usage` or `Declaration`/`RecordField`.
+Given the item is of the correct kind, the language server looks up the referenced declaration or associated usages respectively.
+The stored position of each item is encoded in the LSP defined format and sent to the client.
+In short, usage graph queries perform two lookups to the linearization.
+One for the requested element and another one to retrieve the linked item.
+
 #### Completion
-
-#### Jump to Definition
-
-#### Show references
 
 #### Symbols
