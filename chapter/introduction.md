@@ -1,9 +1,9 @@
 # Introduction
 
 Integrated Development Environments (IDEs) and other more lightweight code editors are by far the most used tool of software developers.
-Yet, improvements of language intelligence, i.e. code completion, debugging as well as static code analysis and enrichment, have traditionally been subject to both the language and the editor used. Language support is thereby brought to IDEs by the means of platform dependent extensions that require repeated efforts for each platform and hence varied a lot in performance, feature-richness and availability.
+Yet, improvements of language intelligence, i.e. code completion, debugging as well as static code analysis and enrichment, have traditionally been subject to both the language and the editor used. Language support is thereby brought to IDEs by the means of platform dependent extensions that require repeated efforts for each platform and hence varied a lot in performance, features and availability.
 <!-- Comparison here? -->
-Recent years have seen different works [refs?] towards editor independent code intelligence implementations and unified language independent protocols one of which being put forward by Microsoft - the Language Server Protocol [ref] which is discussed in greater detail in [@sec:language-server-protocol].
+Recent years have seen different works [refs?] towards editor-independent code intelligence implementations and unified language-independent protocols one of which being put forward by Microsoft - the Language Server Protocol [ref] which is discussed in greater detail in [@sec:language-server-protocol].
 These approaches reduced the effort of implementing language intelligence from $\mathcal{O}(E \times L)$ to $\mathcal{O}(1 \times L)$ where $E$ stands for the number of _editors_ and $L$ for _languages_.
 As a side effect this also allows for developers to stay in their preferred developing environment instead of needing to resort to e.g. Vim or Emacs emulation or loosing access to other plugins.
 
@@ -20,7 +20,7 @@ While previously implementing language tools that integrate with the developer's
 ## Problem Definition
 
 Yet, while many of the implementations are freely available as Open Source Software [ref?], the methodology behind these servers is often poorly documented, especially for smaller languages.
-There are some experience reports [ref: merlin, and others] and a detailed video series on the Rust Analyzer[ref or footnote], project, but implementations remain very opinionated and poorly guided through.
+There are some experience reports [ref: merlin, and others] and a detailed video series on the Rust Analyzer[ref or footnote] project, but implementations remain very opinionated and poorly guided through.
 The result is that new implementations keep repeating to develop existing solutions.
 
 Moreover, most projects do not formally evaluate the Language Server on even basic requirements.
