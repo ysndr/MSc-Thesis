@@ -21,7 +21,30 @@ Speaking of smaller languages is significant, as both research communities and i
 Additionally, previous research [ref], that shows the importance of language tools for the selection of a language, highlights the importance of tooling for new languages to be adopted by a wider community.
 While previously implementing language tools that integrate with the developer's environment was practically unfeasible for small projects due to the incompatibility between different extension systems, leveraging the LSP reduces the amount of work required considerably.
 
-## Problem Definition
+
+## Motivation
+
+Since its release, the LSP has grown to be supported by a multitude of languages and editors[@langservers @lsp-website], solving a long-standing problem with traditional IDEs.
+
+Before the inception of language servers, it was the editors' individual responsibility to implement specialized features for any language of interest.
+Under the constraint of limited resources, editors had to position themselves on a spectrum between specializing on integrated support for a certain subset of languages and being generic over the language providing only limited support.
+As the former approach offers a greater business value, especially for proprietary products most professional IDEs gravitate towards excellent (and exclusive) support for single major languages, i.e., XCode and Visual Studio for the native languages for Apple and Microsoft Products respectively as well as JetBrains' IntelliJ platform and RedHat's Eclipse.
+Problematically, this results in less choice for developers and possible lock-in into products subjectively less favored but unique in their features for a certain language.
+The latter approach was taken by most text editors which in turn offered only limited support for any language.
+
+Popularity statistics^[https://web.archive.org/web/20160625140610/https://pypl.github.io/IDE.html] shows that except Vim and Sublime Text, both exceptional general text editors, the top 10 most popular IDEs were indeed specialized products.
+Regardless that some IDEs offer support for more languages through (third-party) extensions, developing any sort of language support requires redundant resources.
+Missing standards, incompatible implementing languages and often proprietary APIs highlight this problem/.
+
+This is especially difficult for emerging languages, with possibly limited development resources to be put towards the development of language tooling.
+Consequently, community efforts of languages any size vary in scope, feature completeness and availability.
+
+The Language Server Protocol aims to solve this issue by specifying a JSON-RPC[^Remote Procedure Call] API that editors (clients) can use to communicate with language servers.
+Language servers are programs that implement a set of IDE features for one language and exposing access to these features through the LSP.
+This allows developers to focus resources to a single project that is above all unrelated to editor-native APIs for analytics processing code representation and GUI integration.
+Consequently, now only a single implementation of a language server is required, instead of one for each editor and editor maintainers can concentrate on offering the best possible LSP client support to their product independent of the language.
+
+### Problem Definition
 
 Yet, while many of the implementations are freely available as Open Source Software [ref?], the methodology behind these servers is often poorly documented, especially for smaller languages.
 There are some experience reports [ref: merlin, and others] and a detailed video series on the Rust Analyzer[ref or footnote] project, but implementations remain very opinionated and poorly guided through.
