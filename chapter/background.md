@@ -174,7 +174,7 @@ This suggests that techniques[@aws-cloud-formation-security-tests] to automatica
 
 ### Nickel
 
-### Gradual typing
+#### Gradual typing
 
 ##### Row types
 #### Contracts
