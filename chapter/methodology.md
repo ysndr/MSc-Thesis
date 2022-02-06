@@ -897,7 +897,7 @@ Depending on the command the item must be either a `Usage` or `Declaration`/`Rec
 Given the item is of the correct kind, the language server looks up the referenced declaration or associated usages respectively.
 The stored position of each item is encoded in the LSP defined format and sent to the client.
 In short, usage graph queries perform two lookups to the linearization.
-One for the requested element and another one to retrieve the linked item.
+One for the requested element and a second one to retrieve the linked item.
 
 #### Completion
 
