@@ -177,7 +177,83 @@ This suggests that techniques[@aws-cloud-formation-security-tests] to automatica
 #### Gradual typing
 
 ##### Row types
+
 #### Contracts
+
+In addition to a static type-system Nickel integrates a contract system akin what is described in [@cant-be-blamed].
+First introduced by Findler and Felleisen, contracts allow the creation of runtime-checked subtypes.
+Unlike types, contracts check an annotated value using arbitrary functions that either pass or *blame* the input.
+Contracts act like assertions that are automatically checked when a value is used or passed to annotated functions.
+
+For instance, a contract could be used to define TCP port numbers, like shown in [@lst:nickel-sample-contract].
+
+```{.nickel #lst:nickel-sample-contract caption="Sample Contract ensuring that a value is a valid TCP port number"}
+let Port | doc "A contract for a port number" =
+  contracts.from_predicate (
+    fun value =>
+      builtins.is_num value &&
+      value % 1 == 0 &&
+      value >= 0 &&
+      value <= 65535
+  )
+in 8080 | #Port
+```
+
+Going along gradual typing, contracts pose a convenient alternative to the `newtype` pattern.
+Instead of requiring values to be wrapped or converted into custom types, contracts are self-contained.
+As a further advantage, multiple contracts can be applied to the same value as well as integrated into other higher level contracts.
+An example can be observed in [@lst:nickel-sample-advanced-contract]
+
+```{.nickel #lst:nickel-sample-advanced-contract caption="More advaced use of contracts restricting values to an even smaller domain"}
+let Port | doc "A contract for a port number" =
+  contracts.from_predicate (
+    fun value =>
+      builtins.is_num value &&
+      value % 1 == 0 &&
+      value >= 0 &&
+      value <= 65535
+  )
+in
+let UnprivilegedPort = contracts.from_predicate (
+  fun value =>
+    (value | #Port) >= 1024  
+  )
+in
+let Even = fun label value =>
+  if value % 2 == 0 then value
+  else
+    let msg = "not an even value" in
+    contracts.blame_with msg label
+in
+
+8001 | #UnprivilegedPort
+     | #Even
+```
+
+Notice how contracts also enable detailed error messages (see [@lst:nickel-sample-error-advaced-contract]) using custom blame messages.
+Nickel is able to point to the exact value violating a contract as well as the contract in question.
+
+```{.text #lst:nickel-sample-error-advaced-contract caption="Example error message for failed contract"}
+error: Blame error: contract broken by a value [not an even value].
+   ┌─ :1:1
+   │
+ 1 │ #Even
+   │ ----- expected type
+   │
+   ┌─ repl-input-34:22:1
+   │  
+22 │ ╭ 8001 | #UnprivilegedPort
+   │   ---- evaluated to this expression
+23 │ │      | #Even
+   │ ╰────────────^ applied to this expression
+
+note: 
+   ┌─ repl-input-34:23:8
+   │
+23 │      | #Even
+   │        ^^^^^ bound here
+```
+
 
 
 #### Nickel AST
