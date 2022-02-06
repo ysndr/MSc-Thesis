@@ -30,6 +30,8 @@ The result is that new implementations keep repeating to develop existing soluti
 Moreover, most projects do not formally evaluate the Language Server on even basic requirements.
 Naïvely, that is, the server should be *performant* enough not to slow down the developer, it should offer *useful* information and capabilities and of course be *correct* as well as *complete*.
 
+## Research Questions
+
 To guide future implementations of language servers for primarily small scale languages the research presented in this thesis aims to answer the following research questions at the example of the Nickel Project^[https://nickel-lang.org]:
 
 RQ.1
