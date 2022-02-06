@@ -15,7 +15,6 @@ Initially developed by Microsoft for the use with their polyglot editor Visual S
 Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], the protocol allows developers of editors and languages to work independently on the support for new languages.
 If supported by both server and client, the LSP now supports more than 24 language features^[https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, code navigation facilities, contextual information such as types or documentation, formatting, and more
 
-
 ### JSON-RPC
 
 JSON-RPC (v2) [@json-rpc] is a JSON based lightweight transport independent remote procedure call protocol used by the LSP to communicate between a language server and a client.
@@ -183,7 +182,7 @@ This suggests that techniques[@aws-cloud-formation-security-tests] to automatica
 
 #### Nickel AST
 
-Nickel's syntax tree is a single sum type, i.e. an enumeration of node types.
+Nickel's syntax tree is a single sum type, i.e., an enumeration of node types.
 Each enumeration variant may refer to child nodes, representing a branch or hold terminal values in which case it is considered a leaf of the tree.
 Additionally, tree nodes hold information about their position in the underlying code.
 
@@ -206,8 +205,6 @@ These data types constitute a static subset of Nickel which allows writing JSON 
 } 
 ```
 
-
-
 Building on that Nickel also supports variables and functions which make up the majority of the AST.
 
 ##### Identifiers
@@ -217,7 +214,7 @@ Such name bindings can be declared in multiple ways, e.g. `let` bindings, functi
 The usage of a name is always parsed as a single `Var` node wrapping the identifier.
 Span information of identifiers is preserved by the parser and encoded in the `Ident` type. 
 
-##### Let Bindings and Functions
+##### Variable Reference
 
 ```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
 
@@ -405,4 +402,4 @@ As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand
 }
 ```
 
-Yet, on a syntax level  Nickel generates a different representation.
+Yet, on a syntax level Nickel generates a different representation.
