@@ -901,4 +901,13 @@ One for the requested element and a second one to retrieve the linked item.
 
 #### Completion
 
-#### Symbols
+Item completion makes use of the scope identifiers attached to each item.
+Since Nickel implements lexical scopes, all declarations made in parent scopes can be a reference.
+If two declarations use the same identifier, Nickel applies variable shadowing to refer to the most recent declaration, i.e., the declaration with the deepest applicable scope.
+NLS uses scope identifiers which represent scope depth as described in [@sec:scopes] to retrieve symbol names for a reference scope using the method described in [@sec:resolving-by-scope].
+The current scope taken as reference is derived from the item at cursor position.
+
+#### Document Symbols
+
+The Nickel Language Server interprets all items of kind `Declaration` as document symbol.
+Accordingly, it filters the linearization by kind and serializes all declarations into an LSP response object.
