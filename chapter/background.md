@@ -235,23 +235,23 @@ Nickel is able to point to the exact value violating a contract as well as the c
 
 ```{.text #lst:nickel-sample-error-advaced-contract caption="Example error message for failed contract"}
 error: Blame error: contract broken by a value [not an even value].
-   ┌─ :1:1
-   │
- 1 │ #Even
-   │ ----- expected type
-   │
-   ┌─ repl-input-34:22:1
-   │  
-22 │ ╭ 8001 | #UnprivilegedPort
-   │   ---- evaluated to this expression
-23 │ │      | #Even
-   │ ╰────────────^ applied to this expression
+    - :1:1
+   |
+ 1 | #Even
+   | ----- expected type
+   |
+    - repl-input-34:22:1
+   |  
+22 | - 8001 | #UnprivilegedPort
+   |   ---- evaluated to this expression
+23 | |      | #Even
+   | -------------^ applied to this expression
 
 note: 
-   ┌─ repl-input-34:23:8
-   │
-23 │      | #Even
-   │        ^^^^^ bound here
+    - repl-input-34:23:8
+   |
+23 |      | #Even
+   |        ^^^^^ bound here
 ```
 
 
