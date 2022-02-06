@@ -5,7 +5,10 @@ Yet, improvements of language intelligence, i.e. code completion, debugging as w
 Language support is thereby brought to IDEs by the means of platform dependent extensions that require repeated efforts for each platform and hence varied a lot in performance, feature-richness and availability.
 <!-- Comparison here? -->
 Recent years have seen different works [refs?] towards editor-independent code intelligence implementations and unified language-independent protocols one of which being put forward by Microsoft - the Language Server Protocol [ref] which is discussed in greater detail in [@sec:language-server-protocol].
-These approaches reduced the effort of implementing language intelligence from $\mathcal{O}(E \times L)$ to $\mathcal{O}(1 \times L)$ where $E$ stands for the number of _editors_ and $L$ for _languages_.
+These approaches reduce the effort required to bring language intelligence to editors.
+Instead of rewriting what is essentially the same language extension for every editor, all LSP-capable editors can connect to the same LSP implementation.
+Moreover, LSP client implementations are independent of the servers.
+Hence, editor communities can focus on developing the best possible and uniform experience which all LSP servers can leverage.
 As a side effect this also allows for developers to stay in their preferred developing environment instead of needing to resort to e.g. Vim or Emacs emulation or loosing access to other plugins.
 
 <!-- graphic here or in the backgroudn chapter -->
