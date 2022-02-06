@@ -17,6 +17,15 @@ jobs:
     name: Build Preview
     runs-on: ubuntu-latest
     steps:
+      - name: Start preview deployment
+        uses: bobheadxi/deployments@v0.6.2
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          no_override: true
+          env: ${{ github.head_ref }}
+          ref: ${{ github.head_ref }}
       - name: Install Nix
         uses: cachix/install-nix-action@v15
       - name: Checkout Repository
@@ -30,7 +39,7 @@ jobs:
           git config user.email "notifications+thesis@ysndr.de"
 
           # create PREVIEW_BRANCH branch if not exists
-          if [[ ! $(git rev-parse --verify origin/"$PREVIEW_BRANCH") ]]; then
+          if [[ ! $(git rev-parse --verify origin/"${{env.PREVIEW_BRANCH}}") ]]; then
             git branch "$PREVIEW_BRANCH" origin/main
           else
             # update PREVIEW_BRANCH to match main again if it does exist
@@ -102,12 +111,16 @@ jobs:
           git add ${{env.PREVIEW_PATH}}
           git commit -m "Build single and combined preview for \"${{github.head_ref}}\"" -m ${{github.sha}} || echo "No files changed"
           git push -u origin ${{env.PREVIEW_BRANCH}}
+          
+          echo "PREVIEW_REF=$(git rev-parse --verify --short ${{env.PREVIEW_BRANCH}})" >> $GITHUB_ENV
 
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v1
+      - name: Update deployment status
+        uses: bobheadxi/deployments@v0.6.2
+        if: always()
         with:
-          issue-number: "${{github.event.number}}"
-          body: |
-            Uploaded preview of this chapter and the full document [preview branch](https://github.com/${{github.repository}}/tree/${{env.PREVIEW_BRANCH}}/${{env.PREVIEW_PATH}})
-
-            **Preview:** [${{github.head_ref}}](https://github.com/${{github.repository}}/tree/${{env.PREVIEW_BRANCH}}/${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf)
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          auto_inactive: false
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: "https://github.com/${{github.repository}}/tree/${{env.PREVIEW_REF}}/${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf"
