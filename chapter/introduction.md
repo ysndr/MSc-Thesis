@@ -1,7 +1,8 @@
 # Introduction
 
 Integrated Development Environments (IDEs) and other more lightweight code editors are by far the most used tool of software developers.
-Yet, improvements of language intelligence, i.e. code completion, debugging as well as static code analysis and enrichment, have traditionally been subject to both the language and the editor used. Language support is thereby brought to IDEs by the means of platform dependent extensions that require repeated efforts for each platform and hence varied a lot in performance, features and availability.
+Yet, improvements of language intelligence, i.e. code completion, debugging as well as static code analysis refactoring and enrichment, have traditionally been subject to both the language and the editor used.
+Language support is thereby brought to IDEs by the means of platform dependent extensions that require repeated efforts for each platform and hence varied a lot in performance, feature-richness and availability.
 <!-- Comparison here? -->
 Recent years have seen different works [refs?] towards editor-independent code intelligence implementations and unified language-independent protocols one of which being put forward by Microsoft - the Language Server Protocol [ref] which is discussed in greater detail in [@sec:language-server-protocol].
 These approaches reduced the effort of implementing language intelligence from $\mathcal{O}(E \times L)$ to $\mathcal{O}(1 \times L)$ where $E$ stands for the number of _editors_ and $L$ for _languages_.
