@@ -45,14 +45,17 @@ RQ.3
 
 ## Goals
 
-The goal of this research is to describe a reusable approach for representing programs that can be used to query data to answer requests on the Language Server Protocol efficiently. The research is conducted on an implementation of the open source language Nickel[^https://nickel-lang.org] which provides the *Diagnostics*, *Jump to \** and *Hover*  features as well as limited *Auto-Completion* and *Symbol resolution*.
-Although implemented for and with integration of the Nickel runtime, the goal is to keep the internal format largely language independent.
+The goal of this research is to describe a reusable approach for representing programs that can be used to query data to answer requests on the Language Server Protocol efficiently. 
+The research is conducted on an implementation of the open source language Nickel[^https://nickel-lang.org] which provides the *Diagnostics*, *Jump to \** and *Hover* features as well as limited *Auto-Completion* and *Symbol resolution*.
+Although implemented for and with integration of the Nickel runtime, the objective is to keep the internal format largely language independent.
 Similarly, the Rust based implementation should be described abstractly enough to be implemented in other languages.
 To support the chosen approach, a user study will show whether the implementation is able to meet the expectations of its users and maintain its performance in real-world scenarios.
 
 ## Non-Goals
 
-The reference solution portrayed in this work is specific for the Nickel language.  Greatest care is given to present the concepts as generically and transferable as possible. However, it is not a goal to explicitly cover a problem space larger than the Nickel language, which is a pure functional language based on lambda calculus <!-- is it? --> featuring recursive record types and optional typing.
+The reference solution portrayed in this work is specific for the Nickel language.
+Greatest care is given to present the concepts as generically and transferable as possible.
+However, it is not a goal to explicitly cover a problem space larger than the Nickel language, which is a pure functional language based on lambda calculus with JSON data types, gradual typing, higher-order contracts and a record merging operation.
 
 ## Research Methodology
 
