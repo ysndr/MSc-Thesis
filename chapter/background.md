@@ -118,7 +118,7 @@ It can be statically analyzed, refactored and version controlled to ensure repro
 
 As a notable instance, the Nix[@nix] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@nixops].
 
-To get an idea of how this would look like, [@lst:nixops-rproxy] shows the configuration for a deployment of the Git based wiki server Gollum[@gollum] behind a nginx reverseproxy on the AWS network.
+To get an idea of how this would look like, [@lst:nixops-rproxy] shows the configuration for a deployment of the Git based wiki server Gollum[@gollum] behind a nginx reverse proxy on the AWS network.
 Although this example targets AWS, Nix itself is platform-agnostic and NixOps supports different backends through various plugins.
 Configurations like this are abstractions over many manual steps and the Nix language employed in this example allows for even higher level turing-complete interaction with configurations.
 
@@ -153,9 +153,7 @@ Configurations like this are abstractions over many manual steps and the Nix lan
       gollumPort = nodes.gollum.config.services.gollum.port;
     in
     {
-
       deployment.ec2.instanceType = "t1.medium";
-
       services.nginx = {
         enable = true;
         virtualHosts."wiki.example.net".locations."/" = {
