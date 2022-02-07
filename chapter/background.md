@@ -421,9 +421,10 @@ strict digraph {
 Nickel supports a shorthand syntax to efficiently define nested records similarly to how nested record fields are accessed.
 As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand syntax which resolves to the semantically equivalent record defined in [@lst:nickel-record-no-shorthand]
 
-```{.nickel #lst:nickel-record-shorthand caption="Nickel record using shorthand"}
+```{.nickel #lst:nickel-record-shorthand caption="Nickel record defined using shorthand"}
 {
   deeply.nested.record.field = true,
+}
 ```
 
 ```{.nickel #lst:nickel-record-no-shorthand caption="Nickel record defined explicitly"}
