@@ -106,7 +106,8 @@ A prime example for the application of configuration languages are IaaS^[Infrast
 These solutions offer great flexibility with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling of (virtual) servers.
 Although the primary interaction with those systems is imperative, maintaining entire applications' or company's environments manually comes with obvious drawbacks.
 
-Changing and undoing changes to existing networks requires intricate knowledge about its topology which in turn has to be meticulously documented as a significant risk for *config drift*.
+Changing and undoing changes to existing networks requires intricate knowledge about its topology which in turn has to be meticulously documented.
+Undocumented modification pose a significant risk for *config drift* which is particularly difficult to undo imperatively.
 Beyond that, interacting with a system through its imperative interfaces demands qualified skills of specialized engineers.
 
 The concept of "Infrastructure as Code" (*IaC*) serves the DevOps principle of overcoming the need for dedicated teams for *Dev*elvopent and *Op*erations, by allowing to declaratively specify the dependencies, topology and virtual resources.
