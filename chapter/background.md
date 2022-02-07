@@ -13,7 +13,7 @@ The second part is dedicated to Nickel, elaborating on the context and use-cases
 Language servers are today's standard of integrating support for programming languages into code editors.
 Initially developed by Microsoft for the use with their polyglot editor Visual Studio Code^[https://code.visualstudio.com/] before being released to the public in 2016 by Microsoft, RedHat and Codeenvy, the LSP decouples language analysis and provision of IDE-like features from the editor.
 Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], the protocol allows developers of editors and languages to work independently on the support for new languages.
-If supported by both server and client, the LSP now supports more than 24 language features^[https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, code navigation facilities, contextual information such as types or documentation, formatting, and more
+If supported by both server and client, the LSP now supports more than 24 language features^[https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, code navigation facilities, contextual information such as types or documentation, formatting, and more.
 
 ### JSON-RPC
 
@@ -37,9 +37,9 @@ Messages with an `id` field present are considered *requests*.
 Servers have to respond to requests with a message referencing the same `id` as well as a result, i.e. data or error.
 If the client does not require a response, it can omit the `id` field sending a *notification*, which servers cannot respond to, with the effect that clients cannot know the effect nor the reception of the message.
 
-Responses as shown in [@lst:json-rpc-res], have to be sent by servers answering to any request.
+Responses, as shown in [@lst:json-rpc-res], have to be sent by servers answering to any request.
 Any result or error of an operation is explicitly encoded in the response.
-Errors are represented as objects specifying the error kind using an error `code` and providing a human-readable descriptive `message` as well as optionally any procedure defined `data`.
+Errors are represented as objects specifying the error kind using an error `code` and provide a human-readable descriptive `message` as well as optionally any procedure defined `data`.
 
 ```{.typescript #lst:json-rpc-res caption="JSON-RPC Response and Error"}
 // Responses
@@ -58,7 +58,7 @@ JSON-RPC only specifies a message protocol, hence the transport method can be fr
 
 ### Commands and Notifications
 
-The LSP build on top of the JSON-RPC protocol described in the previous subsection.
+The LSP builds on top of the JSON-RPC protocol described in the previous subsection.
 
 
 #### File Notification
@@ -81,7 +81,7 @@ The LSP build on top of the JSON-RPC protocol described in the previous subsecti
 
 Nickel [@nickel], the language targeted by the language server detailed in this thesis, defines itself as "configuration language" used to automize the generation of static configuration files.
 
-Static configuration languages such as XML[@xml], JSON[@json], or YAML[@yaml] are language specifications defining how to textually represent structural data used to configure parameters of a program^[some of the named languages may have been designed as a data interchange format which is absolutely compatible with also acting as a configuration language].
+Static configuration languages such as XML[@xml], JSON[@json], or YAML[@yaml] are language specifications defining how to textually represent structural data used to configure parameters of a system^[some of the named languages may have been designed as a data interchange format which is absolutely compatible with also acting as a configuration language].
 Applications of configuration languages are ubiquitous especially in the vicinity of software development. While XML and JSON are often used by package managers [@npm, @maven, @composer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@travis, @ghaction, @gitlab-runner] or machine configurations in software defined networks such as Kubernetes and docker compose.
 
 Such static formats are used due to some significant advantages compared to other formats.
@@ -103,7 +103,7 @@ Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such domain specific langua
 ### Infrastructure as Code
 
 A prime example for the application of configuration languages are IaaS^[Infrastructure as a Service] products.
-These solutions arise highly complex solutions with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling.
+These solutions offer great flexibility with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling of (virtual) servers.
 Although the primary interaction with those systems is imperative, maintaining entire applications' or company's environments manually comes with obvious drawbacks.
 
 Changing and undoing changes to existing networks requires intricate knowledge about its topology which in turn has to be meticulously documented as a significant risk for *config drift*.
@@ -117,7 +117,7 @@ Optimally, different environments for testing, staging and production can be der
 As a notable instance, the Nix[@nix] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@nixops].
 
 To get an idea of how this would look like, [@lst:nixops-rproxy] shows the configuration for a deployment of the Git based wiki server Gollum[@gollum] behind a nginx reverseproxy on the AWS network.
-Although targeting AWS, Nix itself is platform-agnostic and NixOps supports different backends through various plugins.
+Although this example targets AWS, Nix itself is platform-agnostic and NixOps supports different backends through various plugins.
 Configurations like this are abstractions over many manual steps and the Nix language employed in this example allows for even higher level turing-complete interaction with configurations.
 
 ```{.nix #lst:nixops-rproxy caption="Example NixOps deployment to AWS"}
@@ -169,7 +169,7 @@ Similarly, tools like Terraform[@terraform], or Chef[@chef] use their own DSLs a
 The popularity of these products^[https://trends.google.com/trends/explore?date=2012-01-01%202022-01-01&q=%2Fg%2F11g6bg27fp,CloudFormation], beyond all, highlights the importance of expressive configuration formats and their industry value.
 
 Finally, descriptive data formats for cloud configurations allow mitigating security risks through static analysis.
-Yet, as recently as spring 2020 and still more than a year later dossiers of Palo Alto Networks' security department Unit 42 show [@pa2020H1, ps2021H2] show that a majority of public projects uses insecure configurations.
+Yet, as recently as spring 2020 and still more than a year later dossiers of Palo Alto Networks' security department Unit 42 [@pa2020H1, ps2021H2] show that a majority of public projects uses insecure configurations.
 This suggests that techniques[@aws-cloud-formation-security-tests] to automatically check templates are not actively employed, and points out the importance of evaluated configuration languages which can implement passive approaches to security analysis.
 
 ### Nickel
@@ -281,7 +281,9 @@ These data types constitute a static subset of Nickel which allows writing JSON 
 } 
 ```
 
-Building on that Nickel also supports variables and functions which make up the majority of the AST.
+
+
+Building on that Nickel also supports variables and functions.
 
 ##### Identifiers
 
@@ -317,8 +319,8 @@ fun first =>
   fun second => first + second
 ```
 
-Functions in Nickel are lambda expressions.
-A function with multiple arguments gets broken down into nested functions with a single argument for each argument of the source declaration as seen in [@lst:nickel-args-function].
+Functions in Nickel are curried lambda expressions.
+A function with multiple arguments gets broken down into nested single argument functions as seen in [@lst:nickel-args-function].
 Function argument name binding therefore looks the same as in `let` bindings.
 
 
@@ -330,12 +332,12 @@ Complementing type information, it is possible to annotate values with contracts
 
 ```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
 let Contract = { 
-         foo | Num 
-             | doc "I am foo",
-         hello | Str
-               | default = "world"
-       }
-       | doc "Just an example Contract"
+  foo | Num 
+      | doc "I am foo",
+  hello | Str
+        | default = "world"
+}
+| doc "Just an example Contract"
 in 
 let value | #Contract = { foo = 9, }
 in value == { foo = 9, hello = "world", } 
