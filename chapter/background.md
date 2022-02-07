@@ -106,17 +106,19 @@ A prime example for the application of configuration languages are IaaS^[Infrast
 These solutions offer great flexibility with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling of (virtual) servers.
 Although the primary interaction with those systems is imperative, maintaining entire applications' or company's environments manually comes with obvious drawbacks.
 
-Changing and undoing changes to existing networks requires intricate knowledge about its topology which in turn has to be meticulously documented as a significant risk for *config drift*.
+Changing and undoing changes to existing networks requires intricate knowledge about its topology which in turn has to be meticulously documented.
+Undocumented modification pose a significant risk for *config drift* which is particularly difficult to undo imperatively.
 Beyond that, interacting with a system through its imperative interfaces demands qualified skills of specialized engineers.
 
-The concept of "Infrastructure as Code" (*IaC*) serves the DevOps principle of overcoming the need for dedicated teams for *Dev*elvopent and *Op*erations, by allowing to declaratively specify the dependencies, topology and virtual resources.
-Today various tools with different scopes make it easy to provision complex networks, in a reproducible way.
-That is setting up the same environment automatically and independently.
+The concept of "Infrastructure as Code" (*IaC*) serves the DevOps principles.
+IaC tools help to overcome the need for dedicated teams for *Dev*elopment and *Op*erations by allowing to declaratively specify the dependencies, topology and virtual resources.
 Optimally, different environments for testing, staging and production can be derived from a common base and changes to configurations are atomic.
+As an additional benefit, configuration code is subject to common software engineering tooling;
+It can be statically analyzed, refactored and version controlled to ensure reproducibility.
 
 As a notable instance, the Nix[@nix] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@nixops].
 
-To get an idea of how this would look like, [@lst:nixops-rproxy] shows the configuration for a deployment of the Git based wiki server Gollum[@gollum] behind a nginx reverseproxy on the AWS network.
+To get an idea of how this would look like, [@lst:nixops-rproxy] shows the configuration for a deployment of the Git based wiki server Gollum[@gollum] behind a nginx reverse proxy on the AWS network.
 Although this example targets AWS, Nix itself is platform-agnostic and NixOps supports different backends through various plugins.
 Configurations like this are abstractions over many manual steps and the Nix language employed in this example allows for even higher level turing-complete interaction with configurations.
 
@@ -151,9 +153,7 @@ Configurations like this are abstractions over many manual steps and the Nix lan
       gollumPort = nodes.gollum.config.services.gollum.port;
     in
     {
-
       deployment.ec2.instanceType = "t1.medium";
-
       services.nginx = {
         enable = true;
         virtualHosts."wiki.example.net".locations."/" = {
@@ -327,7 +327,7 @@ Function argument name binding therefore looks the same as in `let` bindings.
 ##### Meta Information
 
 One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
-Complementing type information, it is possible to annotate values with contracts and additional meta-data such as documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
+Complementing type information, it is possible to annotate values with contracts and additional metadata such as contracts, documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
 
 
 ```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
@@ -347,7 +347,6 @@ in value == { foo = 9, hello = "world", }
 
 Internally, the addition of annotations wraps the annotated term in a `MetaValue`, an additional tree node which describes its subtree. 
 The expression shown in [@lst:nickel-meta-typed] translates to the AST in [@fig:nickel-meta-typed].
-The green `MetaValue` box is a virtual node generated during parsing and not present in the untyped equivalent.
 
 ```{.nickel #lst:nickel-meta-typed caption="Example of a typed expression"}
 let x: Num = 5 in x
@@ -370,47 +369,6 @@ strict digraph {
   let -> var
 }
 ```
-
-<!-- 
-\Begin{minipage}{.5\textwidth}
-\centering
-
-```{.graphviz #fig:nickel-ast-no-meta}
-strict digraph { 
-  let[label = "Let('x')"]
-  num [label = "Num(5)"]
-  var [label = "Var('x')"]
-
-  let -> num
-  let -> var
-}
-```
-\captionof{figure}{AST of untyped code in Listing: \ref{lst:nickel-meta-untyped}}
-\label{fig:nickel-meta-untyped}
-
-\End{minipage}
-\Begin{minipage}{0.5\textwidth}
-
-
-```{.graphviz}
-strict digraph { 
-  meta [label="MetaValue", color="green", shape="box"]
-  let[label = "Let('x')"]
-  num [label = "Num(5)"]
-  var [label = "Var('x')"]
-
-  meta -> let
-  let -> num
-  let -> var
-}
-```
-
-\captionof{figure}{AST of untyped code in Listing: \ref{lst:nickel-meta-typed}}
-\label{fig:nickel-meta-typed}
-
-\End{minipage}
-
- -->
 
 ##### Nested Record Access
 
@@ -463,9 +421,10 @@ strict digraph {
 Nickel supports a shorthand syntax to efficiently define nested records similarly to how nested record fields are accessed.
 As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand syntax which resolves to the semantically equivalent record defined in [@lst:nickel-record-no-shorthand]
 
-```{.nickel #lst:nickel-record-shorthand caption="Nickel record using shorthand"}
+```{.nickel #lst:nickel-record-shorthand caption="Nickel record defined using shorthand"}
 {
   deeply.nested.record.field = true,
+}
 ```
 
 ```{.nickel #lst:nickel-record-no-shorthand caption="Nickel record defined explicitly"}
