@@ -370,47 +370,6 @@ strict digraph {
 }
 ```
 
-<!-- 
-\Begin{minipage}{.5\textwidth}
-\centering
-
-```{.graphviz #fig:nickel-ast-no-meta}
-strict digraph { 
-  let[label = "Let('x')"]
-  num [label = "Num(5)"]
-  var [label = "Var('x')"]
-
-  let -> num
-  let -> var
-}
-```
-\captionof{figure}{AST of untyped code in Listing: \ref{lst:nickel-meta-untyped}}
-\label{fig:nickel-meta-untyped}
-
-\End{minipage}
-\Begin{minipage}{0.5\textwidth}
-
-
-```{.graphviz}
-strict digraph { 
-  meta [label="MetaValue", color="green", shape="box"]
-  let[label = "Let('x')"]
-  num [label = "Num(5)"]
-  var [label = "Var('x')"]
-
-  meta -> let
-  let -> num
-  let -> var
-}
-```
-
-\captionof{figure}{AST of untyped code in Listing: \ref{lst:nickel-meta-typed}}
-\label{fig:nickel-meta-typed}
-
-\End{minipage}
-
- -->
-
 ##### Nested Record Access
 
 Nickel supports the referencing of variables that are resolved during runtime.
