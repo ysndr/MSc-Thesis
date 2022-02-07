@@ -3,8 +3,8 @@
 This chapter contains a detailed guide through the various steps and components of the Nickel Language Server (NLS).
 Being written in the same language (Rust[@rust]) as the Nickel interpreter allows NLS to integrate existing components for language analysis.
 Complementary, NLS is tightly coupled to Nickel's syntax definition.
-Based on that [@sec:linearization] will introduce the main datastructure underlying all higher level LSP interactions and how the AST described in [@sec:nickel-ast] is transformed into this form.
-Finally, in [@sec:lsp-server] the implementation of current LSP features is discussed on the basis of the previously reviewed components.
+[Section @sec:linearization] will introduce the main datastructure underlying all higher level LSP interactions and how the AST described in [@sec:nickel-ast] is transformed into this form.
+Finally, the implementation of current LSP features is discussed in [@sec:lsp-server].
 
 ## Illustrative example
 
@@ -137,7 +137,7 @@ Consequently, NLS faces the challenge of satisfying multiple goals
 To accommodate these goals NLS comprises three different parts as shown in [@fig:nls-nickel-structure].
 The `Linearizer` trait acts as an interface between Nickel and the language server.
 NLS implements such a `Linearizer` specialized to Nickel which registers nodes and builds a final linearization.
-As Nickel's type checking implementation was adapted to pass AST nodes to the `Linearizer`.
+Nickel's type checking implementation was adapted to pass AST nodes to the `Linearizer`.
 During normal operation the overhead induced by the `Linearizer` is minimized using a stub implementation of the trait.
 
 <!-- TODO: caption -->
