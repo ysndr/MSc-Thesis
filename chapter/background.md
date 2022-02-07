@@ -372,15 +372,24 @@ strict digraph {
 
 ##### Nested Record Access
 
-Nickel supports the referencing of variables that are resolved during runtime.
-With records bound to a variable, a method to destruct records is required.
-Nickel restricts field names to strings, 
+Nickel supports both static and dynamic access to record fields.
+If the field name is statically known, the access is said to be *static* accordingly.
+Conversely, if the name requires evaluating a string from an expression the access is called *dynamic*.
+An example is given in [@lst:nickel-static-dynamic]
 
-The access of record fields is represented using a special set of AST nodes depending on whether the field name requires an evaluation in which case resolution is deferred to the evaluation pass.
-While the latter prevents static analysis of any deeper element by the LSP, `StaticAccess` can be used to resolve any intermediate reference.
+```{.nickel #lst:nickel-static-dynamic caption="Examples for static and dynamic record access}
+let r = { foo = 1, "bar space" = 2} in
+r.foo // static
+r."bar space" // static
+let field = "fo" ++ "o" in r."#{field}" // dynamic
+```
+
+The destruction of record fields is represented using a special set of AST nodes depending on whether the access is static or dynamic.
+Static analysis does not evaluate dynamic fields and thus prevents the analysis of any deeper element starting with dynamic access.
+Static access however can be used to resolve any intermediate reference.
 
 Notably, Nickel represents static access chains in inverse order as unary operations which in turn puts the terminal `Var` node as a leaf in the tree.
-[Figure @fig:nickel-static-access] shows the representation of the static access perfomed in [@lst:nickel-static-access] with the rest of the tree omitted.
+[Figure @fig:nickel-static-access] shows the representation of the static access performed in [@lst:nickel-static-access] with the rest of the tree omitted.
 
 ```{.nickel #lst:nickel-static-access caption="Nickel static access"}
 let x = {
