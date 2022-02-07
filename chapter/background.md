@@ -327,7 +327,7 @@ Function argument name binding therefore looks the same as in `let` bindings.
 ##### Meta Information
 
 One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
-Complementing type information, it is possible to annotate values with contracts and additional meta-data such as documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
+Complementing type information, it is possible to annotate values with contracts and additional metadata such as contracts, documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
 
 
 ```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
@@ -347,7 +347,6 @@ in value == { foo = 9, hello = "world", }
 
 Internally, the addition of annotations wraps the annotated term in a `MetaValue`, an additional tree node which describes its subtree. 
 The expression shown in [@lst:nickel-meta-typed] translates to the AST in [@fig:nickel-meta-typed].
-The green `MetaValue` box is a virtual node generated during parsing and not present in the untyped equivalent.
 
 ```{.nickel #lst:nickel-meta-typed caption="Example of a typed expression"}
 let x: Num = 5 in x
