@@ -110,10 +110,11 @@ Changing and undoing changes to existing networks requires intricate knowledge a
 Undocumented modification pose a significant risk for *config drift* which is particularly difficult to undo imperatively.
 Beyond that, interacting with a system through its imperative interfaces demands qualified skills of specialized engineers.
 
-The concept of "Infrastructure as Code" (*IaC*) serves the DevOps principle of overcoming the need for dedicated teams for *Dev*elvopent and *Op*erations, by allowing to declaratively specify the dependencies, topology and virtual resources.
-Today various tools with different scopes make it easy to provision complex networks, in a reproducible way.
-That is setting up the same environment automatically and independently.
+The concept of "Infrastructure as Code" (*IaC*) serves the DevOps principles.
+IaC tools help to overcome the need for dedicated teams for *Dev*elopment and *Op*erations by allowing to declaratively specify the dependencies, topology and virtual resources.
 Optimally, different environments for testing, staging and production can be derived from a common base and changes to configurations are atomic.
+As an additional benefit, configuration code is subject to common software engineering tooling;
+It can be statically analyzed, refactored and version controlled to ensure reproducibility.
 
 As a notable instance, the Nix[@nix] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@nixops].
 
