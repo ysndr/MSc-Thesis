@@ -15,27 +15,6 @@ Initially developed by Microsoft for the use with their polyglot editor Visual S
 Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], the protocol allows developers of editors and languages to work independently on the support for new languages.
 If supported by both server and client, the LSP now supports more than 24 language features^[https://microsoft.github.io/language-server-protocol/specifications/specification-current/] including code completion, code navigation facilities, contextual information such as types or documentation, formatting, and more.
 
-### Motivation
-
-Since its release, the LSP has grown to be supported by a multitude of languages and editors[@langservers @lsp-website], solving a long-standing problem with traditional IDEs.
-
-Before the inception of language servers, it was the editors' individual responsibility to implement specialized features for any language of interest.
-Under the constraint of limited resources, editors had to position themselves on a spectrum between specializing on integrated support for a certain subset of languages and being generic over the language providing only limited support.
-As the former approach offers a greater business value, especially for proprietary products most professional IDEs gravitate towards excellent (and exclusive) support for single major languages, i.e. XCode and Visual Studio for the native languages for Apple and Microsoft Products respectively as well as JetBrains' IntelliJ platform and RedHat's Eclipse.
-Problematically, this results in less choice for developers and possible lock-in into products subjectively less favored but unique in their features for a certain language.
-The latter approach was taken by most text editors which in turn offered only limited support for any language.
-
-Popularity statistics^[https://web.archive.org/web/20160625140610/https://pypl.github.io/IDE.html] shows that except Vim and Sublime Text, both exceptional general text editors, the top 10 most popular IDEs were indeed specialized products.
-The fact that some IDEs are offering support for more languages through (third-party) extensions, due to the missing standards and incompatible implementing languages/APIs, does not suffice to solve the initial problem that developing any sort of language support requires redundant resources.
-
-This is especially difficult for emerging languages, with possibly limited development resources to be put towards the development of language tooling.
-Consequently, community efforts of languages any size vary in scope, feature completeness and availability.
-
-The Language Server Protocol aims to solve this issue by specifying a JSON-RPC[^Remote Procedure Call] API that editors (clients) can use to communicate with language servers.
-Language servers are programs that implement a set of IDE features for one language and exposing access to these features through the LSP, allowing to focus development resources to a single project that is above all unrelated to editor-native APIs for analytics processing code representation and GUI integration.
-Consequently, now only a single implementation of a language server is required, instead of one for each editor and editor maintainers can concentrate on offering the best possible LSP client support to their product independent of the language.
-
-
 ### JSON-RPC
 
 JSON-RPC (v2) [@json-rpc] is a JSON based lightweight transport independent remote procedure call protocol used by the LSP to communicate between a language server and a client.
@@ -195,15 +174,91 @@ This suggests that techniques[@aws-cloud-formation-security-tests] to automatica
 
 ### Nickel
 
-### Gradual typing
+#### Gradual typing
 
 ##### Row types
+
 #### Contracts
+
+In addition to a static type-system Nickel integrates a contract system akin what is described in [@cant-be-blamed].
+First introduced by Findler and Felleisen, contracts allow the creation of runtime-checked subtypes.
+Unlike types, contracts check an annotated value using arbitrary functions that either pass or *blame* the input.
+Contracts act like assertions that are automatically checked when a value is used or passed to annotated functions.
+
+For instance, a contract could be used to define TCP port numbers, like shown in [@lst:nickel-sample-contract].
+
+```{.nickel #lst:nickel-sample-contract caption="Sample Contract ensuring that a value is a valid TCP port number"}
+let Port | doc "A contract for a port number" =
+  contracts.from_predicate (
+    fun value =>
+      builtins.is_num value &&
+      value % 1 == 0 &&
+      value >= 0 &&
+      value <= 65535
+  )
+in 8080 | #Port
+```
+
+Going along gradual typing, contracts pose a convenient alternative to the `newtype` pattern.
+Instead of requiring values to be wrapped or converted into custom types, contracts are self-contained.
+As a further advantage, multiple contracts can be applied to the same value as well as integrated into other higher level contracts.
+An example can be observed in [@lst:nickel-sample-advanced-contract]
+
+```{.nickel #lst:nickel-sample-advanced-contract caption="More advaced use of contracts restricting values to an even smaller domain"}
+let Port | doc "A contract for a port number" =
+  contracts.from_predicate (
+    fun value =>
+      builtins.is_num value &&
+      value % 1 == 0 &&
+      value >= 0 &&
+      value <= 65535
+  )
+in
+let UnprivilegedPort = contracts.from_predicate (
+  fun value =>
+    (value | #Port) >= 1024  
+  )
+in
+let Even = fun label value =>
+  if value % 2 == 0 then value
+  else
+    let msg = "not an even value" in
+    contracts.blame_with msg label
+in
+
+8001 | #UnprivilegedPort
+     | #Even
+```
+
+Notice how contracts also enable detailed error messages (see [@lst:nickel-sample-error-advaced-contract]) using custom blame messages.
+Nickel is able to point to the exact value violating a contract as well as the contract in question.
+
+```{.text #lst:nickel-sample-error-advaced-contract caption="Example error message for failed contract"}
+error: Blame error: contract broken by a value [not an even value].
+    - :1:1
+   |
+ 1 | #Even
+   | ----- expected type
+   |
+    - repl-input-34:22:1
+   |  
+22 | - 8001 | #UnprivilegedPort
+   |   ---- evaluated to this expression
+23 | |      | #Even
+   | -------------^ applied to this expression
+
+note: 
+    - repl-input-34:23:8
+   |
+23 |      | #Even
+   |        ^^^^^ bound here
+```
+
 
 
 #### Nickel AST
 
-Nickel's syntax tree is a single sum type, i.e. an enumeration of node types.
+Nickel's syntax tree is a single sum type, i.e., an enumeration of node types.
 Each enumeration variant may refer to child nodes, representing a branch or hold terminal values in which case it is considered a leaf of the tree.
 Additionally, tree nodes hold information about their position in the underlying code.
 
@@ -237,7 +292,7 @@ Such name bindings can be declared in multiple ways, e.g. `let` bindings, functi
 The usage of a name is always parsed as a single `Var` node wrapping the identifier.
 Span information of identifiers is preserved by the parser and encoded in the `Ident` type. 
 
-##### Let Bindings and Functions
+##### Variable Reference
 
 ```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
 
@@ -425,4 +480,4 @@ As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand
 }
 ```
 
-Yet, on a syntax level  Nickel generates a different representation.
+Yet, on a syntax level Nickel generates a different representation.
