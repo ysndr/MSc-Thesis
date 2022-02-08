@@ -311,7 +311,7 @@ pub trait Linearizer {
 `Linearizer::retype_ident`
   ~ is used to update the type information of an identifier.
   ~ The reason this method exists is that not all variable definitions have a corresponding AST node but may be part of another node.
-    This is especially apparent with records where the field names part of the record node and as such are linearized with the record but have to be assigned there actual type separately.
+    This is the case with records; Field *names* are not linearized separately but as part of the record. Thus, their type is not known to the linearizer and has to be added explicitly.
 
 `Linearizer::complete`
   ~ implements the post-processing necessary to turn a final `Building` linearization into a `Completed` one.
