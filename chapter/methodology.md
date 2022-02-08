@@ -221,10 +221,14 @@ Variable bindings
   ~ are linearized using the `Declaration` variant which holds the bound identifier as well as a list of `ID`s corresponding to its `Usage`s.
 
 Records
-  ~ remain similar to their AST representation. The `Record` variant simply maps field names to the linked `RecordField`
+  ~ remain similar to their AST representation.
+    The `Record` variant simply maps field names to the linked `RecordField`
 
 Record fields
-  ~ make for to most complicated kind. The `RecordField` kind augments the qualities of a `Declaration` representing an identifier, and tracking its `Usage`s, while also maintaining a link back to its parent `Record` as well as explicitly referencing the value represented.
+  ~ are represented as `RecordField` kinds and store:
+    - the same data as for identifiers (and, in particular, tracks its usages)
+    - a link to the parent `Record`
+    - a link to the value of the field
 
 Variable usages
   ~ are further specified. `Usage`s that can not be mapped to a declaration are tagged `Unbound` or otherwise `Resolved` to the complementary `Declaration`
