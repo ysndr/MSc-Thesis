@@ -3,7 +3,7 @@
 This chapter contains a detailed guide through the various steps and components of the Nickel Language Server (NLS).
 Being written in the same language (Rust[@rust]) as the Nickel interpreter allows NLS to integrate existing components for language analysis.
 Complementary, NLS is tightly coupled to Nickel's syntax definition.
-[Section @sec:linearization] will introduce the main datastructure underlying all higher level LSP interactions and how the AST described in [@sec:nickel-ast] is transformed into this form.
+[Section @sec:linearization] will introduce the main data structure underlying all higher level LSP interactions and how the AST described in [@sec:nickel-ast] is transformed into this form.
 Finally, the implementation of current LSP features is discussed in [@sec:lsp-server].
 
 ## Illustrative example
@@ -80,31 +80,37 @@ Considering the scope of this thesis, the presented approach performs a complete
 The typical size of Nickel projects is assumed to remain small for quite some time, giving reasonable performance in practice.
 Incremental parsing, type-checking and analysis can still be implemented as a second step in the future.
 
+<!-- TODO mention lsif here? -->
 
 ### States
 
-At its core the linearization in either state is represented by an array of `LinearizationItem`s which are derived from AST nodes during the linearization process as well as state dependent auxiliary structures.
+At its core the linearization in either state is represented by an array of `LinearizationItem`s which are derived from AST nodes during the linearization process.
+However, the exact structure of that array is differs as an effect of the post-processing.
 
-Closely related to nodes, `LinearizationItem`s maintain the position of their AST counterpart, as well as its type.
+`LinearizationItem`s maintain the position of their AST counterpart, as well as its type.
 Unlike in the AST, *metadata* is directly associated with the element.
 Further deviating from the AST representation, the *type* of the node and its *kind* are tracked separately.
-The latter is used to distinguish between declarations of variables, records, record fields and variable usages as well as a wildcard kind for any other kind of structure, such as terminals control flow elements.
+The latter is used to represent a usage graph on top of the linear structure. 
+It distinguishes between declarations (`let` bindings, function parameters, records) and variable usages.
+Any other kind of structure, for instance, primitive values (Strings, numbers, boolean, enumerations), is recorded as `Structure`.
 
-The aforementioned separation of linearization states got special attention.
-As the linearization process is integrated with the libraries underlying the Nickel interpreter, it had to be designed to cause minimal overhead during normal execution.
-Hence, the concrete implementation employs type-states[@typestate] to separate both states on a type level and defines generic interfaces that allow for context dependent implementations.
+To separate the phases of the elaboration of the linearization in a type-safe, the implementation is based on type-states[@typestate].
+Type-states were chosen over an enumeration bases approach for the additional flexibility they provide to build a generic interface.
+Thanks to the generic interface, the adaptions to Nickel to integrate NLS are expected to have almost no influence on the runtime performance of the language in an optimized build.
 
-At its base the `Linearization` type is a transparent smart pointer[@deref-chapter;@smart-pointer-chapter] to the particular `LinearizationState` which holds state specific data.
-On top of that NLS defines a `Building` and `Completed` state.
+NLS implements separate type-states for the two phases of the linearization: `Building` and `Completed`.
 
-The `Building` state represents a raw linearization.
-In particular that is a list of `LinearizationItems` of unresolved type ordered as they are created through a depth-first iteration of the AST.
-Note that new items are exclusively appended such that their `id` field is equal to the position at all time during this phase.
-Additionally, the `Building` state records all items for each scope in a separate mapping.
 
-Once fully built, a `Building` instance is post-processed yielding a `Completed` linearization.
-While being defined similar to its origin, the structure is optimized for positional access, affecting the order of the `LinearizationItem`s and requiring an auxiliary mapping for efficient access to items by their `id`.
-Moreover, types of items in the `Completed` linearization will be resolved.
+building phase:
+  ~ A linearization in the `Building` state is a linearization under construction.
+    It is a list of `LinearizationItem`s of unresolved type, appended as they are created during a depth-first traversal of the AST.
+  ~ During this phase, the `id` affected to a new item is always equal to its index in the array.
+  ~ The Building state also records the definitions in scope of each item in a separate mapping.
+
+post-processing phase:
+  ~ Once fully built, a Building instance is post-processed to get a `Completed` linearization.
+  ~ Although fundamentally still represented by an array, a completed linearization is optimized for search by positions (in the source file) thanks to sorting and the use of an auxiliary map from `id`s to the new index of items.
+  ~ Additionally, missing edges in the usage graph have been created and he types of items are fully resolved in a completed linearization.
 
 Type definitions of the `Linearization` as well as its type-states `Building` and `Completed` are listed in [@lst:nickel-definition-lineatization;@lst:nls-definition-building-type;@lst:nls-definition-completed-type].
 Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS.
@@ -141,7 +147,7 @@ The NLS project aims to present a transferable architecture that can be adapted 
 Consequently, NLS faces the challenge of satisfying multiple goals
 
 1. To keep up with the frequent changes to the Nickel language and ensure compatibility at minimal cost, NLS needs to integrate critical functions of Nickel's runtime
-2. Adaptions to Nickel to accommodate the language server should be minimal not to obstruct its development and maintain performance of the runtime.
+2. Adaptions to Nickel to accommodate the language server should be minimal not obstruct its development and maintain performance of the runtime.
 <!-- what is more? -->
 
 To accommodate these goals NLS comprises three different parts as shown in [@fig:nls-nickel-structure].
@@ -208,7 +214,7 @@ pub enum UsageState {
 
 ```
 
-The `TermKind` type is an enumeration of the discussed cases and defines the role of a `LinearizationItem` in the usage graph.
+The `TermKind` type is an enumeration which defines the role of a `LinearizationItem` in the usage graph.
 
 Variable bindings
   ~ are linearized using the `Declaration` variant which holds the bound identifier as well as a list of `ID`s corresponding to its `Usage`s.
@@ -235,7 +241,7 @@ Other nodes
 The Nickel language implements lexical scopes with name shadowing.
 
 1. A name can only be referred to after it has been defined
-2. A name can be redefined for a local area
+2. A name can be redefined locally
 
 An AST inherently supports this logic.
 A variable reference always refers to the closest parent node defining the name and scopes are naturally separated using branching.
@@ -298,7 +304,7 @@ pub trait Linearizer {
   ~ Its responsibility is to combine context information stored in the `Linearizer` and concrete information about a node to extend the `Linearization` by appropriate items.
 
 `Linearizer::retype_ident`
-  ~ is used to update the type information for a current identifier.
+  ~ is used to update the type information of an identifier.
   ~ The reason this method exists is that not all variable definitions have a corresponding AST node but may be part of another node.
     This is especially apparent with records where the field names part of the record node and as such are linearized with the record but have to be assigned there actual type separately.
 
