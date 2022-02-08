@@ -176,10 +176,11 @@ digraph {
 #### Usage Graph
 
 At the core the linearization is a simple *linear* structure.
-Also, in the general case^[Except single primitive expressions] the linearization is reordered in the post-processing step.
-This makes it impossible to encode relationships of nodes on a structural level.
-Yet, Nickel's support for name binding of variables, functions and in recursive records implies great a necessity for node-to-node relationships to be represented in a representation that aims to work with these relationships.
-On a higher level, tracking both definitions and usages of identifiers yields a directed graph.
+Yet, it represents relationships of nodes on a structural level as a tree-like structure.
+Taking into account variable usage information adds back-edges to the original AST, yielding a graph structure.
+Both kinds of edges have to be encoded with the elements in the list.
+Alas, items have to be referred to using `id`s since the index of items cannot be relied on(such as in e.g. a binary heap), because the array is reordered to optimize access by source position.
+
 
 There are three main kids of vertices in such a graph.
 **Declarations** are nodes that introduce an identifier, and can be referred to by a set of nods.
@@ -220,10 +221,14 @@ Variable bindings
   ~ are linearized using the `Declaration` variant which holds the bound identifier as well as a list of `ID`s corresponding to its `Usage`s.
 
 Records
-  ~ remain similar to their AST representation. The `Record` variant simply maps field names to the linked `RecordField`
+  ~ remain similar to their AST representation.
+    The `Record` variant simply maps field names to the linked `RecordField`
 
 Record fields
-  ~ make for to most complicated kind. The `RecordField` kind augments the qualities of a `Declaration` representing an identifier, and tracking its `Usage`s, while also maintaining a link back to its parent `Record` as well as explicitly referencing the value represented.
+  ~ are represented as `RecordField` kinds and store:
+    - the same data as for identifiers (and, in particular, tracks its usages)
+    - a link to the parent `Record`
+    - a link to the value of the field
 
 Variable usages
   ~ are further specified. `Usage`s that can not be mapped to a declaration are tagged `Unbound` or otherwise `Resolved` to the complementary `Declaration`
@@ -306,7 +311,7 @@ pub trait Linearizer {
 `Linearizer::retype_ident`
   ~ is used to update the type information of an identifier.
   ~ The reason this method exists is that not all variable definitions have a corresponding AST node but may be part of another node.
-    This is especially apparent with records where the field names part of the record node and as such are linearized with the record but have to be assigned there actual type separately.
+    This is the case with records; Field *names* are not linearized separately but as part of the record. Thus, their type is not known to the linearizer and has to be added explicitly.
 
 `Linearizer::complete`
   ~ implements the post-processing necessary to turn a final `Building` linearization into a `Completed` one.
