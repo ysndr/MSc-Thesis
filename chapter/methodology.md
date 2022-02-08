@@ -147,7 +147,7 @@ The NLS project aims to present a transferable architecture that can be adapted 
 Consequently, NLS faces the challenge of satisfying multiple goals
 
 1. To keep up with the frequent changes to the Nickel language and ensure compatibility at minimal cost, NLS needs to integrate critical functions of Nickel's runtime
-2. Adaptions to Nickel to accommodate the language server should be minimal not to obstruct its development and maintain performance of the runtime.
+2. Adaptions to Nickel to accommodate the language server should be minimal not obstruct its development and maintain performance of the runtime.
 <!-- what is more? -->
 
 To accommodate these goals NLS comprises three different parts as shown in [@fig:nls-nickel-structure].
@@ -214,7 +214,7 @@ pub enum UsageState {
 
 ```
 
-The `TermKind` type is an enumeration of the discussed cases and defines the role of a `LinearizationItem` in the usage graph.
+The `TermKind` type is an enumeration which defines the role of a `LinearizationItem` in the usage graph.
 
 Variable bindings
   ~ are linearized using the `Declaration` variant which holds the bound identifier as well as a list of `ID`s corresponding to its `Usage`s.
@@ -241,7 +241,7 @@ Other nodes
 The Nickel language implements lexical scopes with name shadowing.
 
 1. A name can only be referred to after it has been defined
-2. A name can be redefined for a local area
+2. A name can be redefined locally
 
 An AST inherently supports this logic.
 A variable reference always refers to the closest parent node defining the name and scopes are naturally separated using branching.
@@ -304,7 +304,7 @@ pub trait Linearizer {
   ~ Its responsibility is to combine context information stored in the `Linearizer` and concrete information about a node to extend the `Linearization` by appropriate items.
 
 `Linearizer::retype_ident`
-  ~ is used to update the type information for a current identifier.
+  ~ is used to update the type information of an identifier.
   ~ The reason this method exists is that not all variable definitions have a corresponding AST node but may be part of another node.
     This is especially apparent with records where the field names part of the record node and as such are linearized with the record but have to be assigned there actual type separately.
 
