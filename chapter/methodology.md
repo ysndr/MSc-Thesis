@@ -3,7 +3,7 @@
 This chapter contains a detailed guide through the various steps and components of the Nickel Language Server (NLS).
 Being written in the same language (Rust[@rust]) as the Nickel interpreter allows NLS to integrate existing components for language analysis.
 Complementary, NLS is tightly coupled to Nickel's syntax definition.
-[Section @sec:linearization] will introduce the main datastructure underlying all higher level LSP interactions and how the AST described in [@sec:nickel-ast] is transformed into this form.
+[Section @sec:linearization] will introduce the main data structure underlying all higher level LSP interactions and how the AST described in [@sec:nickel-ast] is transformed into this form.
 Finally, the implementation of current LSP features is discussed in [@sec:lsp-server].
 
 ## Illustrative example
