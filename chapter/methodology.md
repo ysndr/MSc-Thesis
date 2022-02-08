@@ -80,6 +80,7 @@ Considering the scope of this thesis, the presented approach performs a complete
 The typical size of Nickel projects is assumed to remain small for quite some time, giving reasonable performance in practice.
 Incremental parsing, type-checking and analysis can still be implemented as a second step in the future.
 
+<!-- TODO mention lsif here? -->
 
 ### States
 
@@ -93,21 +94,23 @@ The latter is used to represent a usage graph on top of the linear structure.
 It distinguishes between declarations (`let` bindings, function parameters, records) and variable usages.
 Any other kind of structure, for instance, primitive values (Strings, numbers, boolean, enumerations), is recorded as `Structure`.
 
-The aforementioned separation of linearization states got special attention.
-As the linearization process is integrated with the libraries underlying the Nickel interpreter, it had to be designed to cause minimal overhead during normal execution.
-Hence, the concrete implementation employs type-states[@typestate] to separate both states on a type level and defines generic interfaces that allow for context dependent implementations.
+To separate the phases of the elaboration of the linearization in a type-safe, the implementation is based on type-states[@typestate].
+Type-states were chosen over an enumeration bases approach for the additional flexibility they provide to build a generic interface.
+Thanks to the generic interface, the adaptions to Nickel to integrate NLS are expected to have almost no influence on the runtime performance of the language in an optimized build.
 
-At its base the `Linearization` type is a transparent smart pointer[@deref-chapter;@smart-pointer-chapter] to the particular `LinearizationState` which holds state specific data.
-On top of that NLS defines a `Building` and `Completed` state.
+NLS implements separate type-states for the two phases of the linearization: `Building` and `Completed`.
 
-The `Building` state represents a raw linearization.
-In particular that is a list of `LinearizationItems` of unresolved type ordered as they are created through a depth-first iteration of the AST.
-Note that new items are exclusively appended such that their `id` field is equal to the position at all time during this phase.
-Additionally, the `Building` state records all items for each scope in a separate mapping.
 
-Once fully built, a `Building` instance is post-processed yielding a `Completed` linearization.
-While being defined similar to its origin, the structure is optimized for positional access, affecting the order of the `LinearizationItem`s and requiring an auxiliary mapping for efficient access to items by their `id`.
-Moreover, types of items in the `Completed` linearization will be resolved.
+building phase:
+  ~ A linearization in the `Building` state is a linearization under construction.
+    It is a list of `LinearizationItem`s of unresolved type, appended as they are created during a depth-first traversal of the AST.
+  ~ During this phase, the `id` affected to a new item is always equal to its index in the array.
+  ~ The Building state also records the definitions in scope of each item in a separate mapping.
+
+post-processing phase:
+  ~ Once fully built, a Building instance is post-processed to get a `Completed` linearization.
+  ~ Although fundamentally still represented by an array, a completed linearization is optimized for search by positions (in the source file) thanks to sorting and the use of an auxiliary map from `id`s to the new index of items.
+  ~ Additionally, missing edges in the usage graph have been created and he types of items are fully resolved in a completed linearization.
 
 Type definitions of the `Linearization` as well as its type-states `Building` and `Completed` are listed in [@lst:nickel-definition-lineatization;@lst:nls-definition-building-type;@lst:nls-definition-completed-type].
 Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS.
