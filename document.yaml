@@ -1,4 +1,7 @@
 variables:
   papersize: a4
+  toc-depth: 4
+
+number-sections: true
 
 top-level-division: chapter
