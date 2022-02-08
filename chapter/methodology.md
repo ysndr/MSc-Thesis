@@ -83,12 +83,15 @@ Incremental parsing, type-checking and analysis can still be implemented as a se
 
 ### States
 
-At its core the linearization in either state is represented by an array of `LinearizationItem`s which are derived from AST nodes during the linearization process as well as state dependent auxiliary structures.
+At its core the linearization in either state is represented by an array of `LinearizationItem`s which are derived from AST nodes during the linearization process.
+However, the exact structure of that array is differs as an effect of the post-processing.
 
-Closely related to nodes, `LinearizationItem`s maintain the position of their AST counterpart, as well as its type.
+`LinearizationItem`s maintain the position of their AST counterpart, as well as its type.
 Unlike in the AST, *metadata* is directly associated with the element.
 Further deviating from the AST representation, the *type* of the node and its *kind* are tracked separately.
-The latter is used to distinguish between declarations of variables, records, record fields and variable usages as well as a wildcard kind for any other kind of structure, such as terminals control flow elements.
+The latter is used to represent a usage graph on top of the linear structure. 
+It distinguishes between declarations (`let` bindings, function parameters, records) and variable usages.
+Any other kind of structure, for instance, primitive values (Strings, numbers, boolean, enumerations), is recorded as `Structure`.
 
 The aforementioned separation of linearization states got special attention.
 As the linearization process is integrated with the libraries underlying the Nickel interpreter, it had to be designed to cause minimal overhead during normal execution.
