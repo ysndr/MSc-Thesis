@@ -573,8 +573,6 @@ First, NLS tries to find the identifier in its scoped aware name registry.
 If the registry does not contain the identifier, NLS will linearize the node as `Unbound`.
 In the case that the registry lookup succeeds, NLS retrieves the referenced `Declaration` or `RecordField`. The `Linearizer` will then add the `Resolved` `Usage` item to the linearization and update the declaration's list of usages.
 
-###### Variable Usage and Static Record Access
-
 Looking at the AST representation of record destructuring in [@fig:nickel-static-access] shows that accessing inner records involves chains of unary operations *ending* with a reference to a variable binding.
 Each operation encodes one identifier, i.e. field of a referenced record.
 However, to reference the corresponding declaration, the final usage has to be known.
