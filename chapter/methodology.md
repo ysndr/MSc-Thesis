@@ -146,15 +146,21 @@ impl LinearizationState for Completed {}
 The NLS project aims to present a transferable architecture that can be adapted for future languages.
 Consequently, NLS faces the challenge of satisfying multiple goals
 
-1. To keep up with the frequent changes to the Nickel language and ensure compatibility at minimal cost, NLS needs to integrate critical functions of Nickel's runtime
-2. Adaptions to Nickel to accommodate the language server should be minimal not obstruct its development and maintain performance of the runtime.
+1. To keep up with the frequent changes to the Nickel language and ensure compatibility at minimal cost, NLS needs to *integrate critical functions* of Nickel's runtime
+2. Adaptions to Nickel to accommodate the language server should be minimal not obstruct its development and *maintain performance of the runtime*.
 <!-- what is more? -->
 
 To accommodate these goals NLS comprises three different parts as shown in [@fig:nls-nickel-structure].
-The `Linearizer` trait acts as an interface between Nickel and the language server.
-NLS implements such a `Linearizer` specialized to Nickel which registers nodes and builds a final linearization.
-Nickel's type checking implementation was adapted to pass AST nodes to the `Linearizer`.
-During normal operation the overhead induced by the `Linearizer` is minimized using a stub implementation of the trait.
+
+The `Linearizer` trait 
+  ~ acts as an interface between Nickel and the language server.
+    NLS implements a `Linearizer` specialized to Nickel which registers AST nodes and builds a final linearization.
+Nickel's type checking implementation
+  ~ was adapted to pass AST nodes to the `Linearizer`.
+    Modifications to Nickel are minimal, comprising only few additional function calls and a slightly extended argument list.
+A stub implementation
+  ~ of the `Linearizer` trait is used during normal operation.
+    Since most methods of this implementation are `no-op`s, the compiler should be able to optimize away all `Linearizer` calls in release builds.
 
 <!-- TODO: caption -->
 ```{.graphviz #fig:nls-nickel-structure caption="Interaction of Componenets"}
