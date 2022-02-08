@@ -442,7 +442,6 @@ if true then "TRUE :)" else "false :("
 
 In the most common case of general elements, the node is simply registered as a `LinearizationItem` of kind `Structure`.
 This applies for all simple expressions like those exemplified in [@lst:nickel-simple-expr]
-Essentially, any of such nodes turns into a typed span as the remaining information tracked is the item's span and type checker provided type.
 
 
 ##### Declarations
