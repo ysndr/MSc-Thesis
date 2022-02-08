@@ -226,6 +226,7 @@ Records
 
 Record fields
   ~ are represented as `RecordField` kinds and store:
+    
     - the same data as for identifiers (and, in particular, tracks its usages)
     - a link to the parent `Record`
     - a link to the value of the field
