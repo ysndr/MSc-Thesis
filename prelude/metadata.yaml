@@ -1,0 +1,5 @@
+---
+autoSectionLabels: true
+header-includes:
+  - \AtBeginDocument{\floatplacement{codelisting}{H}}
+...

@@ -1,3 +1,5 @@
+./prelude/metadata.yaml
+./prelude/prelude.md
 ./chapter/introduction.md
 ./chapter/background.md
 ./chapter/related-work.md
