@@ -62,14 +62,24 @@ let image = "k8s.gcr.io/#{name_}" in
 ## Linearization
 
 The focus of the NLS as presented in this work is to implement a working language server with a comprehensive feature set.
-Prioritizing a sound feature set, NLS takes an eager, non-incremental approach to code analysis, resolving all information at once for each code update (`didChange` and `didOpen` events), assuming that initial Nickel projects remain reasonably small.
-The analysis result is subsequently stored in a linear data structure with efficient access to elements.
-This data structure is referred to in the following as *linearization*.
-The term arises from the fact that the linearization is a transformation of the syntax tree into a linear structure which is presented in more detail in [@sec:transfer-from-ast].
-The implementation distinguishes two separate states of the linearization.
-During its construction, the linearization will be in a *building* state, and is eventually post-processed yielding a *completed* state.
-The semantics of these states are defined in [@sec:states], while the post-processing is described separately in [@sec:post-processing].
-Finally, [@sec:resolving-elements] explains how the linearization is accessed.
+To answer requests, NLS needs to store more information than what is originally present in a Nickel AST.
+Apart from missing data, an AST is not optimized for quick random access of nodes based on their position, which is a crucial operation for a language server.
+To that end NLS introduces an auxiliary data structure, the *linearization*, which is derived from the AST.
+It represents the original data linearly, performs an enrichment of the AST nodes and provides greater decoupling of the LSP functions from the implemented language.
+[Section @sec:transfer-from-ast] details the process of transferring the AST.
+After NLS parsed a Nickel source files to an AST it starts to fill the linearization, which is in a *building* state during this phase.
+For reasons detailed in [@sec:post-processing], the linearization needs to be post-processed, yielding a *completed* state.
+The completed linearization acts as the basis to handle all supported LSP requests as explained in [@sec:lsp-server].
+[Section @sec:resolving-elements] explains how a completed linearization is accessed.
+
+Advanced LSP implementations sometimes employ so-called incremental parsing, which allows updating only the relevant parts of an AST (and, in case of NLS, the derived linearization) upon small changes in the source.
+However, an incremental LSP is not trivial to implement.
+For once, NLS would not be able to leverage existing components from the existing Nickel implementation (most notably, the parser).
+Parts of the nickel runtime, such as the typechecker, would need to be adapted or even reimplemented to work in an incremental way too.
+Considering the scope of this thesis, the presented approach performs a complete analysis on every update to the source file.
+The typical size of Nickel projects is assumed to remain small for quite some time, giving reasonable performance in practice.
+Incremental parsing, type-checking and analysis can still be implemented as a second step in the future.
+
 
 ### States
 
