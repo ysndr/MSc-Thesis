@@ -176,10 +176,11 @@ digraph {
 #### Usage Graph
 
 At the core the linearization is a simple *linear* structure.
-Also, in the general case^[Except single primitive expressions] the linearization is reordered in the post-processing step.
-This makes it impossible to encode relationships of nodes on a structural level.
-Yet, Nickel's support for name binding of variables, functions and in recursive records implies great a necessity for node-to-node relationships to be represented in a representation that aims to work with these relationships.
-On a higher level, tracking both definitions and usages of identifiers yields a directed graph.
+Yet, it represents relationships of nodes on a structural level as a tree-like structure.
+Taking into account variable usage information adds back-edges to the original AST, yielding a graph structure.
+Both kinds of edges have to be encoded with the elements in the list.
+Alas, items have to be referred to using `id`s since the index of items cannot be relied on(such as in e.g. a binary heap), because the array is reordered to optimize access by source position.
+
 
 There are three main kids of vertices in such a graph.
 **Declarations** are nodes that introduce an identifier, and can be referred to by a set of nods.
