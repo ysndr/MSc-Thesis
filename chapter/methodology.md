@@ -187,25 +187,22 @@ Taking into account variable usage information adds back-edges to the original A
 Both kinds of edges have to be encoded with the elements in the list.
 Alas, items have to be referred to using `id`s since the index of items cannot be relied on(such as in e.g. a binary heap), because the array is reordered to optimize access by source position.
 
+There are two groups of vertices in such a graph.
+**Declarations** are nodes that introduce an identifier, and can be referred to by a set of nodes.
+Referral is represented by **Usage** nodes.
 
-There are three main kids of vertices in such a graph.
-**Declarations** are nodes that introduce an identifier, and can be referred to by a set of nods.
-Referral is represented by **Usage** nodes which can either be bound to a declaration or unbound if no corresponding declaration is known.
-In practice Nickel distinguishes simple variable bindings from name binding through record fields which are resolved during the post-precessing.
-It also Integrates a **Record** and **RecordField** kinds to aid record destructuring.
-
-During the linearization process this graphical model is recreated on the linear representation of the source.
-Hence, each `LinearizationItem` is associated with one of the aforementioned kinds, encoding its function in the usage graph.
+During the linearization process this graphical model is embeded into the items of the linearization.
+Hence, each `LinearizationItem` is associated with a kind representing the item's role in the graph (see: [@lst:nls-termkind-definition]).
 
 ```{.rust #lst:nls-termkind-definition caption="Definition of a linearization items TermKind"}
 pub enum TermKind {
-    Declaration(Ident, Vec<ID>),
+    Declaration(Ident, Vec<ID>, ValueState),
     Record(HashMap<Ident, ID>),
     RecordField {
         ident: Ident,
         record: ID,
         usages: Vec<ID>,
-        value: Option<ID>,
+        value: ValueState,
     },
 
     Usage(UsageState),
@@ -219,16 +216,22 @@ pub enum UsageState {
     Deferred { parent: ID, child: Ident },
 }
 
+pub enum ValueState {
+    Unknown,
+    Known(ID),
+}
 ```
 
-The `TermKind` type is an enumeration which defines the role of a `LinearizationItem` in the usage graph.
-
-Variable bindings
-  ~ are linearized using the `Declaration` variant which holds the bound identifier as well as a list of `ID`s corresponding to its `Usage`s.
+Variable bindings and function arguments
+  ~ are linearized using the `Declaration` variant which holds
+  
+    - the bound identifier
+    - a list of `ID`s corresponding to its `Usage`s.
+    - its assigned value
 
 Records
   ~ remain similar to their AST representation.
-    The `Record` variant simply maps field names to the linked `RecordField`
+    The `Record` variant simply maps the record's field names to the linked `RecordField`
 
 Record fields
   ~ are represented as `RecordField` kinds and store:
@@ -238,11 +241,14 @@ Record fields
     - a link to the value of the field
 
 Variable usages
-  ~ are further specified. `Usage`s that can not be mapped to a declaration are tagged `Unbound` or otherwise `Resolved` to the complementary `Declaration`
-  ~ Record destructuring may require a late resolution as discussed in [@sed:variable-usage-and-static-record-access].
+  ~ can be in three different states. 
+  
+    1. `Usage`s that can not (yet) be mapped to a declaration are tagged `Unbound`
+    2. A `Resolved` usage introduces a back-link to the complementary `Declaration`
+    3. For record destructuring resolution of the name might need to be `Deferred` to the post-processing as discussed in [@sec:variable-usage-and-static-record-access].
 
 Other nodes
-  ~ of the AST that do not fit in a usage graph, are linearized as `Structure`.
+  ~ of the AST that do not participate in the usage graph, are linearized as `Structure` -- A wildcard variant with no associated data.
 
 <!-- TODO: Add graphics -->
 
@@ -453,13 +459,12 @@ This applies for all simple expressions like those exemplified in [@lst:nickel-s
 ##### Declarations
 
 In case of `let` bindings or function arguments name binding is equally simple.
-
-When the `Let` node is processed, the `Linearizer` generates `Declaration` items for each identifier contained.
-As discussed in [@sec:let-bindings-and-functions] the `Let` node may contain a name binding as well as pattern matches.
-The node's type supplied to the `Linearizer` accords to the value and is therefore applied to the name binding only.
-Additionally, NLS updates its name register with the newly created `Declaration`s.
+As discussed in [@sec:let-bindings-and-functions] the `let` node may contain both a name and pattern matches.
+For either the linearizer generates `Declaration` items and updates its name register.
+However, type information is available for name bindings only, meaning pattern matches remain untyped.
 
 The same process applies for argument names in function declarations.
+Due to argument currying, NLS linearizes only a single argument/pattern at a time.
 
 ##### Records
 
@@ -496,25 +501,25 @@ digraph G {
 }
 ```
 
-Linearizing records proves more difficult.
-In [@sec:graph-representation] the AST representation of Records was discussed.
-As shown by [@fig:nickel-record-ast], Nickel does not have AST nodes dedicated to record fields.
+[Section @sec:graph-representation] introduced the AST representation of Records.
+As suggested by [@fig:nickel-record-ast], Nickel does not have AST nodes dedicated to record fields.
 Instead, it associates field names with values as part of the `Record` node.
-For the language server on the other hand the record field is as important as its value, since it serves as name declaration.
-For that reason NLS distinguishes `Record` and `RecordField` as independent kinds of linearization items.
-
-NLS has to create a separate item for the field and the value.
-That is to maintain similarity to the other binding types.
-It provides a specific and logical span to reference and allows the value to be of another kind, such as a variable usage like shown in the example.
-The language server is bound to process nodes individually.
+Since the language server is bound to process nodes individually, in effect, it will only see the values.
 Therefore, it can not process record values at the same time as the outer record.
-Yet, record values may reference other fields defined in the same record regardless of the order, as records are recursive by default.
-Consequently, all fields have to be in scope and as such be linearized beforehand.
-While, `RecordField` items are created while processing the record, they can not yet be connected to the value they represent, as the linearizer can not know the `id` of the latter.
-This is because the subtree of each of the fields can be arbitrary large causing an unknown amount of items, and hence intermediate `id`s to be added to the Linearization.
+For the language server it is important to associate field names with their value, as it serves as name declaration.
+For that reason, NLS distinguishes `Record` and `RecordField` as independent kinds of linearization items where `RecordFields` act as a bridge between the record and the value named after the field.
 
-A summary of this can be seen for instance on the linearization of the previously discussed record in [@fig:nls-lin-records].
-Here, record fields are linearized first, pointing to some following location.
+To maintain similarity to other binding types, NLS has to create a separate item for the field and the value.
+This also ensures, that the value can be linearized independently.
+
+Record values may reference other fields defined in the same record regardless of the order, as records are recursive by default.
+Consequently, all fields have to be in scope and as such be linearized beforehand.
+When linearizing a record, NLS will generate `RecordField` items for each field.
+However, it can not associate the field's value with the item yet (which is expressed using `ValueState::None`).
+This is because the subtree of each field can be arbitrary large, as is the offset of the corresponding linearization items.
+
+The visualization ([@fig:nls-lin-records]) of the record discussed in [@lst:nickel-record] gives an example for this.
+Here, the first items linearized are record fields.
 Yet, as the `containers` field value is processed first, the `metadata` field value is offset by a number of fields unknown when the outer record node is processed.
 
 ```{.graphviz #fig:nls-lin-records caption="Linearization of a record"}
