@@ -577,30 +577,36 @@ The complete process looks as follows:
 
 ##### Variable Reference
 
-While name declaration can happen in several ways, the usage of a variable is always expressed as a `Var` node wrapping a referenced identifier.
+The usage of a variable is always expressed as a `Var` node that holds an identifier.
 Registering a name usage is a multi-step process.
 
-First, NLS tries to find the identifier in its scoped aware name registry.
+First, NLS tries to find the identifier in its scope-aware name registry.
 If the registry does not contain the identifier, NLS will linearize the node as `Unbound`.
-In the case that the registry lookup succeeds, NLS retrieves the referenced `Declaration` or `RecordField`. The `Linearizer` will then add the `Resolved` `Usage` item to the linearization and update the declaration's list of usages.
+In the case that the registry lookup succeeds, NLS retrieves the referenced `Declaration` or `RecordField`. The linearizer will then add a usage item in the `Resolved` state to the linearization and update the declaration's list of usages.
 
-Looking at the AST representation of record destructuring in [@fig:nickel-static-access] shows that accessing inner records involves chains of unary operations *ending* with a reference to a variable binding.
-Each operation encodes one identifier, i.e. field of a referenced record.
+##### Resolution of Record Fields
+
+The AST representation of record destructuring in [@fig:nickel-static-access] shows that accessing inner records involves chains of unary operations *ending* with a reference to a variable binding.
+Each operation encodes one field of a referenced record.
 However, to reference the corresponding declaration, the final usage has to be known.
-Therefore, instead of linearizing the intermediate elements directly, the `Linearizer` adds them to a shared stack until the grounding variable reference is reached.
+Therefore, instead of linearizing the intermediate elements directly, the `Linearizer` adds them to a shared stack until the grounding variable reference is registered.
+
 Whenever a variable usage is linearized, NLS checks the stack for latent destructors.
-If destructors are present, NLS adds `Usage` items for each element on the stack.
+If destructors are present, it adds `Usage` items for each element on the stack.
+Yet, because records are recursive it is possible that fields reference other fields' values.
 
-Note that record destructors can be used as values of record fields as well and thus refer to other fields of the same record.
-As the `Linearizer` processes the field values sequentially, it is possible that a usage references parts of the record that have not yet been processed making it unavailable for NLS to fully resolve.
-A visualization of this is provided in [@fig:nls-unavailable-rec-record-field]
-For this reason the `Usages` added to the linearization are marked as `Deferred` and will be fully resolved during the post-processing phase as documented in [@sec:resolving-deferred-access].
-In [@fig:ncl-record-access] this is shown visually.
-The `Var` AST node is linearized as a `Resolved` usage node which points to the existing `Declaration` node for the identifier.
-Mind that this could be a `RecordField` too if referred to in a record.
-NLS linearized the trailing access nodes as `Deferred` nodes.
+Consider the following example [@lst:nickel-recursive-record], which is depicted in [@fig:nls-unavailable-rec-record-field]
 
 
+```{.nickel #lst:nickel-recursive-record caption="Example of a recursive record"}
+{
+  y = {
+    yy = "foo",
+    yz = z,
+  },
+  z = y.yy
+}
+```
 
 ```{.graphviz #fig:nls-unavailable-rec-record-field caption="Example race condition in recursive records. The field `y.yz` cannot be not be referenced at this point as the `y` branch has yet to be linearized"}
 digraph G {
@@ -618,24 +624,39 @@ digraph G {
       field_yz [label="Field|yz"]
     }
 
-    var_z [label = "Usage|y.yz"]
+    var_z [label = "Usage|y.yy" ]
+    var_yz [label = "Usage|z" ]
 
     hidden [shape=point, width=0, height = 0]
 
     /* Relationships */
     record_x -> {field_y, field_z}
-    field_y -> record_y
+    field_y -> record_y [color=grey]
     field_z -> var_z
     record_y -> {field_yy, field_yz} [color=grey]
-    var_z -> field_yz [style=dashed, label="Not resolvable"]
+    field_yz -> var_yz [color=grey]
+    var_z -> field_yy [style=dashed, label="Not resolvable"]
+    var_yz -> field_z [constraint=false, style=dashed, color=grey]
 
-    var_z -> hidden [style=invis]
 
     {rank=same; field_y; field_z }
     {rank=same; field_yy; field_yz }
-    {rank=same; record_y; hidden;}
+    {rank=same; record_y; var_z;}
 }
 ```
+
+Here, a conflict is guaranteed.
+As the `Linearizer` processes the field values sequentially in arbitrary order, it is unable to resolve both `y.yz` and `z`.
+
+Assuming the value for `z` is linearized first, the items corresponding the destructuring of `y` can not be resolved.
+While the *field* `y` is known, its value is not (cf. [@sec:records]), from which follows that `yy` is inaccessible.
+Yet, `y.yy` will be possible to resolve once the value of `y` is processed.
+For this reason the `Usage` generated from the destructor `.yy` is marked as `Deferred` and will be fully resolved during the post-processing phase as documented in [@sec:resolving-deferred-access].
+
+In fact, NLS linearized all destructor elements as `Deferred` and resolves the correct references later.
+[Figure @fig:ncl-record-access] shows this more clearly for the expression `x.y.z`.
+The `Declaration` for `x` is known, therefore its `Var` AST node is linearized as a `Resolved` usage.
+Mind that in records `x` could as well be a `RecordField`.
 
 ```{.graphviz #fig:ncl-record-access caption="Depiction of generated usage nodes for record destructuring"}
 digraph G {
