@@ -187,15 +187,12 @@ Taking into account variable usage information adds back-edges to the original A
 Both kinds of edges have to be encoded with the elements in the list.
 Alas, items have to be referred to using `id`s since the index of items cannot be relied on(such as in e.g. a binary heap), because the array is reordered to optimize access by source position.
 
+There are two groups of vertices in such a graph.
+**Declarations** are nodes that introduce an identifier, and can be referred to by a set of nodes.
+Referral is represented by **Usage** nodes.
 
-There are three main kids of vertices in such a graph.
-**Declarations** are nodes that introduce an identifier, and can be referred to by a set of nods.
-Referral is represented by **Usage** nodes which can either be bound to a declaration or unbound if no corresponding declaration is known.
-In practice Nickel distinguishes simple variable bindings from name binding through record fields which are resolved during the post-precessing.
-It also Integrates a **Record** and **RecordField** kinds to aid record destructuring.
-
-During the linearization process this graphical model is recreated on the linear representation of the source.
-Hence, each `LinearizationItem` is associated with one of the aforementioned kinds, encoding its function in the usage graph.
+During the linearization process this graphical model is embeded into the items of the linearization.
+Hence, each `LinearizationItem` is associated with a kind representing the item's role in the graph (see: [@lst:nls-termkind-definition]).
 
 ```{.rust #lst:nls-termkind-definition caption="Definition of a linearization items TermKind"}
 pub enum TermKind {
@@ -218,17 +215,14 @@ pub enum UsageState {
     Resolved(ID),
     Deferred { parent: ID, child: Ident },
 }
-
 ```
 
-The `TermKind` type is an enumeration which defines the role of a `LinearizationItem` in the usage graph.
-
-Variable bindings
+Variable bindings and function arguments
   ~ are linearized using the `Declaration` variant which holds the bound identifier as well as a list of `ID`s corresponding to its `Usage`s.
 
 Records
   ~ remain similar to their AST representation.
-    The `Record` variant simply maps field names to the linked `RecordField`
+    The `Record` variant simply maps the record's field names to the linked `RecordField`
 
 Record fields
   ~ are represented as `RecordField` kinds and store:
@@ -238,11 +232,14 @@ Record fields
     - a link to the value of the field
 
 Variable usages
-  ~ are further specified. `Usage`s that can not be mapped to a declaration are tagged `Unbound` or otherwise `Resolved` to the complementary `Declaration`
-  ~ Record destructuring may require a late resolution as discussed in [@sed:variable-usage-and-static-record-access].
+  ~ can be in three different states. 
+  
+    1. `Usage`s that can not (yet) be mapped to a declaration are tagged `Unbound`
+    2. A `Resolved` usage introduces a back-link to the complementary `Declaration`
+    3. For record destructuring resolution of the name might need to be `Deferred` to the post-processing as discussed in [@sec:variable-usage-and-static-record-access].
 
 Other nodes
-  ~ of the AST that do not fit in a usage graph, are linearized as `Structure`.
+  ~ of the AST that do not participate in the usage graph, are linearized as `Structure` - A wildcard variant with no associated data.
 
 <!-- TODO: Add graphics -->
 
