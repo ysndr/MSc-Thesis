@@ -248,7 +248,7 @@ Variable usages
     3. For record destructuring resolution of the name might need to be `Deferred` to the post-processing as discussed in [@sec:variable-usage-and-static-record-access].
 
 Other nodes
-  ~ of the AST that do not participate in the usage graph, are linearized as `Structure` - A wildcard variant with no associated data.
+  ~ of the AST that do not participate in the usage graph, are linearized as `Structure` -- A wildcard variant with no associated data.
 
 <!-- TODO: Add graphics -->
 
