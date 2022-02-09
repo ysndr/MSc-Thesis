@@ -501,25 +501,25 @@ digraph G {
 }
 ```
 
-Linearizing records proves more difficult.
-In [@sec:graph-representation] the AST representation of Records was discussed.
-As shown by [@fig:nickel-record-ast], Nickel does not have AST nodes dedicated to record fields.
+[Section @sec:graph-representation] introduced the AST representation of Records.
+As suggested by [@fig:nickel-record-ast], Nickel does not have AST nodes dedicated to record fields.
 Instead, it associates field names with values as part of the `Record` node.
-For the language server on the other hand the record field is as important as its value, since it serves as name declaration.
-For that reason NLS distinguishes `Record` and `RecordField` as independent kinds of linearization items.
-
-NLS has to create a separate item for the field and the value.
-That is to maintain similarity to the other binding types.
-It provides a specific and logical span to reference and allows the value to be of another kind, such as a variable usage like shown in the example.
-The language server is bound to process nodes individually.
+Since the language server is bound to process nodes individually, in effect, it will only see the values.
 Therefore, it can not process record values at the same time as the outer record.
-Yet, record values may reference other fields defined in the same record regardless of the order, as records are recursive by default.
-Consequently, all fields have to be in scope and as such be linearized beforehand.
-While, `RecordField` items are created while processing the record, they can not yet be connected to the value they represent, as the linearizer can not know the `id` of the latter.
-This is because the subtree of each of the fields can be arbitrary large causing an unknown amount of items, and hence intermediate `id`s to be added to the Linearization.
+For the language server it is important to associate field names with their value, as it serves as name declaration.
+For that reason, NLS distinguishes `Record` and `RecordField` as independent kinds of linearization items where `RecordFields` act as a bridge between the record and the value named after the field.
 
-A summary of this can be seen for instance on the linearization of the previously discussed record in [@fig:nls-lin-records].
-Here, record fields are linearized first, pointing to some following location.
+To maintain similarity to other binding types, NLS has to create a separate item for the field and the value.
+This also ensures, that the value can be linearized independently.
+
+Record values may reference other fields defined in the same record regardless of the order, as records are recursive by default.
+Consequently, all fields have to be in scope and as such be linearized beforehand.
+When linearizing a record, NLS will generate `RecordField` items for each field.
+However, it can not associate the field's value with the item yet (which is expressed using `ValueState::None`).
+This is because the subtree of each field can be arbitrary large, as is the offset of the corresponding linearization items.
+
+The visualization ([@fig:nls-lin-records]) of the record discussed in [@lst:nickel-record] gives an example for this.
+Here, the first items linearized are record fields.
 Yet, as the `containers` field value is processed first, the `metadata` field value is offset by a number of fields unknown when the outer record node is processed.
 
 ```{.graphviz #fig:nls-lin-records caption="Linearization of a record"}
