@@ -196,13 +196,13 @@ Hence, each `LinearizationItem` is associated with a kind representing the item'
 
 ```{.rust #lst:nls-termkind-definition caption="Definition of a linearization items TermKind"}
 pub enum TermKind {
-    Declaration(Ident, Vec<ID>),
+    Declaration(Ident, Vec<ID>, ValueState),
     Record(HashMap<Ident, ID>),
     RecordField {
         ident: Ident,
         record: ID,
         usages: Vec<ID>,
-        value: Option<ID>,
+        value: ValueState,
     },
 
     Usage(UsageState),
@@ -215,10 +215,19 @@ pub enum UsageState {
     Resolved(ID),
     Deferred { parent: ID, child: Ident },
 }
+
+pub enum ValueState {
+    Unknown,
+    Known(ID),
+}
 ```
 
 Variable bindings and function arguments
-  ~ are linearized using the `Declaration` variant which holds the bound identifier as well as a list of `ID`s corresponding to its `Usage`s.
+  ~ are linearized using the `Declaration` variant which holds
+  
+    - the bound identifier
+    - a list of `ID`s corresponding to its `Usage`s.
+    - its assigned value
 
 Records
   ~ remain similar to their AST representation.
