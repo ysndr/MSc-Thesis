@@ -744,7 +744,7 @@ digraph G {
 ##### Metadata
 
 In [@sec:meta-information] was shown that on the syntax level, metadata "wraps" the annotated value.
-Conversely, NLS encodes metadata in the `LinearizationItem` as metadata is intrinsically related to a value.
+Conversely, NLS encodes metadata as part of the `LinearizationItem` as it is considered to be intrinsically related to a value.
 NLS therefore has to defer handling of the `MetaValue` node until the processing of the associated value in the succeeding call.
 Like record destructors, NLS temporarily stores this metadata in the `Linearizer`'s memory.
 
@@ -815,7 +815,7 @@ The required metadata needs to be provided by the type checker.
 
 #### Resolving by position
 
-As part of the post-processing step discussed in [@sec:post-processing], the `LinearizationItem`s in the `Completed` linearization are reorderd by their occurence of the corresponding AST node in the source file.
+As part of the post-processing step discussed in [@sec:post-processing], the `LinearizationItem`s in the completed linearization are reorderd by their occurence of the corresponding AST node in the source file.
 To find items in this list three preconditions have to hold:
 
 1. Each element has a corresponding span in the source
