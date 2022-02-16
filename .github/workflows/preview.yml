@@ -17,6 +17,22 @@ jobs:
     name: Build Preview
     runs-on: ubuntu-latest
     steps:
+      - name: Read config
+        id: config
+        run: |
+          branch=${{ github.head_ref }}
+          input="${branch%%#*}"
+          
+          mode=$([[ "$input" == "chapter/"* ]] && echo "chapter" || echo "all")
+          
+          tag="${branch#*#}"
+
+          echo "::set-output name=env::$branch"
+          echo "::set-output name=ref::$branch"
+          echo "::set-output name=input::$input"
+          echo "::set-output name=mode::$mode"
+          echo "::set-output name=tag::$tag"
+
       - name: Start preview deployment
         uses: bobheadxi/deployments@v0.6.2
         id: deployment
@@ -24,8 +40,8 @@ jobs:
           step: start
           token: ${{ secrets.GITHUB_TOKEN }}
           no_override: true
-          env: ${{ github.head_ref }}
-          ref: ${{ github.head_ref }}
+          env: ${{ steps.config.outputs.env }}
+          ref: ${{ steps.config.outputs.ref }}
       - name: Install Nix
         uses: cachix/install-nix-action@v15
       - name: Checkout Repository
@@ -48,28 +64,28 @@ jobs:
             git checkout -
           fi
 
-          mkdir -vp ${{env.PREVIEW_PATH}}/$(dirname ${{github.head_ref}})
+          mkdir -vp ${{env.PREVIEW_PATH}}/$(dirname ${{ steps.config.outputs.input }})
 
-      - name: Compile Chapter ${{github.head_ref}}
-        if: ${{ startsWith(github.head_ref, 'chapter/') }}
+      - name: Compile Chapter ${{steps.config.outputs.env}}
+        if: steps.config.outputs.mode == 'chapter'
         run: |
           nix develop --impure -c \
-              compile-chapter-preview ${{github.head_ref}}.md ${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf
+              compile-chapter-preview ${{ steps.config.outputs.input }}.md ${{env.PREVIEW_PATH}}/${{ steps.config.outputs.input }}.pdf
 
-      - name: Archive ${{github.head_ref}}
-        if: ${{ startsWith(github.head_ref, 'chapter/') }}
+      - name: Archive ${{ steps.config.outputs.input }}
+        if: steps.config.outputs.mode == 'chapter'
         uses: actions/upload-artifact@v2
         with:
           name: chapter-plain
-          path: ${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf
+          path: ${{env.PREVIEW_PATH}}/${{ steps.config.outputs.input }}.pdf
 
       - name: Prepare preview branch
         run: |
           git add ${{env.PREVIEW_PATH}}
           git stash push
           git switch ${{env.PREVIEW_BRANCH}}
-          git merge --squash origin/${{github.head_ref}} -Xtheirs
-          if [[ ${{ startsWith(github.head_ref, 'chapter/') }} ]]; then
+          git merge --squash origin/${{ steps.config.outputs.ref }} -Xtheirs
+          if [[ ${{ steps.config.outputs.mode }} == "chapter" ]]; then
             if [[ -z $(git diff --cached --exit-code) ]]; then
               echo "No files changed"
             else
@@ -78,40 +94,40 @@ jobs:
           else
             echo "Non chapter branch, not committing proposed changes"
           fi
-          git checkout stash -- ${{env.PREVIEW_PATH}}
+          git checkout stash -- ${{ env.PREVIEW_PATH }}
 
       - name: Compile document preview
-        if: ${{ startsWith(github.head_ref, 'chapter/') }}
+        if: steps.config.outputs.mode == 'chapter'
         run: |
           nix develop --impure -c compile-thesis ${{env.PREVIEW_PATH}}/latest.pdf
 
       - name: Archive document preview
-        if: ${{ startsWith(github.head_ref, 'chapter/') }}
+        if: steps.config.outputs.mode == 'chapter'
         uses: actions/upload-artifact@v2
         with:
           name: preview-complete
           path: ${{env.PREVIEW_PATH}}/latest.pdf
 
       # other changes to the document not on chapter branches will be deployed as preview
-      # of the full docuemtn
+      # of the full document
       - name: Compile PR preview
-        if: ${{ !startsWith(github.head_ref, 'chapter/') }}
+        if: steps.config.outputs.mode == 'all'
         run: |
-          nix develop --impure -c compile-thesis ${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf
+          nix develop --impure -c compile-thesis ${{env.PREVIEW_PATH}}/${{steps.config.outputs.input}}.pdf
 
       - name: Archive PR preview
-        if: ${{ !startsWith(github.head_ref, 'chapter/') }}
+        if: steps.config.outputs.mode == 'all'
         uses: actions/upload-artifact@v2
         with:
           name: preview-complete
-          path: ${{env.PREVIEW_PATH}}/${{github.head_ref}}.pdf
+          path: ${{env.PREVIEW_PATH}}/${{steps.config.outputs.input}}.pdf
 
       - name: Commit and push to branch
         run: |
           git add ${{env.PREVIEW_PATH}}
-          git commit -m "Build single and combined preview for \"${{github.head_ref}}\"" -m ${{github.sha}} || echo "No files changed"
+          git commit -m "Build single and combined preview for \"${{ steps.config.outputs.env }}\"" -m ${{github.sha}} || echo "No files changed"
           git push -u origin ${{env.PREVIEW_BRANCH}}
-          
+
           echo "PREVIEW_REF=$(git rev-parse --verify --short ${{env.PREVIEW_BRANCH}})" >> $GITHUB_ENV
 
       - name: Update deployment status
