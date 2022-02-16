@@ -39,15 +39,17 @@ Missing standards, incompatible implementing languages and often proprietary API
 This is especially difficult for emerging languages, with possibly limited development resources to be put towards the development of language tooling.
 Consequently, efforts of language communities vary in scope, feature completeness and availability.
 
-The Language Server Protocol aims to solve this issue by specifying a JSON-RPC^[Remote Procedure Call] API that editors (clients) can use to communicate with language servers.
+The Language Server Protocol aims to solve this issue by specifying an API that editors (clients) can use to communicate with language servers.
 Language servers are programs that implement a set of IDE features for one language and expose access to these features through the LSP.
 This allows developers to focus resources to a single project that is above all unrelated to editor-native APIs for analytics processing code representation and GUI integration.
 Now only a single implementation of a language server is required, instead of an individual plugin for each editor.
-Editor maintainers can concentrate on offering the best possible LSP client support to support their product independent of the editor.
+Editor maintainers can concentrate on offering the best possible LSP client support independent of the language.
 
 ### Problem Definition
 
-Yet, while many of the implementations are freely available as Open Source Software [ref?], the methodology behind these servers is often poorly documented, especially for smaller languages.
+The problem this thesis will address is the current lack of documentation and evaluation of the applied methods for existing Language Servers.
+
+While most of the implementations of LSP servers are freely available as Open Source Software [ref?], the methodology is often poorly documented, especially for smaller languages.
 There are some experience reports [ref: merlin, and others] and a detailed video series on the Rust Analyzer[ref or footnote] project, but implementations remain very opinionated and poorly guided through.
 The result is that new implementations keep repeating to develop existing solutions.
 
@@ -67,7 +69,6 @@ RQ.2
 RQ.3
   ~ Do the methods used to answer RQ.1 meet the expected requirements under the assessment developed in RQ.2?
 
-## Goals
 
 The goal of this research is to describe a reusable approach for representing programs that can be used to query data to answer requests on the Language Server Protocol efficiently. 
 The research is conducted on an implementation of the open source language Nickel[^https://nickel-lang.org] which provides the *Diagnostics*, *Jump to \** and *Hover* features as well as limited *Auto-Completion* and *Symbol resolution*.
