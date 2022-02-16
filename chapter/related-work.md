@@ -8,6 +8,15 @@ Additionally, this part aims to recognize alternative approaches to the LSP, in 
 
 ## Language Servers
 
+The LSP project was announced [@lsp-announced] in 2016 to establish a common protocol over which language tooling could communicate with editors.
+This way it is able to fully concentrate on source analysis instead of integration with specific editors by building custom GUI elements and being restricted to editors extension interface.
+
+At the time of writing the LSP is available in version `3.16` [@Spec].
+Microsoft's official website lists 172 implementations of the LSP[@implementations] for an equally impressive number of languages.
+
+Assessing any majority of these is outside the scope of this work.
+Yet, a few implementations stand out due to their sophisticate architecture, features, popularity or closeness to the presented work.
+
 ### Considerable dimensions
 
 #### Language Complexity
