@@ -66,7 +66,7 @@ Naïvely, that is, the server should be *performant* enough not to slow down the
 To guide future implementations of language servers for primarily small scale languages the research presented in this thesis aims to answer the following research questions at the example of the Nickel Project^[https://nickel-lang.org]:
 
 RQ.1
-  ~ How to develop a language server for a new language with the abovementioned requirements in mind?
+  ~ How to develop a language server for a new language that satisfies its users' needs while being performant enough not to slow them down?
 
 RQ.2
   ~ How can we assess the implementation both quantitatively based on performance measures and qualitatively based on user satisfaction?
