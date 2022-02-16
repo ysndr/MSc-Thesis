@@ -4,16 +4,21 @@ Integrated Development Environments (IDEs) and other more lightweight code edito
 Yet, improvements of language intelligence, i.e. code completion, debugging as well as static code analysis refactoring and enrichment, have traditionally been subject to both the language and the editor used.
 Language support is thereby brought to IDEs by the means of platform dependent extensions that require repeated efforts for each platform and hence varied a lot in performance, feature-richness and availability.
 <!-- Comparison here? -->
-Recent years have seen different works [refs?] towards editor-independent code intelligence implementations and unified language-independent protocols one of which being put forward by Microsoft - the Language Server Protocol [ref] which is discussed in greater detail in [@sec:language-server-protocol].
+Recent years have seen different works [refs?] towards editor-independent code intelligence implementations and unified language-independent protocols.
+The to date most successful approach is the Language Server Protocol (LSP).
+The protocol specifies how editors can communicate with language servers which are separate, editor independent implementations of language analyzers.
+It allows to express a wide variance of language intelligence.
+LSP servers allow editors to jump to definitions, find usages, decorate elements with additional information inline or when hovering elements, list symbols and much more.
+The LSP is discussed in more detail in [@sec:language-server-protocol].
 These approaches reduce the effort required to bring language intelligence to editors.
-Instead of rewriting what is essentially the same language extension for every editor, all LSP-capable editors can connect to the same LSP implementation.
+Instead of rewriting what is essentially the same language extension for every editor, any editor that implements a LSP client can connect to the same server.
 Moreover, LSP client implementations are independent of the servers.
 Hence, editor communities can focus on developing the best possible and uniform experience which all LSP servers can leverage.
 As a side effect this also allows for developers to stay in their preferred developing environment instead of needing to resort to e.g. Vim or Emacs emulation or loosing access to other plugins.
 
 <!-- graphic here or in the backgroudn chapter -->
 
-Being independent of the editors, the choice of language to implement language servers in lies with the developer.
+Being independent of the editors, the developer of the language server is free to choose the optimal implementing language.
 In effect, it is possible for language developers to integrate essential parts of the existing language implementation for a language server.
 By now the LSP has become the most popular choice for cross-platform language tooling with implementations [langservers and microsoft] for all major and many smaller languages.
 
