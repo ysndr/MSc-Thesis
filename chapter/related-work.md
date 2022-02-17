@@ -49,7 +49,6 @@ File Processing
 
 
 
-Since evaluating each language in practice
 
 #### LSP compliance
 
