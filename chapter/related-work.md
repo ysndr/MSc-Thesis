@@ -153,17 +153,7 @@ File Processing
 
 
 
-#### LSP compliance
-
-#### Features
-
-#### File processing
-
-##### Incremental
-
-##### Full
-
-### Comparative Projects
+### Representative Projects
 
 <!-- Rust Analyser -->
 <!-- Merlin -->
@@ -171,8 +161,13 @@ File Processing
 <!-- pylance? -->
 <!-- Scala & Java LSP (feature LSP extensions) -->
 <!-- haskell LSP? (talk to tim) -->
+<!-- swift -->
+<!-- clangd -->
+<!-- typescript -->
 
 ### Honorable mentions
+
+<!-- frege? -->
 
 
 ## Alternative approaches
