@@ -12,17 +12,7 @@ Additionally, this part aims to recognize alternative approaches to the LSP, in 
 
 #### Language Complexity
 
-#### LSP compliance
-
-#### Features
-
-#### File processing
-
-##### Incremental
-
-##### Full
-
-### Comparative Projects
+### Representative Projects
 
 <!-- Rust Analyser -->
 <!-- Merlin -->
@@ -30,8 +20,13 @@ Additionally, this part aims to recognize alternative approaches to the LSP, in 
 <!-- pylance? -->
 <!-- Scala & Java LSP (feature LSP extensions) -->
 <!-- haskell LSP? (talk to tim) -->
+<!-- swift -->
+<!-- clangd -->
+<!-- typescript -->
 
 ### Honorable mentions
+
+<!-- frege? -->
 
 
 ## Alternative approaches
