@@ -165,16 +165,38 @@ A stub implementation
 <!-- TODO: caption -->
 ```{.graphviz #fig:nls-nickel-structure caption="Interaction of Components"}
 digraph {
-  nls [label="NLS"]
-  nickel [label="Nickel"]
-  als [label="Linearizer", shape=box]
-  stub [label="Stub interface"]
+  splines="ortho"
+  node [shape=record]
 
-  nls ->  nickel  [label="uses"]
-  nls ->  als [label="implements"]
-  stub ->  als [label="implements"]
-  nickel ->  als  [label="uses"]
-  nickel ->  stub  [label="uses"]
+
+
+  {
+    node[style=dashed]
+    nls [label="NLS"]
+    host [label=Analysis]
+  }
+
+  {
+    node[style=dotted]
+    nickel [label="Nickel"]
+    stub [label="Stub interface"]
+  }
+
+
+  als [label="Linearizer | \<T\>"]
+
+//   {rank=same; host; stub; }
+
+  
+  
+  host ->  nickel  [label="imports", constraint = false]
+  
+  stub ->  als [label="implements | T = ()"]
+  nickel ->  als  [label="calls"]
+  nickel ->  stub  [label="defines", style=dashed, color=grey]
+  nls ->  host  [label="defines", style=dashed, color=grey]
+  host ->  als [label="implements | T = Nickel"]
+
 }
 ```
 
