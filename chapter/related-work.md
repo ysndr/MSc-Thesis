@@ -46,7 +46,7 @@ Additionally, it would lock-in programmers into a specific platform for its lang
 
 #### Monto
 
-The authors of the Monto project[@monto] call this the "IDE Portability Problem".
+The authors of the Monto project[@monto,@monto-disintegrated] call this the "IDE Portability Problem".
 They compare the situation with the task of compiling different high level languages to a set of CPU architectures.
 The answer to that problem was an intermediate representation (IR).
 Compilers could transform input languages into this IR and in turn generate assembly for different architectures from a single input format.
@@ -63,9 +63,33 @@ A central broker connects the services with each other and the editor.
 
 Since Monto performs all work on the IR, independent of the editor, and serializes the IR as JSON messages, the language used to implement *Monto Services* can be chosen freely giving even more flexibility.
 
-The Editor extensions' responsibility is merely sending Mondo compliant messages to the broker and receive (error) reports.
+The Editor extension's responsibility is to act as a source and sink for data.
+It sends Monto compliant messages to the broker and receives processing results such as (error) reports.
+The communication is based on the ZeroMQ[zeromq] technology which was chosen because it is lightweight and available in manly languages [@monto-disintegrated] allowing to make use of existing language tools
 
 #### Merlin
+
+The Merlin tool [@merlin,@merlin-website] is in many ways a more specific version of the idea presented in Monto.
+Merlin is a language server for the Ocaml language, yet predates the Language Server Protocol.
+
+The authors of Merlin postulate that implementing "tooling support traditionally provided by IDEs" for "niche languages" demands to "share the language-awareness logic" between implementations.
+As an answer to that, they describe the architecture of Merlin in [@merlin].
+
+Similarly to Monto, Merlin separates editor extensions from language analysis.
+Conversely, its interaction builds on a command line interface instead of message passing.
+Editor extensions expose the server functions to the user by integrating with the editor.
+
+The Merlin server hand provides a single optimized implementation of code intelligence for Ocaml.
+Since all resources could be put to a single project, multiple iterations of performance improvements were done on Merlin.
+It now supports partial, incremental parsing and type-checking which allows users to query information even about incomplete or incorrect programs.
+
+Notably, being written in Ocaml, Merlin can make use of existing tools of the Ocaml language.
+In fact, its parser and type-checker are based on the respective original implementations.
+The Merlin project did however have to adapt the Ocaml type-checker to support the aforementioned incrementality.
+Changes are made against a copy of the relevant modules shipped with Merlin which facilitates keeping up with the latest developments of the language.
+
+While Merlin serves as a single implementation used by all clients, unlike Monto it does not specify a language independent format, or service architecture.
+
 ## Language Servers
 
 ### Considerable dimensions
