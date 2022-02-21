@@ -46,7 +46,7 @@ Additionally, it would lock-in programmers into a specific platform for its lang
 
 #### Monto
 
-The authors of the Monto project[@monto] call this the "IDE Portability Problem".
+The authors of the Monto project[@monto,@monto-disintegrated] call this the "IDE Portability Problem".
 They compare the situation with the task of compiling different high level languages to a set of CPU architectures.
 The answer to that problem was an intermediate representation (IR).
 Compilers could transform input languages into this IR and in turn generate assembly for different architectures from a single input format.
@@ -63,7 +63,9 @@ A central broker connects the services with each other and the editor.
 
 Since Monto performs all work on the IR, independent of the editor, and serializes the IR as JSON messages, the language used to implement *Monto Services* can be chosen freely giving even more flexibility.
 
-The Editor extensions' responsibility is merely sending Mondo compliant messages to the broker and receive (error) reports.
+The Editor extension's responsibility is to act as a source and sink for data.
+It sends Monto compliant messages to the broker and receives processing results such as (error) reports.
+The communication is based on the ZeroMQ[zeromq] technology which was chosen because it is lightweight and available in manly languages [@monto-disintegrated] allowing to make use of existing language tools
 
 #### Merlin
 ## Language Servers
