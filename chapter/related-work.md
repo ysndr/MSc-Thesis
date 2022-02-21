@@ -68,6 +68,28 @@ It sends Monto compliant messages to the broker and receives processing results 
 The communication is based on the ZeroMQ[zeromq] technology which was chosen because it is lightweight and available in manly languages [@monto-disintegrated] allowing to make use of existing language tools
 
 #### Merlin
+
+The Merlin tool [@merlin,@merlin-website] is in many ways a more specific version of the idea presented in Monto.
+Merlin is a language server for the Ocaml language, yet predates the Language Server Protocol.
+
+The authors of Merlin postulate that implementing "tooling support traditionally provided by IDEs" for "niche languages" demands to "share the language-awareness logic" between implementations.
+As an answer to that, they describe the architecture of Merlin in [@merlin].
+
+Similarly to Monto, Merlin separates editor extensions from language analysis.
+Conversely, its interaction builds on a command line interface instead of message passing.
+Editor extensions expose the server functions to the user by integrating with the editor.
+
+The Merlin server hand provides a single optimized implementation of code intelligence for Ocaml.
+Since all resources could be put to a single project, multiple iterations of performance improvements were done on Merlin.
+It now supports partial, incremental parsing and type-checking which allows users to query information even about incomplete or incorrect programs.
+
+Notably, being written in Ocaml, Merlin can make use of existing tools of the Ocaml language.
+In fact, its parser and type-checker are based on the respective original implementations.
+The Merlin project did however have to adapt the Ocaml type-checker to support the aforementioned incrementality.
+Changes are made against a copy of the relevant modules shipped with Merlin which facilitates keeping up with the latest developments of the language.
+
+While Merlin serves as a single implementation used by all clients, unlike Monto it does not specify a language independent format, or service architecture.
+
 ## Language Servers
 
 ### Considerable dimensions
