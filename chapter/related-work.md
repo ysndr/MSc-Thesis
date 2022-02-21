@@ -65,7 +65,7 @@ Since Monto performs all work on the IR, independent of the editor, and serializ
 
 The Editor extension's responsibility is to act as a source and sink for data.
 It sends Monto compliant messages to the broker and receives processing results such as (error) reports.
-The communication is based on the ZeroMQ[zeromq] technology which was chosen because it is lightweight and available in manly languages [@monto-disintegrated] allowing to make use of existing language tools
+The communication is based on the ZeroMQ[zeromq] technology which was chosen because it is lightweight and available in manly languages [@monto-disintegrated] allowing to make use of existing language tools.
 
 #### Merlin
 
