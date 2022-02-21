@@ -24,6 +24,10 @@ Speaking of smaller languages is significant, as both research communities and i
 Additionally, previous research [ref], that shows the importance of language tools for the selection of a language, highlights the importance of tooling for new languages to be adopted by a wider community.
 While previously implementing language tools that integrate with the developer's environment was practically unfeasible for small projects due to the incompatibility between different extension systems, leveraging the LSP reduces the amount of work required considerably.
 
+The Nickel[@nickel] language referenced in this work is a new Configuration Programming Language developed by Tweag.
+It is akin to projects like Cue, Dhall, or Nix in that it is an abstraction over pure data description languages such as JSON, YAML or XML.
+The Nickel project combines the capabilities of the former being a pure functional language based on lambda calculus with JSON data types, gradual typing, higher-order contracts and a record merging operation.
+As such, it is intended to write safe abstractions over configuration files as employed in Infrastructure as Code for instance.
 
 ## Motivation
 
