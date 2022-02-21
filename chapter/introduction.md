@@ -69,9 +69,6 @@ RQ.1
 RQ.2
   ~ How can we assess the implementation both quantitatively based on performance measures and qualitatively based on user satisfaction?
 
-RQ.3
-  ~ Do the methods used to answer RQ.1 meet the expected requirements under the assessment developed in RQ.2?
-
 
 The goal of this research is to describe a reusable approach for representing programs that can be used to query data to answer requests on the Language Server Protocol efficiently. 
 The research is conducted on an implementation of the open source language Nickel[^https://nickel-lang.org] which provides the *Diagnostics*, *Jump to \** and *Hover* features as well as limited *Auto-Completion* and *Symbol resolution*.
