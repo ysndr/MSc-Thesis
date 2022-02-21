@@ -153,17 +153,17 @@ File Processing
 
 
 
-### Representative Projects
 
-<!-- Rust Analyser -->
-<!-- Merlin -->
-<!-- rnix-lsp -->
-<!-- pylance? -->
-<!-- Scala & Java LSP (feature LSP extensions) -->
-<!-- haskell LSP? (talk to tim) -->
-<!-- swift -->
-<!-- clangd -->
-<!-- typescript -->
+### Representative LSP Projects
+
+Since the number of implementations of the LSP is continuously growing, this thesis will present a selected set of notable projects.
+
+1. Three highly advanced and complete implementations that are the de-facto standard tooling for their respective language:
+   *rust-analyzer* [@rust-analyzer], *ocaml-lsp*/*merlin* [@ocaml-lsp,@merlin] and the *Haskell Language Server* [@hls]
+2. Two projects that provide compelling alternatives for existing specialized solutions:
+   *Metals* (for Scala) [@metals], *Java LSP* [@java-lsp]
+3. Language Servers for especially small user languages in terms of complexity and userbase, highlighting one of the many use cases for the LSP.
+   *rnix-lsp* [@rnix-lsp], *frege-lsp*
 
 ### Honorable mentions
 
