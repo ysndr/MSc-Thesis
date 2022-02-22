@@ -187,6 +187,19 @@ For instance rust-analyzer implements an analysis optimized parser with support 
 Due to the complexity of the language, LSP requests are processed lazily, with support for caching to ensure performance.
 While many parts of the language have been reimplemented with a language-server-context in mind, the analyzer did not however implement detailed linting or the rust-specific borrow checker.
 For these kinds of analysis, rust-analyzer falls back to calls to the rust build system.
+
+#### Integration for small languages
+
+The LSP makes it possible to bring language support to many editors at once.
+Emerging languages are profiting from this in particular since development resources are typically scarce and the core is quite volatile.
+To mitigate this, core language components can often be reused or integrated through command line calls.
+
+A good example is given by the Frege language [@frege].
+While previously providing an eclipse plugin [@frege-eclipse], the tooling efforts have since been put towards an LSP implementation.
+The development of this language server has been reported on in [@frege-lsp-report].
+The author shows though multiple increments how they utilized the JVM to implement a language server in Java for the (JVM based) Frege language.
+In the final proof-of-concept, the authors build a minimal language server through the use of Frege's existing REPL and interpreter modules.
+
 ### Honorable mentions
 
 <!-- frege? -->
