@@ -43,8 +43,8 @@ The rust-analyzer [@rust-analyzer] takes an intermediate approach.
 It does not reuse or modify the existing compiler, but instead implements analysis functionality based on low level components.
 This way the developers of rust-analyzer have greater freedom to adapt for more advanced features.
 For instance rust-analyzer implements an analysis optimized parser with support for incremental processing.
-Due to the complexity of the language, LSP requests are processed mainly lazily, with support for caching to ensure performance.
-While many parts of the language have been reimplemented with a language server context in mind, the analyzer did not however implement detailed linting or the rust-specific borrow checker.
+Due to the complexity of the language, LSP requests are processed lazily, with support for caching to ensure performance.
+While many parts of the language have been reimplemented with a language-server-context in mind, the analyzer did not however implement detailed linting or the rust-specific borrow checker.
 For these kinds of analysis, rust-analyzer falls back to calls to the rust build system.
 ### Honorable mentions
 
