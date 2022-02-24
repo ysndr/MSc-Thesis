@@ -21,7 +21,7 @@ Since the number of implementations of the LSP is continuously growing, this the
    *rust-analyzer* [@rust-analyzer], *ocaml-lsp*/*merlin* [@ocaml-lsp,@merlin] and the *Haskell Language Server* [@hls]
 2. Two projects that provide compelling alternatives for existing specialized solutions:
    *Metals* (for Scala) [@metals], *Java LSP* [@java-lsp]
-3. Language Servers for especially small user languages in terms of complexity and userbase, highlighting one of the many use cases for the LSP.
+3. Language Servers for small languages in terms of complexity and userbase, highlighting one of the many use cases for the LSP.
    *rnix-lsp* [@rnix-lsp], *frege-lsp*
 
 
@@ -47,17 +47,40 @@ Due to the complexity of the language, LSP requests are processed lazily, with s
 While many parts of the language have been reimplemented with a language-server-context in mind, the analyzer did not however implement detailed linting or the rust-specific borrow checker.
 For these kinds of analysis, rust-analyzer falls back to calls to the rust build system.
 
-#### Integration for small languages
+
+#### Rapid implementation of LSP features
 
 The LSP makes it possible to bring language support to many editors at once.
 Emerging languages are profiting from this in particular since development resources are typically scarce and the core is quite volatile.
 To mitigate this, core language components can often be reused or integrated through command line calls.
 
-A good example is given by the Frege language [@frege].
+A good example is given by the Frege language [@frege-github].
+Frege as introduced in [@frege-paper] is a JVM based functional language with a Haskell-like syntax.
+It features lazy evaluation, user-definable operators, type classes and integration with Java.  
 While previously providing an eclipse plugin [@frege-eclipse], the tooling efforts have since been put towards an LSP implementation.
-The development of this language server has been reported on in [@frege-lsp-report].
+The initial development of this language server has been reported on in [@frege-lsp-report].
 The author shows though multiple increments how they utilized the JVM to implement a language server in Java for the (JVM based) Frege language.
 In the final proof-of-concept, the authors build a minimal language server through the use of Frege's existing REPL and interpreter modules.
+Being written in Java, allows the server to make use of other community efforts such as the LSP4J project which provide abstractions over the interaction with LSP clients.
+Through the use for such abstractions, servers can focus on the implementation of capabilities only.
+
+
+#### Language Independence
+
+The LSP is truly language independent.
+Many language implementations do not expose the required language interfaces (parsing, AST, Types, etc..), or pose various other impediments such as a closed source, licensing, or the absence of LSP abstractions available for the host language.
+
+An instance of this type is the rnix-lsp[@rnix-git] language server for the nix[@nixos.org] programming language.
+Despite the nix language being written in C++ [@nix-repo], its language server builds on a custom parser[@rnix] in Rust.
+
+The work presented by Leimeister in [@cpachecker-lsp] exemplifies how functionality can be provided by entirely external tools as well.
+The server can be used to automatically perform software verification in the background using CPAchecker[@cpachecker].
+CPAchecker is a platform for automatic, extensible, software verification.
+The program is written in Java and provides a command line interface to be run locally.
+Additionally, it is possible to execute resource intensive verification through an HTTP-API on more powerful machines or clusters [@cpa-google-cloud,@cpa-clusters].
+The LSP-Server supports both modes of operation.
+On one hand it interfaces directly with the Java modules provided by the CPAchecker library, on the other it is able to utilize an HTTP-API provided by a server instance of the verifier.
+
 
 ### Honorable mentions
 
