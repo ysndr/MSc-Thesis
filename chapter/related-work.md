@@ -23,7 +23,7 @@ To be able to compare and describe each project objectively and comprehensively,
 
 Target Language
   ~ The complexity of implementing language servers is influenced severely by the targeted language.
-    Feature rich languages naturally require more sophisticated solutions.
+    Feature rich languages naturally require more sophisticated solutions than simpler ones.
     Conversely, self-hosted and interpreted languages can often leverage existing tooling.
 
 Features
@@ -45,15 +45,15 @@ File Processing
     The means are mainly influenced by the complexity of the language.
     Distinctions appear in the way servers process *file indexes and changes* and how they respond to *requests*.
   ~ The LSP supports sending updates in form of diffs of atomic changes and complete transmission of changed files.
-    The former requires incremental parsing and analysis, which are challenging to implement but make processing files much faster upon changes.
+    The former requires methods of incremental parsing and analysis which are difficult by itself, but are able to process files much more quickly.
     An incremental approach makes use of an internal representation of the source code that allows to quickly derive analytic results from and can be updated efficiently.
     Additionally, to facilitate the parsing, it must be able to provide a parser with the right context to correctly parse a changed fragment of code.
-   In practice, most language servers process file changes by re-indexing the entire file, discarding the previous internal state entirely.
+    On the contrary, most language servers process file changes by re-indexing the entire file, updating their internal model much more broadly.
     This is a more approachable method.
     Yet, it is less performant since entire files need to be processed, which becomes more noticeable as file sizes and edit frequency increase.
   ~ For code analysis LSP implementers have to decide between *lazy* or *greedy* approaches for processing files and answering requests.
     Dominantly greedy implementations resolve most available information during the indexing of the file.
-    The server can then utilize this model to answer requests using mere lookups.
+    The server can then facilitate this model to answer requests using mere lookups.
     This stands in contrast to lazy approaches where only minimal local information is resolved during the indexing.
     Requests invoke an ad-hoc resolution the results of which may be memoized for future requests.
     Lazy resolution is more prevalent in conjunction with incremental indexing, since it further reduces the work associated with file changes.
@@ -61,26 +61,79 @@ File Processing
 
 
 
-#### LSP compliance
 
-#### Features
+### Representative LSP Projects
 
-#### File processing
+Since the number of implementations of the LSP is continuously growing, this thesis will present a selected set of notable projects.
 
-##### Incremental
+1. Three highly advanced and complete implementations that are the de-facto standard tooling for their respective language:
+   *rust-analyzer* [@rust-analyzer], *ocaml-lsp*/*merlin* [@ocaml-lsp,@merlin] and the *Haskell Language Server* [@hls]
+2. Two projects that provide compelling alternatives for existing specialized solutions:
+   *Metals* (for Scala) [@metals], *Java LSP* [@java-lsp]
+3. Language Servers for small languages in terms of complexity and userbase, highlighting one of the many use cases for the LSP.
+   *rnix-lsp* [@rnix-lsp], *frege-lsp*
 
-##### Full
 
-### Comparative Projects
 
-<!-- Rust Analyser -->
-<!-- Merlin -->
-<!-- rnix-lsp -->
-<!-- pylance? -->
-<!-- Scala & Java LSP (feature LSP extensions) -->
-<!-- haskell LSP? (talk to tim) -->
+#### LSP as standard tooling
+
+Today LSP based solutions serve as the go-to-method to implement language analysis tools.
+Especially emerging languages without existing integration with major IDEs make extensive use of the flexibility and reach provided by the LSP.
+
+Most languages profit greatly from the possibility to leverage existing tooling for the language.
+For instance the Haskell language server facilitates a plugin system that allows it to integrate with existing tooling projects [@hls-plugin-search].
+Plugins provide capabilities for linting [@hls-hlint-plugin], formatting [@hls-floskell-plugin,hls-ormolu-plugin] documentation [@hls-haddock-comments-plugin] and other code actions [@hls-tactics-plugin] across multiple compiler versions.
+While this requires HSL to be compiled with the same compiler version in use by the IDE, it also avoids large scale reimplementations of compiler features in an entirely different language.
+
+Similarly, the Ocaml language service builds on top of existing infrastructure by relying on the Merlin project introduced in [@sec:Merlin].
+Here, the advantages of employing existing language components have been explored even before the LSP.
+
+The rust-analyzer [@rust-analyzer] takes an intermediate approach.
+It does not reuse or modify the existing compiler, but instead implements analysis functionality based on low level components.
+This way the developers of rust-analyzer have greater freedom to adapt for more advanced features.
+For instance rust-analyzer implements an analysis optimized parser with support for incremental processing.
+Due to the complexity of the language, LSP requests are processed lazily, with support for caching to ensure performance.
+While many parts of the language have been reimplemented with a language-server-context in mind, the analyzer did not however implement detailed linting or the rust-specific borrow checker.
+For these kinds of analysis, rust-analyzer falls back to calls to the rust build system.
+
+
+#### Rapid implementation of LSP features
+
+The LSP makes it possible to bring language support to many editors at once.
+Emerging languages are profiting from this in particular since development resources are typically scarce and the core is quite volatile.
+To mitigate this, core language components can often be reused or integrated through command line calls.
+
+A good example is given by the Frege language [@frege-github].
+Frege as introduced in [@frege-paper] is a JVM based functional language with a Haskell-like syntax.
+It features lazy evaluation, user-definable operators, type classes and integration with Java.  
+While previously providing an eclipse plugin [@frege-eclipse], the tooling efforts have since been put towards an LSP implementation.
+The initial development of this language server has been reported on in [@frege-lsp-report].
+The author shows though multiple increments how they utilized the JVM to implement a language server in Java for the (JVM based) Frege language.
+In the final proof-of-concept, the authors build a minimal language server through the use of Frege's existing REPL and interpreter modules.
+Being written in Java, allows the server to make use of other community efforts such as the LSP4J project which provide abstractions over the interaction with LSP clients.
+Through the use for such abstractions, servers can focus on the implementation of capabilities only.
+
+
+#### Language Independence
+
+The LSP is truly language independent.
+Many language implementations do not expose the required language interfaces (parsing, AST, Types, etc..), or pose various other impediments such as a closed source, licensing, or the absence of LSP abstractions available for the host language.
+
+An instance of this type is the rnix-lsp[@rnix-git] language server for the nix[@nixos.org] programming language.
+Despite the nix language being written in C++ [@nix-repo], its language server builds on a custom parser[@rnix] in Rust.
+
+The work presented by Leimeister in [@cpachecker-lsp] exemplifies how functionality can be provided by entirely external tools as well.
+The server can be used to automatically perform software verification in the background using CPAchecker[@cpachecker].
+CPAchecker is a platform for automatic, extensible, software verification.
+The program is written in Java and provides a command line interface to be run locally.
+Additionally, it is possible to execute resource intensive verification through an HTTP-API on more powerful machines or clusters [@cpa-google-cloud,@cpa-clusters].
+The LSP-Server supports both modes of operation.
+On one hand it interfaces directly with the Java modules provided by the CPAchecker library, on the other it is able to utilize an HTTP-API provided by a server instance of the verifier.
+
 
 ### Honorable mentions
+
+<!-- frege? -->
 
 
 ## Alternative approaches
