@@ -11,10 +11,10 @@ Additionally, this part aims to recognize alternative approaches to the LSP, in 
 
 ### IDEs
 
-Before the invention of the Language Server Protocol, extensive language support used to be provided by an IDE.
+Before the invention of the Language Server Protocol, language intelligence used to be provided by an IDE.
 Yet, the range of officially supported languages remained relatively small [@intellij-supported-languages].
-While integration for popular languages was common, IDE grade support for less popular ones was all but guaranteed and relied mainly on community efforts.
-In fact Eclipse[@eclipse-a-platform,eclipse-www], IntelliJ[@intelliJ], and Visual Studio[@VisualStudio], to this day the most popular IDE choices, Focus on a narrow subset of languages, historically, Java and .NET.
+While integration for popular languages was common, top-tier support for less popular ones was all but guaranteed and relied mainly on community efforts.
+In fact Eclipse[@eclipse-a-platform,eclipse-www], IntelliJ[@intelliJ], and Visual Studio[@VisualStudio], to this day the most popular IDE choices, focus on a narrow subset of languages, historically Java and .NET.
 Additional languages can be integrated by custom (third-party) plugins or derivations of the base platform ([@list-of-eclipse,@jetbrains-all-products]).
 Due to the proprietary nature of some of these products, plugins are not compatible between different platforms.
 Many less popular languages therefore saw redundant implementations of what is essentially the same.
@@ -24,9 +24,9 @@ Importantly, the implementers of the former reported troubles with the language 
 The Haskell language is an exceptional example since there is also a native Haskell IDE[@haskell-for-mac] albeit that it is available only to the MacOS operating system.
 This showcases the difficulties of language tooling and its provision.
 
-In general, developing language integrations, both as the vendor of an IDE or third-party plugin developer requires extensive resources.
-[Table @tbl:plugins-size] gives an idea of the efforts-required.
-Strikingly, since the IntelliJ platform is based on the JVM, its plugin system requires the use of JVM languages [@custom-language-support]
+In general, developing language integrations, both as the vendor of an IDE or a third-party plugin developer requires extensive resources.
+[Table @tbl:plugins-size] gives an idea of the efforts required.
+Since the IntelliJ platform is based on the JVM, its plugin system requires the use of JVM languages [@custom-language-support], making it hard to reuse the code of e.g. a reference compiler or interpreter.
 The Rust and Haskell integrations for instance contain at best only a fraction of code in their respective language.
 
 | Plugin                    | lines of code                                                |
@@ -39,8 +39,8 @@ The Rust and Haskell integrations for instance contain at best only a fraction o
 
 : Comparison of the size for different IntelliJ platform plugins {#tbl:plugins-size}
 
-Naturally, development efforts at this size would gravitate around the most promising solution, stifling the progress on competing platforms [@intellij-comparison-eclipse].
-Additionally, it would lock-in programmers into a specific platform for its language support regardless of their personal preference.
+Naturally, development efforts at this size tend to gravitate around the most promising solution, stifling the progress on competing platforms [@intellij-comparison-eclipse].
+Editor-specific approaches also tend to lock-in programmers into a specific platform for its language support regardless of their personal preference.
 
 ### IDE Abstraction
 
@@ -54,7 +54,7 @@ Compilers could transform input languages into this IR and in turn generate asse
 With Monto, Kreidel et al propose a similar idea for IDE portability.
 The paper describes the *Monto IR* and how they use a *Message Broker* to receive events from the Editor and dispatch them to *Monto Services*.
 
-The Monto IR is a language agnostic and editor independent, JSON serialized tree-like model.
+The Monto IR is a language-agnostic and editor-independent tree-like model serialized as JSON.
 Additionally, the IR maintains low level syntax highlighting information (font, color, style, etc.) but leaves the highlighting to the language specific service.
 
 The processing and modification of the source code and IR is performed by *Monto Services*.
@@ -76,7 +76,7 @@ The authors of Merlin postulate that implementing "tooling support traditionally
 As an answer to that, they describe the architecture of Merlin in [@merlin].
 
 Similarly to Monto, Merlin separates editor extensions from language analysis.
-Conversely, its interaction builds on a command line interface instead of message passing.
+However, Merlin uses a command line interface instead of message passing for interaction.
 Editor extensions expose the server functions to the user by integrating with the editor.
 
 The Merlin server hand provides a single optimized implementation of code intelligence for Ocaml.
