@@ -23,7 +23,7 @@ To be able to compare and describe each project objectively and comprehensively,
 
 Target Language
   ~ The complexity of implementing language servers is influenced severely by the targeted language.
-    Feature rich languages naturally require more sophisticated solutions than simpler ones.
+    Feature rich languages naturally require more sophisticated solutions.
     Conversely, self-hosted and interpreted languages can often leverage existing tooling.
 
 Features
@@ -45,7 +45,7 @@ File Processing
     The means are mainly influenced by the complexity of the language.
     Distinctions appear in the way servers process *file indexes and changes* and how they respond to *requests*.
   ~ The LSP supports sending updates in form of diffs of atomic changes and complete transmission of changed files.
-    The former requires methods of incremental parsing and analysis which are difficult by itself, but are able to process files much more quickly.
+    The former requires incremental parsing and analysis, which are challenging to implement but make processing files much faster upon changes.
     An incremental approach makes use of an internal representation of the source code that allows to quickly derive analytic results from and can be updated efficiently.
     Additionally, to facilitate the parsing, it must be able to provide a parser with the right context to correctly parse a changed fragment of code.
     On the contrary, most language servers process file changes by re-indexing the entire file, updating their internal model much more broadly.
@@ -53,7 +53,7 @@ File Processing
     Yet, it is less performant since entire files need to be processed, which becomes more noticeable as file sizes and edit frequency increase.
   ~ For code analysis LSP implementers have to decide between *lazy* or *greedy* approaches for processing files and answering requests.
     Dominantly greedy implementations resolve most available information during the indexing of the file.
-    The server can then facilitate this model to answer requests using mere lookups.
+    The server can then utilize this model to answer requests using mere lookups.
     This stands in contrast to lazy approaches where only minimal local information is resolved during the indexing.
     Requests invoke an ad-hoc resolution the results of which may be memoized for future requests.
     Lazy resolution is more prevalent in conjunction with incremental indexing, since it further reduces the work associated with file changes.
