@@ -377,7 +377,7 @@ If the field name is statically known, the access is said to be *static* accordi
 Conversely, if the name requires evaluating a string from an expression the access is called *dynamic*.
 An example is given in [@lst:nickel-static-dynamic]
 
-```{.nickel #lst:nickel-static-dynamic caption="Examples for static and dynamic record access}
+```{.nickel #lst:nickel-static-dynamic caption="Examples for static and dynamic record access"}
 let r = { foo = 1, "bar space" = 2} in
 r.foo // static
 r."bar space" // static
