@@ -31,11 +31,11 @@ Features
     The implementation of these protocol features is optional and servers and clients are able to communicate a set of *mutually supported* capabilities.
   ~ The Langserver.org^[https://langserver.org] project identified six basic capabilities that are most widely supported:
 
-    1. `Code completion`
-    2. `Hover`,
-    3. `Jump to def`,
-    4. `Workspace symbols`,
-    5. `Find references`
+    1. Code completion,
+    2. Hover information,
+    3. Jump to definition,
+    4. Find references,
+    5. Workspace symbols,
     6. Diagnostics
 
   ~ Yet, not all of these are applicable in every case and some LSP implementations reach for a much more complete coverage of the protocol.
