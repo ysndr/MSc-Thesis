@@ -222,6 +222,12 @@ Additionally, it is possible to execute resource intensive verification through 
 The LSP-Server supports both modes of operation.
 On one hand it interfaces directly with the Java modules provided by the CPAchecker library, on the other it is able to utilize an HTTP-API provided by a server instance of the verifier.
 
+Similar to the work by Leimeister, in [@comprehension-features] Mészáros et al. present a proof of concept leveraging the LSP to integrate (stand-alone) code comprehension tools with the LSP compliant VSCode editor.
+Code comprehension tools support the work with complex code bases by "providing various textual information, visualization views and source code metrics on multiple abstraction levels".
+Pushing the boundaries of LSP use-cases, code comprehension tools do not only analyze specific source code, but also take into account contextual information.
+One of such tools is CodeCompass [@code-compass].
+
+
 
 ### Honorable mentions
 
