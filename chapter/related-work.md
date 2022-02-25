@@ -48,8 +48,11 @@ Editor-specific approaches also tend to lock-in programmers into a specific plat
 
 The authors of the Monto project[@monto,@monto-disintegrated] call this the "IDE Portability Problem".
 They compare the situation with the task of compiling different high level languages to a set of CPU architectures.
-The answer to that problem was an intermediate representation (IR).
-Compilers could transform input languages into this IR and in turn generate assembly for different architectures from a single input format.
+In Compilers, the answer to that problem was the use of an intermediate representation (IR).
+A major compiler toolchain making use of this is the LLVM [@llvm].
+Compiler frontends for different languages -- e.g. Clang[@clang], Rustc[@rustc], NVCC[@nvcc],... -- compile input languages into LLVM IR, a low level language with additional capabilities to provide optimization hints but independent of a particular architecture.
+LLVM performs optimization of the IR and passes it to a compiler backend which in turn generates bytecode for specific architectures e.g. `x86_64`, `MIPS`, `aarch64`, `wasm`, etc.
+Notably through this mechanism, languages gain support for a range of architectures and profit from existing optimizations developed for the IR.
 
 With Monto, Kreidel et al propose a similar idea for IDE portability.
 The paper describes the *Monto IR* and how they use a *Message Broker* to receive events from the Editor and dispatch them to *Monto Services*.
