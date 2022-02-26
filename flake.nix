@@ -15,6 +15,11 @@
           pandoc $(cat ./toc.txt) --defaults document.yaml -o "$@"
         '';
 
+        compile-toc = pkgs.writeShellScriptBin "compile-toc" ''
+          pandoc $(cat ./toc.txt) --defaults document.yaml  -t markdown --toc --template table-of-contents.md.template --toc-depth=4 \
+          | pandoc --defaults document.yaml -o $@
+        '';
+
         compile-chapter-preview = pkgs.writeShellScriptBin "compile-chapter-preview" ''
           pandoc $1 --defaults document.yaml -o "''${@:2}"
         '';
@@ -42,6 +47,7 @@
               pythonExtra = p: [ p.pygraphviz p.psutil ];
             })
             compile-all
+            compile-toc
             compile-chapter-preview
           ];
         };
