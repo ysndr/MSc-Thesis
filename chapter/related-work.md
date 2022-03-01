@@ -36,9 +36,7 @@ Additionally, this part aims to recognize alternative approaches to the LSP, in 
 
 ## Alternative approaches
 
-### Platform plugins
 
-### Legacy protocols
 
 ### LSP Extensions
 
