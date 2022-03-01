@@ -88,9 +88,7 @@ File Processing
 
 ## Alternative approaches
 
-### Platform plugins
 
-### Legacy protocols
 
 ### LSP Extensions
 
