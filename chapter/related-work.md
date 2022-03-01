@@ -85,6 +85,10 @@ Similar to the work by Leimeister, in [@comprehension-features] Mészáros et al
 Code comprehension tools support the work with complex code bases by "providing various textual information, visualization views and source code metrics on multiple abstraction levels".
 Pushing the boundaries of LSP use-cases, code comprehension tools do not only analyze specific source code, but also take into account contextual information.
 One of such tools is CodeCompass [@code-compass].
+The works of Mészáros yielded a language server that allowed to access the analysis features of CodeCompass in VSCode.
+In their paper they specifically describe the generation of source code diagrams.
+Commands issued by the client are processed by a CodeCompass plugin which acts as an LSP server and interacts with CodeCompass through internal APIs.
+
 
 #### Language Servers for Domain Specific Languages
 
