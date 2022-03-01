@@ -86,6 +86,18 @@ Code comprehension tools support the work with complex code bases by "providing 
 Pushing the boundaries of LSP use-cases, code comprehension tools do not only analyze specific source code, but also take into account contextual information.
 One of such tools is CodeCompass [@code-compass].
 
+#### Language Servers for Domain Specific Languages
+
+Bünder and Kuchen [@multi-editor-support] highlight the importance of the LSP in the area of Domain Specific Languages (DSL).
+Compared to general purpose languages, DSLs often focus both technical and non-technical users.
+While DSL creation workbenches like Xtext [@eclipse-xtext], Spoofax [@spoofax] or MPS[@jetpbrains-mps] allow for the implementation and provision of Eclipse or IntelliJ based DSLs, tooling for these languages is usually tied to the underlying platform.
+Requiring a specific development platform does not satisfy every user of the language.
+Developers may prefer using different editors, while non-technical users could easily be overwhelmed by a highly technical tool such as Eclipse and likewise prefer a lighter editor or integration into their business application.
+The authors of [@multi-editor-support] present how Xtext can be employed to forge DSLs that are relying on the LSP to provide multi-editor support.
+Using a generated LSP server allows the integration of DSL language tooling into LSP capable editors.
+The authors especially mention the Monaco Editor [@monaco-editor], a reusable HTML component for code editing using web technologies.
+It is used in products like VSCode [@vscode], Theia [@theia] and other web accessible code editors.
+Since the Monaco Editor can be configured as an LSP client integrating LSP supported DSLs into web based business applications is now easier than ever before.
 
 
 ### Honorable mentions
