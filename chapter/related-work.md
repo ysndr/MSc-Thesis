@@ -72,4 +72,37 @@ Following the LSP example and defining commands language agnostic instead of tie
 Since the extensions can be incorporated by specific implementations of language servers in the same domain, a single client implementation serves multiple languages.
 The authors point out that while their approach specializes in specification languages, the idea can be transferred to other areas.
 
-### LSIF
+### Language Server Index Format
+
+The Language Server Index Format, or short LSIF, is an augmentation of the LSP.
+Since the LSP requires a language server to actively analyze files and answer requests, its use is typically constrained to local installations.
+As pointed out in the introducing blog post [@lsif-blog-post], several use cases exist where the LSP approach fails due to resource limits.
+The article explicitly names web based platforms such as GitHub[@github] or Sourcegraph[@sourcegraph].
+
+The LSIF aims to provide the features of the LSP without the need of actively running a language server.
+Instead, "language servers or other programming tools to emit their knowledge about a code workspace" as a LSIF compliant JSON report.
+
+The specification [@lsif-spec] defines four principal goals for the LSIF:
+
+- The format should not imply the use of a certain persistence technology.
+- The data defined should be modeled as closely as possible to the Language Server Protocol to make it possible to serve the data through the LSP without further transformation.
+- The data stored is result data usually returned from an LSP request. 
+- The output format will be based on JSON as with the LSP.
+
+The format specifies a graph structure that comprises that links ranges of source code to language analysis results that are based on the data types defined by the LSP.
+Vertices represent higher level concepts such as `document`s, `range`s, `resultSet`s and actual results.
+The relation between Vertices is expressed through the edges.
+
+Referring to an example form the official specification [@lsif-spec], an analysis of the code sample in [@lst:lsif-code-sample] may produce hover information for the function `bar()`.
+Using the LSIF, the result would be encoded as seen in [@lst:lsif-result-sample].
+The graph structure encoded here is visualized in [@fig:lsif-example].
+Using this graph an LSIF tool is able to resolve statically determined hover information by performing the following steps.
+
+1. search for `textDocument/hover` edges
+2. select the edge that originates at a `range` vertex corresponding to the requested position.
+3. return the target vertex
+
+As a consequence, a subset of LSP capabilities can be provided statically based on the preprocessed LSIF model.
+
+
+### DAP
