@@ -168,5 +168,14 @@ The BSP provides abstractions over dependencies, build targets, compilation and 
 While the LSP provides `run` or `test` integration for selected languages through Code Lenses, this is not part of the intended responsibilities of the protocol.
 In contrast, those tasks are explicitly targeted by the BSP.
 
-Next to, *writing* software (LSP) and *building/running/testing* software (e.g. BSP), *debugging* presents a third principle task of software development.
-Similar to the other tasks most actions related to debugging are common among different languages (stepping in/out of functions, pausing/continuing exection, )
+Next to *writing* software (LSP) and *building/running/testing* software (e.g. BSP), *debugging* presents a third principal task of software development.
+Similar to the other tasks, most actions and user interfaces related to debugging are common among different languages (stepping in/out of functions, pausing/continuing exection, breakpoints, etc.).
+Hence, the Debug Adapter Protocol, as maintained by Microsoft and implemented in the VSCode Editor, aims to separate the language specific implementation of debuggers from the UI integration.
+Following the idea of the LSP, the DAP specifies a communication format between debuggers and editors.
+Since debuggers are fairly complicated software, the integration of editor communication should not prompt new developments of debuggers.
+Instead, the DAP assumes a possible intermediate debugger adapter do perform and interface with existing debuggers such as `LLDB`, `GDB`, `node-debug` and others[@DAP-impls].
+
+Following the named protocols, Jeanjean et al. envision a future [@reifying] where all kinds of software tools are developed as protocol based services independent of and shared by different IDEs and Editors.
+Taking this idea further, they call for a Protocol Specification that allows to describe language protocols on a higher level.
+Such a protocol, they claim, could enable editor maintainers to implement protocol clients more easily by utilizing automated generation from Language Service Protocol Specifications.
+Additionally, it could allow different Language Services to interact with and depend on other services.
