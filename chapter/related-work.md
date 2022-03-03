@@ -105,4 +105,16 @@ Using this graph an LSIF tool is able to resolve statically determined hover inf
 As a consequence, a subset of LSP capabilities can be provided statically based on the preprocessed LSIF model.
 
 
-### DAP
+### \*SP, Abstracting software development processes
+
+Since its introduction the Language Server Protocol has become a standard format to provide language tooling for editing source code.
+Meanwhile, as hinted in [@sec:lsp-extensions], the LSP is not able to fully satisfy every use-case sparking the development of various LSP extensions.
+Following the success of language servers, similar advances have been made in other parts of the software development process.
+
+For instance, many Java build tools expose software build abstractions through the Build Server Protocol [@build-server-protocol], allowing IDEs to integrate more languages more easily by leveraging the same principle as the LSP.
+The BSP provides abstractions over dependencies, build targets, compilation and running of projects.
+While the LSP provides `run` or `test` integration for selected languages through Code Lenses, this is not part of the intended responsibilities of the protocol.
+In contrast, those tasks are explicitly targeted by the BSP.
+
+Next to, *writing* software (LSP) and *building/running/testing* software (e.g. BSP), *debugging* presents a third principle task of software development.
+Similar to the other tasks most actions related to debugging are common among different languages (stepping in/out of functions, pausing/continuing exection, )
