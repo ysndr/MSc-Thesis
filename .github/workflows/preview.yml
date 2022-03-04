@@ -22,7 +22,7 @@ jobs:
       - name: Check if preview generation is paused
         id: skip
         run: |
-          if [[ ${{ contains(github.event.pull_request.labels.*.name, 'no-preview') }} ]]
+          if [[ ${{ contains(github.event.pull_request.labels.*.name, 'no-preview') }} == true ]]
           then
             echo "::notice title=Preview Disabled::Remove the \`no-preview\` label to resume building previews"
             echo "::set-output name=skip::true"
