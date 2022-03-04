@@ -19,7 +19,7 @@ Yet, a few implementations stand out due to their sophisticate architecture, fea
 
 ### Considerable dimensions
 
-To be able to compare and describe each project objectively and comprehensively, the focus will be on the following dimensions.
+To be able to compare and describe LSP projects objectively and comprehensively, the focus will be on the following dimensions.
 
 Target Language
   ~ The complexity of implementing language servers is influenced severely by the targeted language.
