@@ -18,6 +18,19 @@ jobs:
     name: Build Preview
     runs-on: ubuntu-latest
     steps:
+
+      - name: Check if preview generation is paused
+        id: skip
+        run: |
+          if [[ ${{ contains(github.event.pull_request.labels.*.name, 'no-preview') }} ]]
+          then
+            echo "::notice title=Preview Disabled::Remove the \`no-preview\` label to resume building previews"
+            echo "::set-output name=skip::true"
+            exit 1
+          else
+            echo "::set-output name=skip::false"
+          fi
+      
       - name: Read config
         id: config
         run: |
@@ -45,6 +58,7 @@ jobs:
           no_override: true
           env: ${{ steps.config.outputs.env }}
           ref: ${{ steps.config.outputs.ref }}
+
       - name: Install Nix
         uses: cachix/install-nix-action@v15
       - name: Checkout Repository
@@ -137,7 +151,7 @@ jobs:
 
       - name: Update deployment status
         uses: bobheadxi/deployments@v0.6.2
-        if: always()
+        if: always() && (${{ steps.skip.outputs.skip }} == 'false' )
         with:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
