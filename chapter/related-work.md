@@ -24,7 +24,7 @@ To be able to compare and describe LSP projects objectively and comprehensively,
 Target Language
   ~ The complexity of implementing language servers is influenced severely by the targeted language.
     Feature rich languages naturally require more sophisticated solutions.
-    Conversely, self-hosted and interpreted languages can often leverage existing tooling.
+    Yet, existing tooling can often be leveraged to facilitate language servers.
 
 Features
   ~ The LSP defines an extensive array of capabilities.
