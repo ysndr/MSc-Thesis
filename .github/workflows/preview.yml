@@ -5,7 +5,7 @@ on:
   pull_request:
     branches:
       - main # PR into main
-      - 'chapter/**' # PR on chapter branches
+      - "chapter/**" # PR on chapter branches
 
 concurrency: preview
 
@@ -24,9 +24,9 @@ jobs:
           branch=${{ github.head_ref }}
           input="${branch%%#*}"
           pdf_output="${{ env.PREVIEW_PATH }}/${branch}.pdf"
-          
+
           mode=$([[ "$input" == "chapter/"* ]] && echo "chapter" || echo "all")
-          
+
           tag="${branch#*#}"
 
           echo "::set-output name=env::$branch"
@@ -105,7 +105,6 @@ jobs:
           nix develop --impure -c compile-thesis ${{env.PREVIEW_PATH}}/latest.pdf
           nix develop --impure -c compile-toc ${{env.PREVIEW_PATH}}/latest.toc.pdf
 
-
       - name: Archive document preview
         if: steps.config.outputs.mode == 'chapter'
         uses: actions/upload-artifact@v2
@@ -120,7 +119,6 @@ jobs:
         run: |
           nix develop --impure -c compile-thesis ${{env.PREVIEW_PATH}}/${{ steps.config.outputs.pdf_output }}
           nix develop --impure -c compile-toc ${{env.PREVIEW_PATH}}/${{steps.config.outputs.input}}.toc.pdf
-
 
       - name: Archive PR preview
         if: steps.config.outputs.mode == 'all'
