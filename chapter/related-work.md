@@ -6,93 +6,6 @@ As such, it is important to get a picture of the field of current LSP projects.
 This chapter will survey a varied range of popular language servers, compare common capabilities, and implementation approaches.
 Additionally, this part aims to recognize alternative approaches to the LSP, in the form of legacy protocols, extensible development platforms LSP extensions and the emerging Language Server Index Format.
 
-
-## Previous Approaches
-
-### IDEs
-
-Before the invention of the Language Server Protocol, language intelligence used to be provided by an IDE.
-Yet, the range of officially supported languages remained relatively small [@intellij-supported-languages].
-While integration for popular languages was common, top-tier support for less popular ones was all but guaranteed and relied mainly on community efforts.
-In fact Eclipse[@eclipse-a-platform,eclipse-www], IntelliJ[@intelliJ], and Visual Studio[@VisualStudio], to this day the most popular IDE choices, focus on a narrow subset of languages, historically Java and .NET.
-Additional languages can be integrated by custom (third-party) plugins or derivations of the base platform ([@list-of-eclipse,@jetbrains-all-products]).
-Due to the proprietary nature of some of these products, plugins are not compatible between different platforms.
-Many less popular languages therefore saw redundant implementations of what is essentially the same.
-For Haskell separate efforts produced an eclipse based IDE [@haskell-ide-eclips], as well as independent IntelliJ plugins [@intellij-haskell,@HaskForce].
-Importantly, the implementers of the former reported troubles with the language barrier between Haskell and the Eclipse base written in Java.
-
-The Haskell language is an exceptional example since there is also a native Haskell IDE[@haskell-for-mac] albeit that it is available only to the MacOS operating system.
-This showcases the difficulties of language tooling and its provision.
-
-In general, developing language integrations, both as the vendor of an IDE or a third-party plugin developer requires extensive resources.
-[Table @tbl:plugins-size] gives an idea of the efforts required.
-Since the IntelliJ platform is based on the JVM, its plugin system requires the use of JVM languages [@custom-language-support], making it hard to reuse the code of e.g. a reference compiler or interpreter.
-The Rust and Haskell integrations for instance contain at best only a fraction of code in their respective language.
-
-| Plugin                    | lines of code                                                |
-| ------------------------- | ------------------------------------------------------------ |
-| intellij-haskell          | 17249 (Java) + 13476 (Scala) **+ 0 (Haskell)**               |
-| intellij-rust             | 229131 (Kotlin) + 3958 (Rust)                                |
-| intellij-scala            | 39382 (Java) + 478904 (Scala)                                |
-| intellij-kotlin           | 182372 (Java) + 563394 (Kotlin)                              |
-| intellij-community/python | 47720 (C) + 248177 (Java) + 37101 (Kotlin) + 277125 (Python) |
-
-: Comparison of the size for different IntelliJ platform plugins {#tbl:plugins-size}
-
-Naturally, development efforts at this size tend to gravitate around the most promising solution, stifling the progress on competing platforms [@intellij-comparison-eclipse].
-Editor-specific approaches also tend to lock-in programmers into a specific platform for its language support regardless of their personal preference.
-
-### IDE Abstraction
-
-#### Monto
-
-The authors of the Monto project[@monto,@monto-disintegrated] call this the "IDE Portability Problem".
-They compare the situation with the task of compiling different high level languages to a set of CPU architectures.
-In Compilers, the answer to that problem was the use of an intermediate representation (IR).
-A major compiler toolchain making use of this is the LLVM [@llvm].
-Compiler frontends for different languages -- e.g. Clang[@clang], Rustc[@rustc], NVCC[@nvcc],... -- compile input languages into LLVM IR, a low level language with additional capabilities to provide optimization hints but independent of a particular architecture.
-LLVM performs optimization of the IR and passes it to a compiler backend which in turn generates bytecode for specific architectures e.g. `x86_64`, `MIPS`, `aarch64`, `wasm`, etc.
-Notably through this mechanism, languages gain support for a range of architectures and profit from existing optimizations developed for the IR.
-
-With Monto, Kreidel et al propose a similar idea for IDE portability.
-The paper describes the *Monto IR* and how they use a *Message Broker* to receive events from the Editor and dispatch them to *Monto Services*.
-
-The Monto IR is a language-agnostic and editor-independent tree-like model serialized as JSON.
-Additionally, the IR maintains low level syntax highlighting information (font, color, style, etc.) but leaves the highlighting to the language specific service.
-
-The processing and modification of the source code and IR is performed by *Monto Services*.
-Services implement specific actions, e.g. parsing, outlining or highlighting.
-A central broker connects the services with each other and the editor.
-
-Since Monto performs all work on the IR, independent of the editor, and serializes the IR as JSON messages, the language used to implement *Monto Services* can be chosen freely giving even more flexibility.
-
-The Editor extension's responsibility is to act as a source and sink for data.
-It sends Monto compliant messages to the broker and receives processing results such as (error) reports.
-The communication is based on the ZeroMQ[zeromq] technology which was chosen because it is lightweight and available in manly languages [@monto-disintegrated] allowing to make use of existing language tools.
-
-#### Merlin
-
-The Merlin tool [@merlin,@merlin-website] is in many ways a more specific version of the idea presented in Monto.
-Merlin is a language server for the Ocaml language, yet predates the Language Server Protocol.
-
-The authors of Merlin postulate that implementing "tooling support traditionally provided by IDEs" for "niche languages" demands to "share the language-awareness logic" between implementations.
-As an answer to that, they describe the architecture of Merlin in [@merlin].
-
-Similarly to Monto, Merlin separates editor extensions from language analysis.
-However, Merlin uses a command line interface instead of message passing for interaction.
-Editor extensions expose the server functions to the user by integrating with the editor.
-
-The Merlin server hand provides a single optimized implementation of code intelligence for Ocaml.
-Since all resources could be put to a single project, multiple iterations of performance improvements were done on Merlin.
-It now supports partial, incremental parsing and type-checking which allows users to query information even about incomplete or incorrect programs.
-
-Notably, being written in Ocaml, Merlin can make use of existing tools of the Ocaml language.
-In fact, its parser and type-checker are based on the respective original implementations.
-The Merlin project did however have to adapt the Ocaml type-checker to support the aforementioned incrementality.
-Changes are made against a copy of the relevant modules shipped with Merlin which facilitates keeping up with the latest developments of the language.
-
-While Merlin serves as a single implementation used by all clients, unlike Monto it does not specify a language independent format, or service architecture.
-
 ## Language Servers
 
 ### Considerable dimensions
@@ -123,10 +36,94 @@ While Merlin serves as a single implementation used by all clients, unlike Monto
 
 ## Alternative approaches
 
-### Platform plugins
-
-### Legacy protocols
-
 ### LSP Extensions
 
-### LSIF
+The LSP defines a large range of commands and capabilities which is continuously being extended by the maintainers of the protocol.
+Yet, occasionally server developers find themselves in need of functionality not yet present in the protocol.
+For example the LSP does not provide commands to exchange binary data such as files.
+In [@sec:language-independence] the CodeCompass Language Server was introduced.
+A stern feature of this server is the ability to generate and show diagrams in SVG format.
+However, the LSP does not define the concept of *requesting diagrams*.
+In particular Mészáros et al. describe different shortcomings of the LSP :
+
+1. The "LSP doesn’t have a feature to place a context menu at an arbitrary spot in the document"
+   Context menu entries are implemented by clients based on the agreed upon capabilities of the server.
+   Undefined capabilities cannot be added to the context menu.
+
+   In the case of CodeCompass the developers made up for this by using the code completion feature as an alternative dynamic context menu.
+
+2. "LSP does not support displaying pictures (diagrams)".
+   CodeCompass generates diagrams for selected code.
+   Yet, there is no image transfer included with the LSP.
+   Since the LSP is based on JSON-RPC messages, the authors' solution was to define a new command, specifically designed to tackle this non-standard use case.
+
+
+Missing features of the protocol such as the ones pointed out by Mészáros et al. appear frequently, especially in complex language servers or ones that implement more than basic code processing.
+
+The rust-analyzer defines almost thirty non-standard commands [@rust-analyzer-extensions], to enable different language specific actions.
+
+Taking the idea of the CodeCompass project further, Rodriguez-Echeverria et al. propose a generic extension of the LSP for graphical modeling [@lsp-for-graphical-modeling].
+Their approach is based on a generic intermediate representation of graphs which can be generated by language servers and turned into a graphical representation by the client implementation.
+
+Similarly, in [@Specification-Language-Server-Protocol,@decoupling-core-analysis-support] the authors describe a method to develop language agnostic LSP extensions.
+In their work they defined a language server protocol for specification languages (SLSP) which builds on top of the existing LSP, but adds several additional commands.
+The commands are grouped by their use case in the domain of specification languages and handles by separate modules of the client extension implementing support for the SLSP.
+Following the LSP example and defining commands language agnostic instead of tied to a specific language, allows to maintain the initial purpose of the LSP.
+Since the extensions can be incorporated by specific implementations of language servers in the same domain, a single client implementation serves multiple languages.
+The authors point out that while their approach specializes in specification languages, the idea can be transferred to other areas.
+
+### Language Server Index Format
+
+The Language Server Index Format, or short LSIF, is an augmentation of the LSP.
+Since the LSP requires a language server to actively analyze files and answer requests, its use is typically constrained to local installations.
+As pointed out in the introducing blog post [@lsif-blog-post], several use cases exist where the LSP approach fails due to resource limits.
+The article explicitly names web based platforms such as GitHub[@github] or Sourcegraph[@sourcegraph].
+
+The LSIF aims to provide the features of the LSP without the need of actively running a language server.
+Instead, "language servers or other programming tools to emit their knowledge about a code workspace" as a LSIF compliant JSON report.
+
+The specification [@lsif-spec] defines four principal goals for the LSIF:
+
+- The format should not imply the use of a certain persistence technology.
+- The data defined should be modeled as closely as possible to the Language Server Protocol to make it possible to serve the data through the LSP without further transformation.
+- The data stored is result data usually returned from an LSP request. 
+- The output format will be based on JSON as with the LSP.
+
+The format specifies a graph structure that comprises that links ranges of source code to language analysis results that are based on the data types defined by the LSP.
+Vertices represent higher level concepts such as `document`s, `range`s, `resultSet`s and actual results.
+The relation between Vertices is expressed through the edges.
+
+Referring to an example form the official specification [@lsif-spec], an analysis of the code sample in [@lst:lsif-code-sample] may produce hover information for the function `bar()`.
+Using the LSIF, the result would be encoded as seen in [@lst:lsif-result-sample].
+The graph structure encoded here is visualized in [@fig:lsif-example].
+Using this graph an LSIF tool is able to resolve statically determined hover information by performing the following steps.
+
+1. search for `textDocument/hover` edges
+2. select the edge that originates at a `range` vertex corresponding to the requested position.
+3. return the target vertex
+
+As a consequence, a subset of LSP capabilities can be provided statically based on the preprocessed LSIF model.
+
+
+### \*SP, Abstracting software development processes
+
+Since its introduction the Language Server Protocol has become a standard format to provide language tooling for editing source code.
+Meanwhile, as hinted in [@sec:lsp-extensions], the LSP is not able to fully satisfy every use-case sparking the development of various LSP extensions.
+Following the success of language servers, similar advances have been made in other parts of the software development process.
+
+For instance, many Java build tools expose software build abstractions through the Build Server Protocol [@build-server-protocol], allowing IDEs to integrate more languages more easily by leveraging the same principle as the LSP.
+The BSP provides abstractions over dependencies, build targets, compilation and running of projects.
+While the LSP provides `run` or `test` integration for selected languages through Code Lenses, this is not part of the intended responsibilities of the protocol.
+In contrast, those tasks are explicitly targeted by the BSP.
+
+Next to *writing* software (LSP) and *building/running/testing* software (e.g. BSP), *debugging* presents a third principal task of software development.
+Similar to the other tasks, most actions and user interfaces related to debugging are common among different languages (stepping in/out of functions, pausing/continuing exection, breakpoints, etc.).
+Hence, the Debug Adapter Protocol, as maintained by Microsoft and implemented in the VSCode Editor, aims to separate the language specific implementation of debuggers from the UI integration.
+Following the idea of the LSP, the DAP specifies a communication format between debuggers and editors.
+Since debuggers are fairly complicated software, the integration of editor communication should not prompt new developments of debuggers.
+Instead, the DAP assumes a possible intermediate debugger adapter do perform and interface with existing debuggers such as `LLDB`, `GDB`, `node-debug` and others[@DAP-impls].
+
+Following the named protocols, Jeanjean et al. envision a future [@reifying] where all kinds of software tools are developed as protocol based services independent of and shared by different IDEs and Editors.
+Taking this idea further, they call for a Protocol Specification that allows to describe language protocols on a higher level.
+Such a protocol, they claim, could enable editor maintainers to implement protocol clients more easily by utilizing automated generation from Language Service Protocol Specifications.
+Additionally, it could allow different Language Services to interact with and depend on other services.
