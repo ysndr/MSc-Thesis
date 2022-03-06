@@ -20,7 +20,6 @@ env:
   PREVIEW_BRANCH: "preview"
 
 jobs:
-
   check_disabled:
     name: Check if preview generation is paused
     runs-on: ubuntu-latest
@@ -28,20 +27,17 @@ jobs:
       skip: ${{ steps.skip.outputs.skip }}
     steps:
       - id: skip
+        if: contains(github.event.pull_request.labels.*.name, 'no-preview') 
         run: |
-          if [[ ${{ contains(github.event.pull_request.labels.*.name, 'no-preview') }} == true ]]
-          then
-            echo "::warn title=Preview Disabled::Remove the \`no-preview\` label to resume building previews"
             echo "::set-output name=skip::true"
-          else
-            echo "::set-output name=skip::false"
-          fi
+            echo "::warning title=Preview Disabled::Remove the \`no-preview\` label to resume building previews"
 
-  build:    
+
+  build:
     name: Build Preview
     runs-on: ubuntu-latest
-    needs: [check_disabled]
-    if: ${{ needs.check_disabled.outputs.skip }} == 'false'
+    needs: check_disabled
+    if: (! needs.check_disabled.outputs.skip)
     steps:
       - name: Read config
         id: config
