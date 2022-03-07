@@ -102,7 +102,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: chapter-plain
-          path: ${{env.PREVIEW_PATH}}/${{ steps.config.outputs.input }}.pdf
+          path: ${{ steps.config.outputs.pdf_output }}
 
       - name: Prepare preview branch
         run: |
@@ -147,7 +147,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: preview-complete
-          path: ${{env.PREVIEW_PATH}}/${{ steps.config.outputs.pdf_output }}
+          path: ${{ steps.config.outputs.pdf_output }}
 
       - name: Commit and push to branch
         run: |
