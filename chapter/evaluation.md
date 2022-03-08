@@ -27,9 +27,9 @@ Performance
     The evaluation should allow estimates of the sustained performance in real-world scenarios.
 
 Answering the questions above, this chapter consists of two main sections.
-The first section [sec:methods] introduces methods employed for the evaluation.
-In particular, it details the survey ([sec:qualitative]) which was conducted with the intent to gain qualitative opinions by users, as well as the tracing mechanism ([sec:quantitative]) for factual quantitative insights.
-
+The first section [@sec:methods] introduces methods employed for the evaluation.
+In particular, it details the survey ([@sec:qualitative]) which was conducted with the intent to gain qualitative opinions by users, as well as the tracing mechanism ([@sec:quantitative]) for factual quantitative insights.
+[Section @sec:results] summarises the results of these methods.
 
 ## Methods
 
