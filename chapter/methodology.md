@@ -66,7 +66,7 @@ To answer requests, NLS needs to store more information than what is originally 
 Apart from missing data, an AST is not optimized for quick random access of nodes based on their position, which is a crucial operation for a language server.
 To that end NLS introduces an auxiliary data structure, the *linearization*, which is derived from the AST.
 It represents the original data linearly, performs an enrichment of the AST nodes and provides greater decoupling of the LSP functions from the implemented language.
-[Section @sec:transfer-from-ast] details the process of transferring the AST.
+[Section @sec:transfer-from-ast] details the process of transforming the AST to a linearization.
 After NLS parsed a Nickel source files to an AST it starts to fill the linearization, which is in a *building* state during this phase.
 For reasons detailed in [@sec:post-processing], the linearization needs to be post-processed, yielding a *completed* state.
 The completed linearization acts as the basis to handle all supported LSP requests as explained in [@sec:lsp-server].
@@ -85,7 +85,7 @@ Incremental parsing, type-checking and analysis can still be implemented as a se
 ### States
 
 At its core the linearization in either state is represented by an array of `LinearizationItem`s which are derived from AST nodes during the linearization process.
-However, the exact structure of that array is differs as an effect of the post-processing.
+However, the exact structure of that array during the different phases differs as an effect of the post-processing.
 
 `LinearizationItem`s maintain the position of their AST counterpart, as well as its type.
 Unlike in the AST, *metadata* is directly associated with the element.
@@ -94,7 +94,7 @@ The latter is used to represent a usage graph on top of the linear structure.
 It distinguishes between declarations (`let` bindings, function parameters, records) and variable usages.
 Any other kind of structure, for instance, primitive values (Strings, numbers, boolean, enumerations), is recorded as `Structure`.
 
-To separate the phases of the elaboration of the linearization in a type-safe, the implementation is based on type-states[@typestate].
+To separate the phases of the elaboration of the linearization in a type-safe way, the implementation is based on type-states[@typestate].
 Type-states were chosen over an enumeration bases approach for the additional flexibility they provide to build a generic interface.
 Thanks to the generic interface, the adaptions to Nickel to integrate NLS are expected to have almost no influence on the runtime performance of the language in an optimized build.
 
@@ -110,7 +110,7 @@ building phase:
 post-processing phase:
   ~ Once fully built, a Building instance is post-processed to get a `Completed` linearization.
   ~ Although fundamentally still represented by an array, a completed linearization is optimized for search by positions (in the source file) thanks to sorting and the use of an auxiliary map from `id`s to the new index of items.
-  ~ Additionally, missing edges in the usage graph have been created and he types of items are fully resolved in a completed linearization.
+  ~ Additionally, missing edges in the usage graph have been created and the types of items are fully resolved in a completed linearization.
 
 Type definitions of the `Linearization` as well as its type-states `Building` and `Completed` are listed in [@lst:nickel-definition-lineatization;@lst:nls-definition-building-type;@lst:nls-definition-completed-type].
 Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS.
@@ -163,7 +163,7 @@ A stub implementation
     Since most methods of this implementation are `no-op`s, the compiler should be able to optimize away all `Linearizer` calls in release builds.
 
 <!-- TODO: caption -->
-```{.graphviz #fig:nls-nickel-structure caption="Interaction of Componenets"}
+```{.graphviz #fig:nls-nickel-structure caption="Interaction of Components"}
 digraph {
   nls [label="NLS"]
   nickel [label="Nickel"]
@@ -185,7 +185,7 @@ At the core the linearization is a simple *linear* structure.
 Yet, it represents relationships of nodes on a structural level as a tree-like structure.
 Taking into account variable usage information adds back-edges to the original AST, yielding a graph structure.
 Both kinds of edges have to be encoded with the elements in the list.
-Alas, items have to be referred to using `id`s since the index of items cannot be relied on(such as in e.g. a binary heap), because the array is reordered to optimize access by source position.
+Alas, items have to be referred to using `id`s since the index of items cannot be relied on (such as in e.g. a binary heap), because the array is reordered to optimize access by source position.
 
 There are two groups of vertices in such a graph.
 **Declarations** are nodes that introduce an identifier, and can be referred to by a set of nodes.
@@ -278,7 +278,7 @@ Additionally, to keep track of the variables in scope, and iteratively build a u
 
 #### Linearizer
 
-The heart of the linearization the `Linearizer` trait as defined in [@lst:nls-linearizer-trait].
+The heart of the linearization is the `Linearizer` trait as defined in [@lst:nls-linearizer-trait].
 The `Linearizer` lives in parallel to the `Linearization`.
 Its methods modify a shared reference to a `Building` `Linearization`.
 
@@ -510,7 +510,7 @@ For the language server it is important to associate field names with their valu
 For that reason, NLS distinguishes `Record` and `RecordField` as independent kinds of linearization items where `RecordFields` act as a bridge between the record and the value named after the field.
 
 To maintain similarity to other binding types, NLS has to create a separate item for the field and the value.
-This also ensures, that the value can be linearized independently.
+This also ensures that the value can be linearized independently.
 
 Record values may reference other fields defined in the same record regardless of the order, as records are recursive by default.
 Consequently, all fields have to be in scope and as such be linearized beforehand.
@@ -562,7 +562,7 @@ digraph G {
 }
 ```
 
-To provide the necessary references, NLS makes used of the *scope safe* memory of its `Linearizer` implementation.
+To provide the necessary references, NLS makes use of the *scope safe* memory of its `Linearizer` implementation.
 This is possible, because each record value corresponds to its own scope.
 The complete process looks as follows:
 
@@ -608,7 +608,7 @@ Consider the following example [@lst:nickel-recursive-record], which is depicted
 }
 ```
 
-```{.graphviz #fig:nls-unavailable-rec-record-field caption="Example race condition in recursive records. The field `y.yz` cannot be not be referenced at this point as the `y` branch has yet to be linearized"}
+```{.graphviz #fig:nls-unavailable-rec-record-field caption="Example lock in recursive records. The field `y.yz` cannot be not be referenced at this point as the `y` branch has yet to be linearized"}
 digraph G {
     node [shape=record]
     spline=false
@@ -774,13 +774,13 @@ Since the linearization is performed in a preorder traversal, processing already
 Yet, during the linearization the location might be unstable or unknown for different items.
 Record fields for instance are processed in an arbitrary order rather than the order they are defined.
 Moreover, for nested records and record short notations, symbolic `Record` items are created which cannot be mapped to a physical location and are thus placed at the range `[0..=0]` in the beginning of the file.
-Maintaining constant insertion performance and item-referencing require that the linearization is exclusively appended.
+Maintaining constant insertion performance and item-referencing requires that the linearization is exclusively appended.
 Each of these cases, break the physical linearity of the linearization.
 
 NLS thus defers reordering of items.
 The language server uses a stable sorting algorithm to sort items by their associated span's starting position.
 This way, nesting of items with the same start location is preserved.
-Since several operations require efficient access to elements by `id`, which after the sorting does not correspond to the items index in the linearization, after sorting NLS creates an index mapping `id`s to list indices.
+Since several operations require efficient access to elements by `id`, which after the sorting does not correspond to the items index in the linearization, after sorting NLS creates an index mapping `id`s to the new actual indices.
 
 #### Resolving deferred access
 
@@ -875,7 +875,7 @@ impl Completed {
 
 #### Resolving by ID
 
-During the building process item IDs are equal to their index in the underlying List which allows for efficient access by ID.
+During the building process item IDs are equal to their index in the underlying array which allows for efficient access by ID.
 To allow similarly efficient access to nodes with using IDs a `Completed` linearization maintains a mapping of IDs to their corresponding index in the reordered array.
 A queried ID is first looked up in this mapping which yields an index from which the actual item is read.
 
