@@ -21,16 +21,16 @@ let Port | doc "A contract for a port number" =
 
 let Container = {
   image | Str,
-  ports | List #Port,
+  ports | List Port,
 } in
 
 let NobernetesConfig = {
   apiVersion | Str,
   metadata.name | Str,
-  replicas | #nums.PosNat
+  replicas | nums.PosNat
            | doc "The number of replicas"
            | default = 1,
-  containers | { _ : #Container },
+  containers | { _ : Container },
 
 } in
 
@@ -45,7 +45,7 @@ let webContainer = fun image => {
   ports = [ 80, 443 ],
 } in
 
-let image = "k8s.gcr.io/#{name_}" in
+let image = "k8s.gcr.io/%{name_}" in
 
 {
   apiVersion = "1.1.0",
@@ -54,7 +54,7 @@ let image = "k8s.gcr.io/#{name_}" in
   containers = {
     "main container" = webContainer image
   }
-} | #NobernetesConfig
+} | NobernetesConfig
 
 ```
 
@@ -449,7 +449,7 @@ null
 if true then "TRUE :)" else "false :("
 
 // string iterpolation
-"#{ "hello" } #{ "world" }!"
+"%{ "hello" } %{ "world" }!"
 ```
 
 In the most common case of general elements, the node is simply registered as a `LinearizationItem` of kind `Structure`.
