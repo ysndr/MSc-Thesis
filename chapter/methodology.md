@@ -90,7 +90,7 @@ However, the exact structure of that array differs as an effect of the post-proc
 `LinearizationItem`s maintain the position of their AST counterpart as well as its type.
 Unlike in the AST ([sec:meta-information]), *metadata* is directly associated with the element.
 Further deviating from the AST representation, the *type* of the node and its *kind* are tracked separately.
-The latter is used to represent a usage graph on top of the linear structure. 
+The latter is used to represent a usage graph on top of the linear structure.
 It distinguishes between declarations (`let` bindings, function parameters, records) and variable usages.
 Any other kind of structure, for instance, primitive values (Strings, numbers, boolean, enumerations), is recorded as `Structure`.
 
@@ -207,13 +207,13 @@ At the core the linearization is a simple *linear* structure.
 Yet, it represents relationships of nodes on a structural level as a tree-like structure.
 Taking into account variable usage information adds back-edges to the original AST, yielding a graph structure.
 Both kinds of edges have to be encoded with the elements in the list.
-Alas, items have to be referred to using `id`s since the index of items cannot be relied on (such as in e.g. a binary heap), because the array is reordered to optimize access by source position.
+Alas, items have to be referred to using `id`s since the index of items cannot be relied on (such as in e.g., a binary heap), because the array is reordered to optimize access by source position.
 
 There are two groups of vertices in such a graph.
 **Declarations** are nodes that introduce an identifier, and can be referred to by a set of nodes.
 Referral is represented by **Usage** nodes.
 
-During the linearization process this graphical model is embeded into the items of the linearization.
+During the linearization process this graphical model is embedded into the items of the linearization.
 Hence, each `LinearizationItem` is associated with a kind representing the item's role in the graph (see: [@lst:nls-termkind-definition]).
 
 ```{.rust #lst:nls-termkind-definition caption="Definition of a linearization items TermKind"}
@@ -246,7 +246,7 @@ pub enum ValueState {
 
 Variable bindings and function arguments
   ~ are linearized using the `Declaration` variant which holds
-  
+
     - the bound identifier
     - a list of `ID`s corresponding to its `Usage`s.
     - its assigned value
@@ -285,7 +285,7 @@ The Nickel language implements lexical scopes with name shadowing.
 
 An AST inherently supports this logic.
 A variable reference always refers to the closest parent node defining the name and scopes are naturally separated using branching.
-Each branch of a node represents a sub-scope of its parent, i.e. new declarations made in one branch are not visible in the other.
+Each branch of a node represents a sub-scope of its parent, i.e., new declarations made in one branch are not visible in the other.
 
 When eliminating the tree structure, scopes have to be maintained in order to provide auto-completion of identifiers and list symbol names based on their scope as context.
 Since the bare linear data structure cannot be used to deduce a scope, related metadata has to be tracked separately.
