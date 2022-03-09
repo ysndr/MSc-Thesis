@@ -591,7 +591,7 @@ Each operation encodes one field of a referenced record.
 However, to reference the corresponding declaration, the final usage has to be known.
 Therefore, instead of linearizing the intermediate elements directly, the `Linearizer` adds them to a shared stack until the grounding variable reference is registered.
 
-Whenever a variable usage is linearized, NLS checks the stack for latent destructors.
+Whenever a variable usage is linearized, NLS checks the stack for latent destructors (record accesses).
 If destructors are present, it adds `Usage` items for each element on the stack.
 Yet, because records are recursive it is possible that fields reference other fields' values.
 
