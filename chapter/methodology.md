@@ -792,12 +792,12 @@ After the post-processing the resulting linearization
 
 #### Sorting
 
-Since the linearization is performed in a preorder traversal, processing already happens in the order elements are defined physically.
+Since the linearization is performed in a preorder traversal, processing already happens in the order elements are defined in the file.
 Yet, during the linearization the location might be unstable or unknown for different items.
 Record fields for instance are processed in an arbitrary order rather than the order they are defined.
-Moreover, for nested records and record short notations, symbolic `Record` items are created which cannot be mapped to a physical location and are thus placed at the range `[0..=0]` in the beginning of the file.
+Moreover, for nested records and record short notations, symbolic `Record` items are created which cannot be mapped to the original source and are thus placed at the range `[0..=0]` in the beginning of the file.
 Maintaining constant insertion performance and item-referencing requires that the linearization is exclusively appended.
-Each of these cases, break the physical linearity of the linearization.
+Given the examples above, this breaks the original order of the items with respect to their assigned position.
 
 NLS thus defers reordering of items.
 The language server uses a stable sorting algorithm to sort items by their associated span's starting position.
