@@ -1,9 +1,9 @@
 # Design implementation of NLS
 
-This chapter contains a detailed guide through the various steps and components of the Nickel Language Server (NLS).
+This chapter guides through the various steps and components of the Nickel Language Server (NLS).
 Being written in the same language (Rust[@rust]) as the Nickel interpreter allows NLS to integrate existing components for language analysis.
-Complementary, NLS is tightly coupled to Nickel's syntax definition.
-[Section @sec:linearization] will introduce the main data structure underlying all higher level LSP interactions and how the AST described in [@sec:nickel-ast] is transformed into this form.
+Aiming for an abstract interface, NLS defines its own data structure underpinning all higher level LSP interactions.
+[Section @sec:linearization] will introduce this `linearization` data structure and explain how NLS bridges the gap between the explicitly handled Nickel AST towards the abstract linearization.
 Finally, the implementation of current LSP features is discussed in [@sec:lsp-server].
 
 ## Illustrative example
@@ -62,7 +62,7 @@ let image = "k8s.gcr.io/%{name_}" in
 ## Linearization
 
 The focus of the NLS as presented in this work is to implement a working language server with a comprehensive feature set.
-To answer requests, NLS needs to store more information than what is originally present in a Nickel AST.
+To answer requests, NLS needs to store more information than what is originally present in a Nickel AST such as information about references and types.
 Apart from missing data, an AST is not optimized for quick random access of nodes based on their position, which is a crucial operation for a language server.
 To that end NLS introduces an auxiliary data structure, the *linearization*, which is derived from the AST.
 It represents the original data linearly, performs an enrichment of the AST nodes and provides greater decoupling of the LSP functions from the implemented language.
@@ -70,32 +70,32 @@ It represents the original data linearly, performs an enrichment of the AST node
 After NLS parsed a Nickel source files to an AST it starts to fill the linearization, which is in a *building* state during this phase.
 For reasons detailed in [@sec:post-processing], the linearization needs to be post-processed, yielding a *completed* state.
 The completed linearization acts as the basis to handle all supported LSP requests as explained in [@sec:lsp-server].
-[Section @sec:resolving-elements] explains how a completed linearization is accessed.
+[Section @sec:resolving-elements] explains how a completed linearization is accessed efficiently.
 
 Advanced LSP implementations sometimes employ so-called incremental parsing, which allows updating only the relevant parts of an AST (and, in case of NLS, the derived linearization) upon small changes in the source.
 However, an incremental LSP is not trivial to implement.
 For once, NLS would not be able to leverage existing components from the existing Nickel implementation (most notably, the parser).
-Parts of the nickel runtime, such as the typechecker, would need to be adapted or even reimplemented to work in an incremental way too.
+Parts of the nickel runtime, such as the typechecker, would need to be adapted or even reimplemented to work incrementally too.
 Considering the scope of this thesis, the presented approach performs a complete analysis on every update to the source file.
 The typical size of Nickel projects is assumed to remain small for quite some time, giving reasonable performance in practice.
-Incremental parsing, type-checking and analysis can still be implemented as a second step in the future.
+Incremental parsing, type-checking and analysis can still be implemented as a second step in the future after gathering more usage data once nickel and the NLS enjoy greater adoption.
 
 <!-- TODO mention lsif here? -->
 
 ### States
 
 At its core the linearization in either state is represented by an array of `LinearizationItem`s which are derived from AST nodes during the linearization process.
-However, the exact structure of that array during the different phases differs as an effect of the post-processing.
+However, the exact structure of that array differs as an effect of the post-processing.
 
-`LinearizationItem`s maintain the position of their AST counterpart, as well as its type.
-Unlike in the AST, *metadata* is directly associated with the element.
+`LinearizationItem`s maintain the position of their AST counterpart as well as its type.
+Unlike in the AST ([sec:meta-information]), *metadata* is directly associated with the element.
 Further deviating from the AST representation, the *type* of the node and its *kind* are tracked separately.
 The latter is used to represent a usage graph on top of the linear structure. 
 It distinguishes between declarations (`let` bindings, function parameters, records) and variable usages.
 Any other kind of structure, for instance, primitive values (Strings, numbers, boolean, enumerations), is recorded as `Structure`.
 
 To separate the phases of the elaboration of the linearization in a type-safe way, the implementation is based on type-states[@typestate].
-Type-states were chosen over an enumeration bases approach for the additional flexibility they provide to build a generic interface.
+Type-states were chosen over an enumeration based approach for the additional flexibility they provide to build a generic interface.
 Thanks to the generic interface, the adaptions to Nickel to integrate NLS are expected to have almost no influence on the runtime performance of the language in an optimized build.
 
 NLS implements separate type-states for the two phases of the linearization: `Building` and `Completed`.
@@ -165,16 +165,38 @@ A stub implementation
 <!-- TODO: caption -->
 ```{.graphviz #fig:nls-nickel-structure caption="Interaction of Components"}
 digraph {
-  nls [label="NLS"]
-  nickel [label="Nickel"]
-  als [label="Linearizer", shape=box]
-  stub [label="Stub interface"]
+  splines="ortho"
+  node [shape=record]
 
-  nls ->  nickel  [label="uses"]
-  nls ->  als [label="implements"]
-  stub ->  als [label="implements"]
-  nickel ->  als  [label="uses"]
-  nickel ->  stub  [label="uses"]
+
+
+  {
+    node[style=dashed]
+    nls [label="NLS"]
+    host [label=Analysis]
+  }
+
+  {
+    node[style=dotted]
+    nickel [label="Nickel"]
+    stub [label="Stub interface"]
+  }
+
+
+  als [label="Linearizer | \<T\>"]
+
+//   {rank=same; host; stub; }
+
+  
+  
+  host ->  nickel  [label="imports", constraint = false]
+  
+  stub ->  als [label="implements | T = ()"]
+  nickel ->  als  [label="calls"]
+  nickel ->  stub  [label="defines", style=dashed, color=grey]
+  nls ->  host  [label="defines", style=dashed, color=grey]
+  host ->  als [label="implements | T = Nickel"]
+
 }
 ```
 
