@@ -98,7 +98,7 @@ A stern feature of this server is the ability to generate and show diagrams in S
 However, the LSP does not define the concept of *requesting diagrams*.
 In particular Mészáros et al. describe different shortcomings of the LSP :
 
-1. The "LSP doesn’t have a feature to place a context menu at an arbitrary spot in the document"
+1. > "LSP doesn’t have a feature to place a context menu at an arbitrary spot in the document"
    Context menu entries are implemented by clients based on the agreed upon capabilities of the server.
    Undefined capabilities cannot be added to the context menu.
 
