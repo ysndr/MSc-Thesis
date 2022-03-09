@@ -827,10 +827,15 @@ If no field with that name is present or the parent points to a `Structure` or `
 #### Resolving types
 
 <!-- TODO: link to background section -->
-As a necessity for type checking, Nickel generates type variables for any node of the AST which it hands down to the `Linearizer`.
+Nickel features type inference in order to relieve the programmer of the burden of writing a lot of redundant type annotations.
+In a typed block, the typechecker is able to guess the type of all the values, even when they are not explicitly annotated by the user.
+To do so, the typechecker generates constraints derived from inspecting the AST, and solve them along the way.
+As a consequence, when a node is first encountered by NLS, its type is not necessarily  known.
+There, the typechecker associate to the new node a so-called unification variable, which is a placeholder for a later resolved type.
+This unification variable is handed down to the `Linearizer`.
+
+Similar to runtime processing, NLS needs to resolve the final types separately. After typechecking, NLS is eventually able to query the resolved type corresponding to an AST node using the associated unification variable.
 <!-- TODO: example for types? -->
-In order to provide meaningful information, the Language Server needs to derive concrete types from these variables.
-The required metadata needs to be provided by the type checker.
 
 
 ### Resolving Elements
