@@ -67,7 +67,7 @@ Their approach is based on a generic intermediate representation of graphs which
 
 Similarly, in [@Specification-Language-Server-Protocol,@decoupling-core-analysis-support] the authors describe a method to develop language agnostic LSP extensions.
 In their work they defined a language server protocol for specification languages (SLSP) which builds on top of the existing LSP, but adds several additional commands.
-The commands are grouped by their use case in the domain of specification languages and handles by separate modules of the client extension implementing support for the SLSP.
+The commands are grouped by their use case in the domain of specification languages and handled by separate modules of the client extension implementing support for the SLSP.
 Following the LSP example and defining commands language agnostic instead of tied to a specific language, allows to maintain the initial purpose of the LSP.
 Since the extensions can be incorporated by specific implementations of language servers in the same domain, a single client implementation serves multiple languages.
 The authors point out that while their approach specializes in specification languages, the idea can be transferred to other areas.
@@ -82,7 +82,7 @@ The article explicitly names web based platforms such as GitHub[@github] or Sour
 The LSIF aims to provide the features of the LSP without the need of actively running a language server.
 Instead, "language servers or other programming tools to emit their knowledge about a code workspace" as a LSIF compliant JSON report.
 
-The specification [@lsif-spec] defines four principal goals for the LSIF:
+The LSIF specification [@lsif-spec] defines four principal goals:
 
 - The format should not imply the use of a certain persistence technology.
 - The data defined should be modeled as closely as possible to the Language Server Protocol to make it possible to serve the data through the LSP without further transformation.
@@ -91,7 +91,7 @@ The specification [@lsif-spec] defines four principal goals for the LSIF:
 
 The format specifies a graph structure that comprises that links ranges of source code to language analysis results that are based on the data types defined by the LSP.
 Vertices represent higher level concepts such as `document`s, `range`s, `resultSet`s and actual results.
-The relation between Vertices is expressed through the edges.
+The relation between vertices is expressed through the edges.
 
 Referring to an example form the official specification [@lsif-spec], an analysis of the code sample in [@lst:lsif-code-sample] may produce hover information for the function `bar()`.
 Using the LSIF, the result would be encoded as seen in [@lst:lsif-result-sample].
