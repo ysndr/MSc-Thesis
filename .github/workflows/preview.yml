@@ -166,4 +166,4 @@ jobs:
           status: ${{ job.status }}
           auto_inactive: false
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-          env_url: "https://github.com/${{github.repository}}/tree/${{env.PREVIEW_REF}}/${{env.PREVIEW_PATH}}/${{ steps.config.outputs.pdf_output }}"
+          env_url: "https://github.com/${{github.repository}}/tree/${{env.PREVIEW_REF}}/${{ steps.config.outputs.pdf_output }}"
