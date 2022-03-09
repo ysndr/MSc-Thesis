@@ -486,7 +486,7 @@ For either the linearizer generates `Declaration` items and updates its name reg
 However, type information is available for name bindings only, meaning pattern matches remain untyped.
 
 The same process applies for argument names in function declarations.
-Due to argument currying, NLS linearizes only a single argument/pattern at a time.
+Due to argument currying[^https://en.wikipedia.org/wiki/Currying], NLS linearizes only a single argument/pattern at a time.
 
 ##### Records
 
