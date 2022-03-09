@@ -99,12 +99,14 @@ However, the LSP does not define the concept of *requesting diagrams*.
 In particular Mészáros et al. describe different shortcomings of the LSP :
 
 1. > "LSP doesn’t have a feature to place a context menu at an arbitrary spot in the document"
+
    Context menu entries are implemented by clients based on the agreed upon capabilities of the server.
    Undefined capabilities cannot be added to the context menu.
 
    In the case of CodeCompass the developers made up for this by using the code completion feature as an alternative dynamic context menu.
 
-2. "LSP does not support displaying pictures (diagrams)".
+2. > "LSP does not support displaying pictures (diagrams)".
+
    CodeCompass generates diagrams for selected code.
    Yet, there is no image transfer included with the LSP.
    Since the LSP is based on JSON-RPC messages, the authors' solution was to define a new command, specifically designed to tackle this non-standard use case.
