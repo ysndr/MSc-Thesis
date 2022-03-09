@@ -481,12 +481,12 @@ This applies for all simple expressions like those exemplified in [@lst:nickel-s
 ##### Declarations
 
 In case of `let` bindings or function arguments name binding is equally simple.
-As discussed in [@sec:let-bindings-and-functions] the `let` node may contain both a name and pattern matches.
+As discussed in [@sec:let-bindings-and-functions] the `let` node may contain both a name and patterns.
 For either the linearizer generates `Declaration` items and updates its name register.
 However, type information is available for name bindings only, meaning pattern matches remain untyped.
 
 The same process applies for argument names in function declarations.
-Due to argument currying, NLS linearizes only a single argument/pattern at a time.
+Due to argument currying[^https://en.wikipedia.org/wiki/Currying], NLS linearizes only a single argument/pattern at a time.
 
 ##### Records
 
