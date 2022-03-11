@@ -107,7 +107,7 @@ jobs:
       - name: Prepare preview branch
         run: |
           git add ${{env.PREVIEW_PATH}}
-          git stash push
+          [[ ${{ steps.config.outputs.mode }} == "chapter" ]] && git stash push
           git switch ${{env.PREVIEW_BRANCH}}
           git merge --squash origin/${{ steps.config.outputs.ref }} -Xtheirs
           if [[ ${{ steps.config.outputs.mode }} == "chapter" ]]; then
@@ -119,7 +119,7 @@ jobs:
           else
             echo "Non chapter branch, not committing proposed changes"
           fi
-          git checkout stash -- ${{ env.PREVIEW_PATH }}
+          [[ ${{ steps.config.outputs.mode }} == "chapter" ]] && git checkout stash -- ${{ env.PREVIEW_PATH }}
 
       - name: Compile document preview
         if: steps.config.outputs.mode == 'chapter'
