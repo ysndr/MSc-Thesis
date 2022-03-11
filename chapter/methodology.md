@@ -302,7 +302,7 @@ A `ScopeId` in turn is a "scope path", a list of path elements where the prefix 
 
 
 
-```{.nickel, #lst:nickel-scope-example, caption="Explicit display of Nickel scopes"}
+```{.nickel #lst:nickel-scope-example caption="Explicit display of Nickel scopes"}
 ---------------------------------------------+/1
                                              |
 let record                                   |
@@ -928,7 +928,7 @@ During the building process item IDs are equal to their index in the underlying 
 To allow similarly efficient access to nodes with using IDs a `Completed` linearization maintains a mapping of IDs to their corresponding index in the reordered array.
 For instance NLS would represent the example [@lst:nickel-scope-example] as shown in :
 
-```{.rust, #lst:nls-scopes-elements, caption="Items collected for each scope of the example. Simplified representation using concrete values"}
+```{.rust #lst:nls-scopes-elements caption="Items collected for each scope of the example. Simplified representation using concrete values"}
 /1 -> { Declaration("record") }
 /1/1 -> { RecordField("key1"), RecordField("key2") }
 /1/1/1 -> { "value" }
