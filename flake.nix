@@ -21,7 +21,7 @@
         '';
 
         compile-chapter-preview = pkgs.writeShellScriptBin "compile-chapter-preview" ''
-          pandoc $1 --defaults document.yaml -o "''${@:2}"
+          pandoc prelude/metadata.yaml prelude/prelude.md $1 --defaults document.yaml -o "''${@:2}"
         '';
 
       in
