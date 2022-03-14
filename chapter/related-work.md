@@ -16,7 +16,7 @@ Yet, the range of officially supported languages remained relatively small [@int
 While integration for popular languages was common, top-tier support for less popular ones was all but guaranteed and relied mainly on community efforts.
 In fact Eclipse[@eclipse-a-platform,eclipse-www], IntelliJ[@intelliJ], and Visual Studio[@VisualStudio], to this day the most popular IDE choices, focus on a narrow subset of languages, historically Java and .NET.
 Additional languages can be integrated by custom (third-party) plugins or derivations of the base platform ([@list-of-eclipse,@jetbrains-all-products]).
-Due to the proprietary nature of some of these products, plugins are not compatible between different platforms.
+Due to the technical implications, plugins are generally not compatible between different platforms.
 Many less popular languages therefore saw redundant implementations of what is essentially the same.
 For Haskell separate efforts produced an eclipse based IDE [@haskell-ide-eclips], as well as independent IntelliJ plugins [@intellij-haskell,@HaskForce].
 Importantly, the implementers of the former reported troubles with the language barrier between Haskell and the Eclipse base written in Java.
