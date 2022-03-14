@@ -12,120 +12,111 @@ Additionally, this part aims to recognize alternative approaches to the LSP, in 
 
 #### Language Complexity
 
-#### LSP compliance
 
-#### Features
+### Representative LSP Projects
 
-#### File processing
+Since the number of implementations of the LSP is continuously growing, this thesis will present a selected set of notable projects.
 
-##### Incremental
+1. Three highly advanced and complete implementations that are the de-facto standard tooling for their respective language:
+   *rust-analyzer* [@rust-analyzer], *ocaml-lsp*/*merlin* [@ocaml-lsp,@merlin] and the *Haskell Language Server* [@hls]
+2. Two projects that provide compelling alternatives for existing specialized solutions:
+   *Metals* (for Scala) [@metals], *Java LSP* [@java-lsp]
+3. Language Servers for small languages in terms of complexity and userbase, highlighting one of the many use cases for the LSP.
+   *rnix-lsp* [@rnix-lsp], *frege-lsp*
 
-##### Full
 
-### Comparative Projects
 
-<!-- Rust Analyser -->
-<!-- Merlin -->
-<!-- rnix-lsp -->
-<!-- pylance? -->
-<!-- Scala & Java LSP (feature LSP extensions) -->
-<!-- haskell LSP? (talk to tim) -->
+#### LSP as standard tooling
+
+Today LSP-based solutions serve as the go-to method to implement language analysis tools.
+Emerging languages in particular take advantage from the the flexibility and reach of the LSP.
+
+Most languages profit greatly from the possibility to leverage existing tooling for the language.
+For instance the Haskell language server facilitates a plugin system that allows it to integrate with existing tooling projects [@hls-plugin-search].
+Plugins provide capabilities for linting [@hls-hlint-plugin], formatting [@hls-floskell-plugin,hls-ormolu-plugin], documentation [@hls-haddock-comments-plugin] and other code actions [@hls-tactics-plugin] across multiple compiler versions.
+While this requires HSL to be compiled with the same compiler version in use by the IDE, it also avoids large scale reimplementations of compiler features in an entirely different language.
+
+Similarly, the Ocaml language service builds on top of existing infrastructure by relying on the Merlin project introduced in [@sec:Merlin].
+Here, the advantages of employing existing language components have been explored even before the LSP.
+
+The rust-analyzer [@rust-analyzer] takes an intermediate approach.
+It does not reuse or modify the existing compiler, but instead implements analysis functionality based on low level components.
+This way the developers of rust-analyzer have greater freedom to adapt for more advanced features.
+For instance rust-analyzer implements an analysis optimized parser with support for incremental processing.
+Due to the complexity of the language, LSP requests are processed lazily, with support for caching to ensure performance.
+While many parts of the language have been reimplemented with a language-server-context in mind, the analyzer did not however implement detailed linting or the rust-specific borrow checker.
+For these kinds of analysis, rust-analyzer falls back to calls to the rust build system.
+
+
+#### Rapid implementation of LSP features
+
+The LSP makes it possible to bring language support to many editors at once.
+Emerging languages are profiting from this in particular since development resources are typically scarce and the core is quite volatile.
+To mitigate this, core language components can often be reused or integrated through command line calls.
+
+A good example is given by the Frege language [@frege-github].
+Frege as introduced in [@frege-paper] is a JVM based functional language with a Haskell-like syntax.
+It features lazy evaluation, user-definable operators, type classes and integration with Java.  
+While previously providing an eclipse plugin [@frege-eclipse], the tooling efforts have since been put towards an LSP implementation.
+The initial development of this language server has been reported on in [@frege-lsp-report].
+The author shows though multiple increments how they utilized the JVM to implement a language server in Java for the (JVM based) Frege language.
+In the final proof-of-concept, the authors build a minimal language server through the use of Frege's existing REPL and interpreter modules.
+Being written in Java, allows the server to make use of other community efforts such as the LSP4J project which provide abstractions over the interaction with LSP clients.
+Through the use for such abstractions, servers can focus on the implementation of capabilities only.
+
+
+#### Language Independence
+
+The LSP is truly language independent.
+Many language implementations do not expose the required language interfaces (parsing, AST, Types, etc..), or pose various other impediments such as a closed source, licensing, or the absence of LSP abstractions available for the host language.
+
+An instance of this type is the rnix-lsp[@rnix-git] language server for the nix[@nixos.org] programming language.
+Despite the nix language being written in C++ [@nix-repo], its language server builds on a custom parser[@rnix] in Rust.
+
+The work presented by Leimeister in [@cpachecker-lsp] exemplifies how functionality can be provided by entirely external tools as well.
+The server can be used to automatically perform software verification in the background using CPAchecker[@cpachecker].
+CPAchecker is a platform for automatic and extensible software verification.
+The program is written in Java and provides a command line interface to be run locally.
+Additionally, it is possible to execute resource intensive verification through an HTTP-API on more powerful machines or clusters [@cpa-google-cloud,@cpa-clusters].
+The LSP-Server supports both modes of operation.
+On one hand it interfaces directly with the Java modules provided by the CPAchecker library, on the other it is able to utilize an HTTP-API provided by a server instance of the verifier.
+
+Similar to the work by Leimeister, in [@comprehension-features] Mészáros et al. present a proof of concept leveraging the LSP to integrate (stand-alone) code comprehension tools with the LSP compliant VSCode editor.
+Code comprehension tools support the work with complex code bases by "providing various textual information, visualization views and source code metrics on multiple abstraction levels".
+Pushing the boundaries of LSP use-cases, code comprehension tools do not only analyze specific source code, but also take into account contextual information.
+One of such tools is CodeCompass [@code-compass].
+The works of Mészáros yielded a language server that allowed to access the analysis features of CodeCompass in VSCode.
+In their paper they specifically describe the generation of source code diagrams.
+Commands issued by the client are processed by a CodeCompass plugin which acts as an LSP server and interacts with CodeCompass through internal APIs.
+
+
+#### Language Servers for Domain Specific Languages
+
+Bünder and Kuchen [@multi-editor-support] highlight the importance of the LSP in the area of Domain Specific Languages (DSL).
+Compared to general purpose languages, DSLs often targets both technical and non-technical users.
+While DSL creation workbenches like Xtext [@eclipse-xtext], Spoofax [@spoofax] or MPS[@jetpbrains-mps] allow for the implementation and provision of Eclipse or IntelliJ based DSLs, tooling for these languages is usually tied to the underlying platform.
+Requiring a specific development platform does not satisfy every user of the language.
+Developers have their editor of choice, that they don't easily give up on.
+Non-technical users could easily be overwhelmed by a complex software like Eclipse.
+For those non-technical users, a light editor would be more adapted, or even one that is directly integrated into their business application.
+The authors of [@multi-editor-support] present how Xtext can generate an LSP server for a custom DSL, providing multi-editor support.
+The authors especially mention the Monaco Editor [@monaco-editor], a reusable HTML component for code editing using web technologies.
+It is used in products like VSCode [@vscode], Theia [@theia] and other web accessible code editors.
+The Monaco Editor supports the LSP as a client (that is, on the editor side).
+Such LSP-capable web editors make integrating DSLs directly into web applications easier than ever before.
+
 
 ### Honorable mentions
+
+<!-- frege? -->
 
 
 ## Alternative approaches
 
+### Platform plugins
+
+### Legacy protocols
+
 ### LSP Extensions
 
-The LSP defines a large range of commands and capabilities which is continuously being extended by the maintainers of the protocol.
-Yet, occasionally server developers find themselves in need of functionality not yet present in the protocol.
-For example the LSP does not provide commands to exchange binary data such as files.
-In [@sec:language-independence] the CodeCompass Language Server was introduced.
-A stern feature of this server is the ability to generate and show diagrams in SVG format.
-However, the LSP does not define the concept of *requesting diagrams*.
-In particular Mészáros et al. describe different shortcomings of the LSP :
-
-1. > "LSP doesn’t have a feature to place a context menu at an arbitrary spot in the document"
-
-   Context menu entries are implemented by clients based on the agreed upon capabilities of the server.
-   Undefined capabilities cannot be added to the context menu.
-
-   In the case of CodeCompass the developers made up for this by using the code completion feature as an alternative dynamic context menu.
-
-2. > "LSP does not support displaying pictures (diagrams)".
-
-   CodeCompass generates diagrams for selected code.
-   Yet, there is no image transfer included with the LSP.
-   Since the LSP is based on JSON-RPC messages, the authors' solution was to define a new command, specifically designed to tackle this non-standard use case.
-
-
-Missing features of the protocol such as the ones pointed out by Mészáros et al. appear frequently, especially in complex language servers or ones that implement more than basic code processing.
-
-The rust-analyzer defines almost thirty non-standard commands [@rust-analyzer-extensions], to enable different language specific actions.
-
-Taking the idea of the CodeCompass project further, Rodriguez-Echeverria et al. propose a generic extension of the LSP for graphical modeling [@lsp-for-graphical-modeling].
-Their approach is based on a generic intermediate representation of graphs which can be generated by language servers and turned into a graphical representation by the client implementation.
-
-Similarly, in [@Specification-Language-Server-Protocol,@decoupling-core-analysis-support] the authors describe a method to develop language agnostic LSP extensions.
-In their work they defined a language server protocol for specification languages (SLSP) which builds on top of the existing LSP, but adds several additional commands.
-The commands are grouped by their use case in the domain of specification languages and handled by separate modules of the client extension implementing support for the SLSP.
-Following the LSP example and defining commands language agnostic instead of tied to a specific language, allows to maintain the initial purpose of the LSP.
-Since the extensions can be incorporated by specific implementations of language servers in the same domain, a single client implementation serves multiple languages.
-The authors point out that while their approach specializes in specification languages, the idea can be transferred to other areas.
-
-### Language Server Index Format
-
-The Language Server Index Format, or short LSIF, is an augmentation of the LSP.
-Since the LSP requires a language server to actively analyze files and answer requests, its use is typically constrained to local installations.
-As pointed out in the introducing blog post [@lsif-blog-post], several use cases exist where the LSP approach fails due to resource limits.
-The article explicitly names web based platforms such as GitHub[@github] or Sourcegraph[@sourcegraph].
-
-The LSIF aims to provide the features of the LSP without the need of actively running a language server.
-Instead, "language servers or other programming tools to emit their knowledge about a code workspace" as a LSIF compliant JSON report.
-
-The LSIF specification [@lsif-spec] defines four principal goals:
-
-- The format should not imply the use of a certain persistence technology.
-- The data defined should be modeled as closely as possible to the Language Server Protocol to make it possible to serve the data through the LSP without further transformation.
-- The data stored is result data usually returned from an LSP request. 
-- The output format will be based on JSON as with the LSP.
-
-The format specifies a graph structure that comprises that links ranges of source code to language analysis results that are based on the data types defined by the LSP.
-Vertices represent higher level concepts such as `document`s, `range`s, `resultSet`s and actual results.
-The relation between vertices is expressed through the edges.
-
-Referring to an example form the official specification [@lsif-spec], an analysis of the code sample in [@lst:lsif-code-sample] may produce hover information for the function `bar()`.
-Using the LSIF, the result would be encoded as seen in [@lst:lsif-result-sample].
-The graph structure encoded here is visualized in [@fig:lsif-example].
-Using this graph an LSIF tool is able to resolve statically determined hover information by performing the following steps.
-
-1. search for `textDocument/hover` edges
-2. select the edge that originates at a `range` vertex corresponding to the requested position.
-3. return the target vertex
-
-As a consequence, a subset of LSP capabilities can be provided statically based on the preprocessed LSIF model.
-
-
-### \*SP, Abstracting software development processes
-
-Since its introduction the Language Server Protocol has become a standard format to provide language tooling for editing source code.
-Meanwhile, as hinted in [@sec:lsp-extensions], the LSP is not able to fully satisfy every use-case sparking the development of various LSP extensions.
-Following the success of language servers, similar advances have been made in other parts of the software development process.
-
-For instance, many Java build tools expose software build abstractions through the Build Server Protocol [@build-server-protocol], allowing IDEs to integrate more languages more easily by leveraging the same principle as the LSP.
-The BSP provides abstractions over dependencies, build targets, compilation and running of projects.
-While the LSP provides `run` or `test` integration for selected languages through Code Lenses, this is not part of the intended responsibilities of the protocol.
-In contrast, those tasks are explicitly targeted by the BSP.
-
-Next to *writing* software (LSP) and *building/running/testing* software (e.g. BSP), *debugging* presents a third principal task of software development.
-Similar to the other tasks, most actions and user interfaces related to debugging are common among different languages (stepping in/out of functions, pausing/continuing exection, breakpoints, etc.).
-Hence, the Debug Adapter Protocol, as maintained by Microsoft and implemented in the VSCode Editor, aims to separate the language specific implementation of debuggers from the UI integration.
-Following the idea of the LSP, the DAP specifies a communication format between debuggers and editors.
-Since debuggers are fairly complicated software, the integration of editor communication should not prompt new developments of debuggers.
-Instead, the DAP assumes a possible intermediate debugger adapter do perform and interface with existing debuggers such as `LLDB`, `GDB`, `node-debug` and others[@DAP-impls].
-
-Following the named protocols, Jeanjean et al. envision a future [@reifying] where all kinds of software tools are developed as protocol based services independent of and shared by different IDEs and Editors.
-Taking this idea further, they call for a Protocol Specification that allows to describe language protocols on a higher level.
-Such a protocol, they claim, could enable editor maintainers to implement protocol clients more easily by utilizing automated generation from Language Service Protocol Specifications.
-Additionally, it could allow different Language Services to interact with and depend on other services.
+### LSIF
