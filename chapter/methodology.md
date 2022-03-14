@@ -1,7 +1,6 @@
 # Design implementation of NLS
 
-This chapter guides through the various steps and components of the Nickel Language Server (NLS).
-Being written in the same language (Rust[@rust]) as the Nickel interpreter allows NLS to integrate existing components for language analysis.
+This chapter guides through the components of the Nickel Language Server (NLS) as well as the implementation details of the source code analysis and information querying.
 Aiming for an abstract interface, NLS defines its own data structure underpinning all higher level LSP interactions.
 [Section @sec:linearization] will introduce this `linearization` data structure and explain how NLS bridges the gap between the explicitly handled Nickel AST towards the abstract linearization.
 Finally, the implementation of current LSP features is discussed in [@sec:lsp-server].
