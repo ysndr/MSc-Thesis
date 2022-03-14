@@ -29,7 +29,7 @@ Target Language
 Features
   ~ The LSP defines an extensive array of capabilities.
     The implementation of these protocol features is optional and servers and clients are able to communicate a set of *mutually supported* capabilities.
-  ~ The Langserver.org^[https://langserver.org] project identified six basic capabilities that are most widely supported:
+  ~ The Langserver [@langserver.org] project identified six basic capabilities that are most widely supported:
 
     1. Code completion,
     2. Hover information,
