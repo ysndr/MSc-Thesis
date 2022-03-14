@@ -41,8 +41,8 @@ Features
   ~ Yet, not all of these are applicable in every case and some LSP implementations reach for a much more complete coverage of the protocol.
 
 File Processing
-  ~ Most language servers use very different methods of handling the source code they analyze.
-    The means are mainly influenced by the complexity of the language.
+  ~ Most language servers handling source code analysis in different ways.
+    The complexity of the language can be a main influence for the choice of the approach.
     Distinctions appear in the way servers process *file indexes and changes* and how they respond to *requests*.
   ~ The LSP supports sending updates in form of diffs of atomic changes and complete transmission of changed files.
     The former requires incremental parsing and analysis, which are challenging to implement but make processing files much faster upon changes.
