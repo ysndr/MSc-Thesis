@@ -15,14 +15,15 @@ Before the invention of the Language Server Protocol, language intelligence used
 Yet, the range of officially supported languages remained relatively small [@intellij-supported-languages].
 While integration for popular languages was common, top-tier support for less popular ones was all but guaranteed and relied mainly on community efforts.
 In fact Eclipse[@eclipse-a-platform,eclipse-www], IntelliJ[@intelliJ], and Visual Studio[@VisualStudio], to this day the most popular IDE choices, focus on a narrow subset of languages, historically Java and .NET.
-Additional languages can be integrated by custom (third-party) plugins or derivations of the base platform ([@list-of-eclipse,@jetbrains-all-products]).
+Additional languages can be integrated by custom (third-party) plugins or derivatives of the base platform ([@list-of-eclipse,@jetbrains-all-products]).
 Due to the technical implications, plugins are generally not compatible between different platforms.
 Many less popular languages therefore saw redundant implementations of what is essentially the same.
 For Haskell separate efforts produced an eclipse based IDE [@haskell-ide-eclips], as well as independent IntelliJ plugins [@intellij-haskell,@HaskForce].
 Importantly, the implementers of the former reported troubles with the language barrier between Haskell and the Eclipse base written in Java.
 
 The Haskell language is an exceptional example since there is also a native Haskell IDE[@haskell-for-mac] albeit that it is available only to the MacOS operating system.
-This showcases the difficulties of language tooling and its provision.
+This showcases the difficulties of language tooling and its provision, since all of these projects are platform dependent and differ in functionality.
+Moreover, effectively the same tool is developed multiple times wasting resources.
 
 In general, developing language integrations, both as the vendor of an IDE or a third-party plugin developer requires extensive resources.
 [Table @tbl:plugins-size] gives an idea of the efforts required.
@@ -82,16 +83,17 @@ Similarly to Monto, Merlin separates editor extensions from language analysis.
 However, Merlin uses a command line interface instead of message passing for interaction.
 Editor extensions expose the server functions to the user by integrating with the editor.
 
-The Merlin server hand provides a single optimized implementation of code intelligence for Ocaml.
-Since all resources could be put to a single project, multiple iterations of performance improvements were done on Merlin.
-It now supports partial, incremental parsing and type-checking which allows users to query information even about incomplete or incorrect programs.
+Thanks to this architecture, the Merlin developers have been able to focus their efforts on a single project providing intelligence for OCaml source code.
+The result of this work is a platform independent, performant and fault-tolerant provider of language intelligence.
+Low level changes to the compiler core have been made to provide incremental parsing, type-checking and analysis.
+Apart from more efficient handling of source changes, this allows users to query information even about incomplete or incorrect programs.
 
-Notably, being written in Ocaml, Merlin can make use of existing tools of the Ocaml language.
-In fact, its parser and type-checker are based on the respective original implementations.
-The Merlin project did however have to adapt the Ocaml type-checker to support the aforementioned incrementality.
-Changes are made against a copy of the relevant modules shipped with Merlin which facilitates keeping up with the latest developments of the language.
+Since both Merlin and the OCaml compiler are written in OCaml, Merlin is able to reuse large parts of the reference OCaml implementation.
+This allows Merlin to avoid reimplementing every single feature of the language.
+Still, incremental parsing and typechecking is not a priority to the compiler which prompted the developers of Merlin to vendor modified versions of the core OCaml components.
 
 While Merlin serves as a single implementation used by all clients, unlike Monto it does not specify a language independent format, or service architecture.
+In fact, Merlin explicitly specializes in a single language and provides a complete implementation where Monto merely defines the language agnostic interface to implement a server on.
 
 ## Language Servers
 
