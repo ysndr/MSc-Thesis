@@ -46,7 +46,8 @@ File Processing
     Distinctions appear in the way servers process *file indexes and changes* and how they respond to *requests*.
   ~ The LSP supports sending updates in form of diffs of atomic changes and complete transmission of changed files.
     The former requires incremental parsing and analysis, which are challenging to implement but make processing files much faster upon changes.
-    An incremental approach makes use of an internal representation of the source code that allows to quickly derive analytic results from and can be updated efficiently.
+    An incremental approach makes use of an internal representation of the source code that allows efficient updates upon small changes to the source file.
+
     Additionally, to facilitate the parsing, it must be able to provide a parser with the right context to correctly parse a changed fragment of code.
    In practice, most language servers process file changes by re-indexing the entire file, discarding the previous internal state entirely.
     This is a more approachable method.
