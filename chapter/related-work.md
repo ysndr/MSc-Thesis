@@ -50,8 +50,10 @@ File Processing
 
     Additionally, to facilitate the parsing, an incremental approach must be able to provide a parser with the right context to correctly parse a changed fragment of code.
    In practice, most language servers process file changes by re-indexing the entire file, discarding the previous internal state entirely.
-    This is a more approachable method.
-    Yet, it is less performant since entire files need to be processed, which becomes more noticeable as file sizes and edit frequency increase.
+    This is a more approachable method, as it poses less requirements to the architects of the language server.
+    Yet, it is far less performant.
+    Unlike incremental processing (which updates only the affected portion of its internal structure), the smallest changes, including adding or removing lines effect the _reprocessing of the entire file_.
+    While sufficient for small languages and codebases, non-incremental processing quickly becomes a performance bottleneck.
   ~ For code analysis LSP implementers have to decide between *lazy* or *greedy* approaches for processing files and answering requests.
     Dominantly greedy implementations resolve most available information during the indexing of the file.
     The server can then utilize this model to answer requests using mere lookups.
