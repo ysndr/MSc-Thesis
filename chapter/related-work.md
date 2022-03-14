@@ -48,7 +48,7 @@ File Processing
     The former requires incremental parsing and analysis, which are challenging to implement but make processing files much faster upon changes.
     An incremental approach makes use of an internal representation of the source code that allows efficient updates upon small changes to the source file.
 
-    Additionally, to facilitate the parsing, it must be able to provide a parser with the right context to correctly parse a changed fragment of code.
+    Additionally, to facilitate the parsing, an incremental approach must be able to provide a parser with the right context to correctly parse a changed fragment of code.
    In practice, most language servers process file changes by re-indexing the entire file, discarding the previous internal state entirely.
     This is a more approachable method.
     Yet, it is less performant since entire files need to be processed, which becomes more noticeable as file sizes and edit frequency increase.
