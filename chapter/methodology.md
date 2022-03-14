@@ -5,6 +5,60 @@ Aiming for an abstract interface, NLS defines its own data structure underpinnin
 [Section @sec:linearization] will introduce this `linearization` data structure and explain how NLS bridges the gap between the explicitly handled Nickel AST towards the abstract linearization.
 Finally, the implementation of current LSP features is discussed in [@sec:lsp-server].
 
+## Key Objectives
+
+The following points are considered key objectives of this thesis implemented in particular for the Nickel Language Server.
+
+### Performance
+
+The usefulness of a language server correlates with its performance.
+It may cause stutters in the editor, or prompt users to wait for responses when upon issuing LSP commands.
+Different studies suggest that interruptions are detrimentatl to programmers productivity [@interruption-1, @interruption-2]. The more often and longer a task is interrupted the higher the frustration.
+Hence, as called for in RQ.1 (cf. [@sec:research-questions]), a main criterion for the language server is its performance.
+
+Speaking of language servers there are two tasks that require processing, and could potentially cause interruptions.
+
+Upon source code changes, a language server may reprocess the code to gather general information, and provide diagnostics.
+Since, for this the LSP uses notifications, and language servers generally run as separate processes, delays in processing may not directly affect the programmer.
+However, depending on the implementation of the server, multiple changes may queue up preventing the timely response to other requests or delaying diagnostics.
+
+The JSON-RPC protocol underlying the LSP, is a synchronous protocol.
+Each request requires that the server responded to the previous request before processing can begin.
+Moreover, the order of requests has to be maintained.
+Since many requests are issued implicitly by the editor, e.g., hover requests, there is a risk of request queuing which could delay the processing of explicit commands.
+It is therefore important to provide nearly instantaneous replies to requests.
+
+It is to mention that the LSP defines "long running" requests, that may run in the background.
+This concept mitigates queuing but can lead to similarly bad user experience as responses appear out of order or late.
+
+### Capability
+
+The second objective is to provide an LSP server that offers the most common LSP features as identified by [@langserver-org].
+Concretely, these capabilities are:
+
+1. Code completion,
+2. Hover information,
+3. Jump to definition,
+4. Find references,
+5. Workspace symbols,
+6. Diagnostics
+
+For the work on NLS these six capabilities were considered as the goal for a minimal viable product.
+
+### Flexibility
+
+The Nickel Language just faced its initial release so changes and additions to the language are inevitable.
+Since, NLS is expressed as the official tooling solution for the language, it has to be able to keep up with Nickel's development.
+Therefore, the architecture needs to be flexible and simple enough to accommodate changes to the language's structure while remaining the server's capabilities and requiring little changes to the language core.
+Likewise, extending the capabilities of the server should be simple enough and designed such future developers are able to pick up the work on NLS.
+
+### Generalizability
+
+In the interest of the academic audience and future developers of language servers, this thesis aims to present a reusable solution.
+The implementation of NLS as examined in this thesis should act as an implementation example that can be applied to other, similar languages.
+As a result the requirements on the language and its implementation should be minimal.
+Also, the Language servers should not depend on the implementation of Nickel (e.g. types) too deeply.
+
 ## Illustrative example
 
 The example [@lst:nickel-complete-example] shows an illustrative high level configuration of a server.
