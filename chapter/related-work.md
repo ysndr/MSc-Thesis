@@ -169,12 +169,12 @@ Since the number of implementations of the LSP is continuously growing, this the
 
 #### LSP as standard tooling
 
-Today LSP based solutions serve as the go-to-method to implement language analysis tools.
-Especially emerging languages without existing integration with major IDEs make extensive use of the flexibility and reach provided by the LSP.
+Today LSP-based solutions serve as the go-to method to implement language analysis tools.
+Emerging languages in particular take advantage from the the flexibility and reach of the LSP.
 
 Most languages profit greatly from the possibility to leverage existing tooling for the language.
 For instance the Haskell language server facilitates a plugin system that allows it to integrate with existing tooling projects [@hls-plugin-search].
-Plugins provide capabilities for linting [@hls-hlint-plugin], formatting [@hls-floskell-plugin,hls-ormolu-plugin] documentation [@hls-haddock-comments-plugin] and other code actions [@hls-tactics-plugin] across multiple compiler versions.
+Plugins provide capabilities for linting [@hls-hlint-plugin], formatting [@hls-floskell-plugin,hls-ormolu-plugin], documentation [@hls-haddock-comments-plugin] and other code actions [@hls-tactics-plugin] across multiple compiler versions.
 While this requires HSL to be compiled with the same compiler version in use by the IDE, it also avoids large scale reimplementations of compiler features in an entirely different language.
 
 Similarly, the Ocaml language service builds on top of existing infrastructure by relying on the Merlin project introduced in [@sec:Merlin].
@@ -216,7 +216,7 @@ Despite the nix language being written in C++ [@nix-repo], its language server b
 
 The work presented by Leimeister in [@cpachecker-lsp] exemplifies how functionality can be provided by entirely external tools as well.
 The server can be used to automatically perform software verification in the background using CPAchecker[@cpachecker].
-CPAchecker is a platform for automatic, extensible, software verification.
+CPAchecker is a platform for automatic and extensible software verification.
 The program is written in Java and provides a command line interface to be run locally.
 Additionally, it is possible to execute resource intensive verification through an HTTP-API on more powerful machines or clusters [@cpa-google-cloud,@cpa-clusters].
 The LSP-Server supports both modes of operation.
@@ -234,15 +234,17 @@ Commands issued by the client are processed by a CodeCompass plugin which acts a
 #### Language Servers for Domain Specific Languages
 
 Bünder and Kuchen [@multi-editor-support] highlight the importance of the LSP in the area of Domain Specific Languages (DSL).
-Compared to general purpose languages, DSLs often focus both technical and non-technical users.
+Compared to general purpose languages, DSLs often targets both technical and non-technical users.
 While DSL creation workbenches like Xtext [@eclipse-xtext], Spoofax [@spoofax] or MPS[@jetpbrains-mps] allow for the implementation and provision of Eclipse or IntelliJ based DSLs, tooling for these languages is usually tied to the underlying platform.
 Requiring a specific development platform does not satisfy every user of the language.
-Developers may prefer using different editors, while non-technical users could easily be overwhelmed by a highly technical tool such as Eclipse and likewise prefer a lighter editor or integration into their business application.
-The authors of [@multi-editor-support] present how Xtext can be employed to forge DSLs that are relying on the LSP to provide multi-editor support.
-Using a generated LSP server allows the integration of DSL language tooling into LSP capable editors.
+Developers have their editor of choice, that they don't easily give up on.
+Non-technical users could easily be overwhelmed by a complex software like Eclipse.
+For those non-technical users, a light editor would be more adapted, or even one that is directly integrated into their business application.
+The authors of [@multi-editor-support] present how Xtext can generate an LSP server for a custom DSL, providing multi-editor support.
 The authors especially mention the Monaco Editor [@monaco-editor], a reusable HTML component for code editing using web technologies.
 It is used in products like VSCode [@vscode], Theia [@theia] and other web accessible code editors.
-Since the Monaco Editor can be configured as an LSP client integrating LSP supported DSLs into web based business applications is now easier than ever before.
+The Monaco Editor supports the LSP as a client (that is, on the editor side).
+Such LSP-capable web editors make integrating DSLs directly into web applications easier than ever before.
 
 
 ### Honorable mentions
