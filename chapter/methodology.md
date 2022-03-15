@@ -59,6 +59,53 @@ The implementation of NLS as examined in this thesis should act as an implementa
 As a result the requirements on the language and its implementation should be minimal.
 Also, the Language servers should not depend on the implementation of Nickel (e.g. types) too deeply.
 
+
+## Design Decisions
+
+[@sec:considerable-dimensions]
+
+### Programming language
+
+Rust ([@rust]) was chosen as the implementing language of NLS primarily since Nickel itself is written in Rust.
+Being written in the same language as the Nickel interpreter allows NLS to integrate existing components for language analysis.
+This way, changes to the Nickel syntax or code analysis impose minimal adaptation of the Language Server.
+
+In fact, using any other language was never considered since that would require a separate implementation of integral parts of Nickel, which are actively being modified.
+
+Additionally, Rust has proven itself as a language for LSP Servers.
+According to the official Rust language website [@rust], Rust is a low-level programming language that focuses on performance, reliability and productivity.
+It is most known for its `trait` oriented design, algebraic data types [@adt-wiki?] and safety, while offering native performance comparable to C languages.
+
+The concept of `traits` [@traits] was chosen over common object inheritance as observed in Java or C#.
+Instead, `traits` define composable interfaces without the complexities of nesting classes.
+Effectively a `trait` is simply a set of methods implemented for a certain data type.
+
+Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@rust-ownership-model].
+A different kind of safety is *type* safety which is an implication of Rust's strong type system and `trait` based generics.
+
+Lastly, Rust has been employed by multiple LSP servers [@lib.rs#language-servers] which created a rich ecosystem of server abstractions.
+
+### File processing
+
+Earlier two differnet file processing models were discussed in [@sec:considerable-dimensions], incremental and complete processing.
+
+LSP implementations may employ so-called incremental parsing, which allows updating only the relevant parts of its source code model upon small changes in the source.
+However, an incremental LSP is not trivial to implement, which is why it is mainly found in more complex servers such as the Rust Analyzer [@rust-analyzer] or the OCaml Language Server [@ocaml-lsp, @merlin].
+
+Implementing an incremental LSP server for Nickel would be impractical.
+NLS would not be able to leverage existing components from the non-incremental Nickel implementation (most notably, the parser).
+Parts of the nickel runtime, such as the type checker, would need to be adapted or even reimplemented to work incrementally too.
+Considering the scope of this thesis, the presented approach performs a complete analysis on every update to the source file.
+The typical size of Nickel projects is assumed to remain small for quite some time, giving reasonable performance in practice.
+Incremental parsing, type-checking and analysis can still be implemented as a second step in the future after gathering more usage data once nickel and the NLS enjoy greater adoption.
+
+### Code Analysis
+
+Code analysis approaches as introduced in [@sec:considerable-dimensions] can have both *lazy* and *eager* qualities.
+Lazy solutions are generally more compatible with an incremental processing model, since these aim to minimizing the change induced computation.
+NLS prioritizes to optimize for efficient queries to a pre-processed data model.
+Similar to the file processing argument in [@sec:file-pressng], it is assumed that Nickel project's size allows for efficient enoigh eager analysis prioritizing a more straight forward implementation  over optimized performance.
+
 ## Illustrative example
 
 The example [@lst:nickel-complete-example] shows an illustrative high level configuration of a server.
@@ -125,13 +172,6 @@ For reasons detailed in [@sec:post-processing], the linearization needs to be po
 The completed linearization acts as the basis to handle all supported LSP requests as explained in [@sec:lsp-server].
 [Section @sec:resolving-elements] explains how a completed linearization is accessed efficiently.
 
-Advanced LSP implementations sometimes employ so-called incremental parsing, which allows updating only the relevant parts of an AST (and, in case of NLS, the derived linearization) upon small changes in the source.
-However, an incremental LSP is not trivial to implement.
-For once, NLS would not be able to leverage existing components from the existing Nickel implementation (most notably, the parser).
-Parts of the nickel runtime, such as the typechecker, would need to be adapted or even reimplemented to work incrementally too.
-Considering the scope of this thesis, the presented approach performs a complete analysis on every update to the source file.
-The typical size of Nickel projects is assumed to remain small for quite some time, giving reasonable performance in practice.
-Incremental parsing, type-checking and analysis can still be implemented as a second step in the future after gathering more usage data once nickel and the NLS enjoy greater adoption.
 
 <!-- TODO mention lsif here? -->
 
