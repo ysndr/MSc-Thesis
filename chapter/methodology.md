@@ -109,6 +109,16 @@ Similar to the file processing argument in [@sec:file-pressng], it is assumed th
 ## Illustrative example
 
 The example [@lst:nickel-complete-example] shows an illustrative high level configuration of a server.
+Using Nickel, this file would be used to define the schema of the configuration format of another program.
+Evaluation and validation is done in the context of Nickel, after which the evaluated structure is translated into a more common (but less expressive) format such as YAML or JSON.
+Here, the chema for a configuration of a Kubernetes-like [@kubernetes] tool is defined using contracts, making exemplary use of variables and functions.
+Specifically, it describes a way to provision named containers.
+The user is able to specify container images and opened ports, as well as define metadata of the deployment.
+The configuration is constrained by the `NobernetesConfig` contract.
+The contract in turn defines the required fields and field types.
+Notably, the fields `containers` and `replicas` are further constrained by individual contracts.
+The `Port` contract is a logical contract that ensures the value is in the range of valid port numbers.
+The example also shows different ways of declaring types (i.e. constraining record value types), string interpolation, as well as the usage of let bindings with standard types.
 Throughout this chapter, different sections about the NSL implementation will refer back to this example.
 
 ```{.nickel #lst:nickel-complete-example caption="Nickel example with most features shown"}
