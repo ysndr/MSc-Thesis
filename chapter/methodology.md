@@ -70,20 +70,27 @@ Rust ([@rust]) was chosen as the implementing language of NLS primarily since Ni
 Being written in the same language as the Nickel interpreter allows NLS to integrate existing components for language analysis.
 This way, changes to the Nickel syntax or code analysis impose minimal adaptation of the Language Server.
 
-In fact, using any other language was never considered since that would require a separate implementation of integral parts of Nickel, which are actively being modified.
+In fact, using any other language was never considered since that would have required a separate implementation of integral parts of Nickel, which are actively being developed.
 
 Additionally, Rust has proven itself as a language for LSP Servers.
-According to the official Rust language website [@rust], Rust is a low-level programming language that focuses on performance, reliability and productivity.
-It is most known for its `trait` oriented design, algebraic data types [@adt-wiki?] and safety, while offering native performance comparable to C languages.
+Lastly, Rust has already been employed by multiple LSP servers [@lib.rs#language-servers] which created a rich ecosystem of server abstractions.
+For instance the largest and most advaced LSP implementation in Rust -- the Rust Analyzer [@rust-analyzer] -- has contributed many tools such as an LSP server interface [@lsp-server-interface] and a refactoring oriented syntax tree represation [@rowan].
+Additionally, lots of smaller languages [@gluon, @slint, @mojom] implement Language Servers in Rust.
+Rust appears to be a viable choice even for languages that are not originally implemented in Rust, such as Nix [@nix, @rninx-lsp].
 
-The concept of `traits` [@traits] was chosen over common object inheritance as observed in Java or C#.
-Instead, `traits` define composable interfaces without the complexities of nesting classes.
-Effectively a `trait` is simply a set of methods implemented for a certain data type.
+In Rust the concept of `traits` [@traits] is fundamental, for the following reasons:
+Traits are definitions of shared behavior.
+Similar to interfaces in other languages, a trait defines a set of methods.
+Traits are implemented for a type, exposing the defined methods on instances of the type.
+Rust's support for generics[@generics] allows constraining arguments and structure fields to implementors of a certain trait.
 
+
+
+Rust also excels due to its various safety features and performane.
 Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@rust-ownership-model].
 A different kind of safety is *type* safety which is an implication of Rust's strong type system and `trait` based generics.
+Finally, as Rust leverages the LLVM infrastructure and requires no runtime, its performance rivals the traditional C languages.
 
-Lastly, Rust has been employed by multiple LSP servers [@lib.rs#language-servers] which created a rich ecosystem of server abstractions.
 
 ### File processing
 
