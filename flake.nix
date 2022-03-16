@@ -32,8 +32,10 @@
             writing.latex
             (writing.pandoc.override {
               filters = [
+                "pandoc-include-code"
                 (builtins.fetchurl "https://raw.githubusercontent.com/jgm/pandocfilters/f850b22/examples/graphviz.py")
                 (builtins.fetchurl "https://raw.githubusercontent.com/jgm/pandocfilters/f850b22/examples/tikz.py")
+                (builtins.fetchurl "https://raw.githubusercontent.com/timofurrer/pandoc-plantuml-filter/master/pandoc_plantuml_filter.py")
                 (pkgs.writeShellScript "pandoc-mermaid" ''
                   MERMAID_BIN=${pkgs.nodePackages.mermaid-cli}/bin/mmdc exec python ${builtins.fetchurl "https://raw.githubusercontent.com/timofurrer/pandoc-mermaid-filter/master/pandoc_mermaid_filter.py"}
                 '')
@@ -43,12 +45,14 @@
                 # (builtins.fetchurl "https://raw.githubusercontent.com/tomduck/pandoc-fignos/master/pandoc_fignos.py")
               ];
               citeproc = true;
-              extraPackages = [ pkgs.graphviz ];
+              extraPackages = [ pkgs.graphviz pkgs.plantuml pkgs.haskellPackages.pandoc-include-code ];
               pythonExtra = p: [ p.pygraphviz p.psutil ];
             })
             compile-all
             compile-toc
             compile-chapter-preview
+
+            pkgs.graphviz pkgs.plantuml
           ];
         };
       });
