@@ -1,0 +1,151 @@
+@startuml
+skinparam linetype ortho
+skinparam groupInheritance 2
+
+
+package ls::interface {
+
+    class Linearizer << (T,coral) >> {
+        -- Associated Types --
+        type Building;
+        type Completed;
+        type CompletionExtra;
+
+        -- Methods --
+        add_term(\n\
+        &mut self,\n\
+        &mut Linearization<Self::Building>,\n\
+        &Term,\n\
+        TermPos,\n\
+        TypeWrapper
+        )
+        retype_ident(\n\
+        &mut self,\n\
+        &mut Linearization<Self::Building>,\n\
+        &Ident,\n\
+        TypeWrapper,
+        )
+        complete(Linearization<Self::Building>)\n\
+        -> Linearization<Self::Completed>
+
+    }
+
+    class Linearization<T: LinearizationState> << (S,steelblue) >> {
+        - state : T
+    }
+
+
+    class LinearizationState << (T,coral) >> {}
+
+    class Building << (S,steelblue) >> {
+        + Vec<LinearizationItem<Unresolved>>,
+        + scope: HashMap<Scope, Vec<ID>>,
+    }
+
+    class Completed << (S,steelblue) >> {
+        + Vec<LinearizationItem<Unresolved>>,
+        - scope: HashMap<Scope, Vec<ID>>,
+        - id_to_index: HashMap<ID, usize>,
+
+        --
+        + get_item(&self, usize) \n\
+        -> Option<&LinearizationItem<Resolved>>
+        + get_in_scope(&self, LinearizationItem<Resolved>)\n\
+        -> Vec<&LinearizationItem<Resolved>>
+        + item_at(&self,&Location) \n\
+        -> Option<&LinearizationItem<Resolved>>
+    }
+
+    class LinearizationItem<S: ResolutionState> << (S,steelblue) >> {
+        + id: usize,
+        + pos: RawSpan,
+        + ty: S,
+        + kind: TermKind,
+        + scope: Scope,
+        + meta: Option<MetaValue>,
+    }
+
+    together {
+        circle Scope << (S,steelblue) >> {}
+        circle ScopeId << (S,steelblue) >> {}
+        circle Environment << (S,steelblue) >> {}
+        circle TermKind
+    }
+}
+
+package nls {
+
+    class AnalysisHost << (S,steelblue) >> {
+        - env: Environment,
+        - scope: Scope,
+        - next_scope_id: ScopeId,
+        - meta: Option<MetaValue>,
+        - let_binding: Option<ID>,
+        - access: Option<Vec<Ident>>,
+        - {field} record_fields: Option<(ID, Vec<(ID, Ident)>)>,
+
+    }
+
+    class "Linearizer for AnalysisHost" as impl_linearizer_for_AnalysisHost << (I,lime) >> {
+        -- Associated Types --
+        type Building = Building;
+        type Completed = Completed;
+        type CompletionExtra = (UnifTable, HashMap<usize, Ident>);
+    }
+
+}
+
+
+
+
+package Nickel {
+
+    circle MetaValue << (S,steelblue) >> {}
+
+    circle Term << (S,steelblue) >> {}
+
+    circle RawSpan << (S,steelblue) >> {}
+
+    circle Ident << (S,steelblue) >> {}
+
+    circle TypeWrapper << (S,steelblue) >> {}
+
+}
+
+AnalysisHost --|> Linearizer
+impl_linearizer_for_AnalysisHost . (AnalysisHost, Linearizer) : "Implementation"
+impl_linearizer_for_AnalysisHost --+ (Building, Completed)
+impl_linearizer_for_AnalysisHost ..> Ident
+
+
+
+Completed <--o "*" LinearizationItem
+Completed --|> LinearizationState
+Building <--o "*" LinearizationItem
+Building --|> LinearizationState
+
+Building ..> Scope
+
+AnalysisHost <--* Scope
+AnalysisHost <--* ScopeId
+AnalysisHost <--* Environment
+AnalysisHost <--o MetaValue
+AnalysisHost <--o Ident
+
+
+
+
+Linearizer ..|> Linearization
+Linearizer ..|> Term
+Linearizer ..|> TypeWrapper
+Linearizer ..|> Ident
+
+
+LinearizationItem ..|> RawSpan
+LinearizationItem ..|> Scope
+LinearizationItem ..|> TermKind
+LinearizationItem ..|> MetaValue
+
+
+Completed <--o Scope
+@enduml
