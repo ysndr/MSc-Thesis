@@ -180,13 +180,22 @@ let image = "k8s.gcr.io/%{name_}" in
 The focus of the NLS as presented in this work is to implement a working language server with a comprehensive feature set.
 To answer requests, NLS needs to store more information than what is originally present in a Nickel AST such as information about references and types.
 Apart from missing data, an AST is not optimized for quick random access of nodes based on their position, which is a crucial operation for a language server.
-To that end NLS introduces an auxiliary data structure, the *linearization*, which is derived from the AST.
-It represents the original data linearly, performs an enrichment of the AST nodes and provides greater decoupling of the LSP functions from the implemented language.
-[Section @sec:transfer-from-ast] details the process of transforming the AST to a linearization.
-After NLS parsed a Nickel source files to an AST it starts to fill the linearization, which is in a *building* state during this phase.
-For reasons detailed in [@sec:post-processing], the linearization needs to be post-processed, yielding a *completed* state.
-The completed linearization acts as the basis to handle all supported LSP requests as explained in [@sec:lsp-server].
-[Section @sec:resolving-elements] explains how a completed linearization is accessed efficiently.
+
+To that end NLS introduces an auxiliary data structure, the so-called linearization.
+The linearization is a linear representation of the program and consists of linearization items.
+It is derived node by node, from the program's AST by the means of a recursive tree traversal.
+The transfer process generates a set of linearization items for every node.
+The kind of the items as well as any additional type information and metadata are determined by the state of the linearization, and the implementation of the process, also called linearizer.
+Transferring AST nodes into an intermediate structure has the additional advantage of establishing a boundary between the language dependent and generic part of the language server, since linearization items could be implemented entirely language independent.
+The transfer process is described in greater detail in [@sec:transfer-from-ast].
+
+The linearization can be in the following two different general states that align with the two phases of its life cycle.
+While NLS processes the AST, it is considered to be in a building state.
+After the AST is fully transferred, the linearization enters the second, phase in which it is referred to as completed and used by the server to facilitate answering LSP requests.
+The two states are syntactically separate and implementation dependent through the use of different types and the generic interface that allows the independent implementations of the linearizer.
+Since different types represent the two states, the building state is explicitly transformed into a completed type allowing for additional post-processing (cf. [@sec:post-processing]).
+To fully support all actions implemented by the server, the completed linearization provides several methods to access specific items efficiently.
+The implementation of these methods is explained in [@sec:resolving-elements].
 
 
 <!-- TODO mention lsif here? -->
