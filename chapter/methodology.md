@@ -177,9 +177,12 @@ let image = "k8s.gcr.io/%{name_}" in
 
 ## Linearization
 
-The focus of the NLS as presented in this work is to implement a working language server with a comprehensive feature set.
-To answer requests, NLS needs to store more information than what is originally present in a Nickel AST such as information about references and types.
-Apart from missing data, an AST is not optimized for quick random access of nodes based on their position, which is a crucial operation for a language server.
+The focus of the NLS as presented in this work is to implement a foundational set of LSP features as described in [@sec:capability].
+In order to process these capabilities efficiently as per [@sec:performance], NLS needs to store more information than what is originally present in a Nickel AST (cf. [@sec:nickel-ast]), such as information about references and types.
+While these can be deduced from the AST lazily, it would require the repeated traversal of arbitrarily large tree with an associated cost to performance.
+Therefore as hinted in [@sec:code-analysis], optimization is directed to efficient lookup from a pre-processed report.
+Since most LSP commands refer to code positions, the intermediate structure must allow efficient lookup of analysis results based on positions.
+
 
 To that end NLS introduces an auxiliary data structure, the so-called linearization.
 The linearization is a linear representation of the program and consists of linearization items.
