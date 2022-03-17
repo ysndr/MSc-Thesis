@@ -81,13 +81,12 @@ Rust appears to be a viable choice even for languages that are not originally im
 In Rust the concept of `traits` [@traits] is fundamental, for the following reasons:
 Traits are definitions of shared behavior.
 Similar to interfaces in other languages, a trait defines a set of methods.
-Traits are implemented for a type, exposing the defined methods on instances of the type.
-Rust's support for generics[@generics] allows constraining arguments and structure fields to implementors of a certain trait.
-
-
+One implements a trait for a certain type, by defining the behavior in the context of the type.
+Rust's support for generics[@generics] allows constraining arguments and structure fields to implementors of a certain trait allowing to abstract concrete behavior from its interface.
 
 Rust also excels due to its various safety features and performance, for the following reasons.
-Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@rust-ownership-model].
+Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@rust-ownership-model] and explicit memory handling.
+The developer in turn needs to be aware of the implications of stack or heap located variables and their size in memory.
 A different kind of safety is *type* safety which is an implication of Rust's strong type system and `trait` based generics.
 Finally, as Rust leverages the LLVM infrastructure and requires no runtime, its performance rivals the traditional C languages.
 
