@@ -62,7 +62,9 @@ Also, the Language servers should not depend on the implementation of Nickel (e.
 
 ## Design Decisions
 
-[@sec:considerable-dimensions]
+[Section @sec:considerable-dimensions] introduced several considerations with respect to the implementation of language servers.
+Additionally, in [@sec:representative-lsp-projects] presents examples of different servers which guided the decisions made while implementing the NLS. 
+Additionally, in [@sec:representative-lsp-projects] presents examples of different servers which guided the decisions made while implementing the NLS. 
 
 ### Programming language
 
@@ -70,20 +72,26 @@ Rust ([@rust]) was chosen as the implementing language of NLS primarily since Ni
 Being written in the same language as the Nickel interpreter allows NLS to integrate existing components for language analysis.
 This way, changes to the Nickel syntax or code analysis impose minimal adaptation of the Language Server.
 
-In fact, using any other language was never considered since that would require a separate implementation of integral parts of Nickel, which are actively being modified.
+In fact, using any other language was never considered since that would have required a separate implementation of integral parts of Nickel, which are actively being developed.
 
 Additionally, Rust has proven itself as a language for LSP Servers.
-According to the official Rust language website [@rust], Rust is a low-level programming language that focuses on performance, reliability and productivity.
-It is most known for its `trait` oriented design, algebraic data types [@adt-wiki?] and safety, while offering native performance comparable to C languages.
+Lastly, Rust has already been employed by multiple LSP servers [@lib.rs#language-servers] which created a rich ecosystem of server abstractions.
+For instance the largest and most advaced LSP implementation in Rust -- the Rust Analyzer [@rust-analyzer] -- has contributed many tools such as an LSP server interface [@lsp-server-interface] and a refactoring oriented syntax tree represation [@rowan].
+Additionally, lots of smaller languages [@gluon, @slint, @mojom] implement Language Servers in Rust.
+Rust appears to be a viable choice even for languages that are not originally implemented in Rust, such as Nix [@nix, @rninx-lsp].
 
-The concept of `traits` [@traits] was chosen over common object inheritance as observed in Java or C#.
-Instead, `traits` define composable interfaces without the complexities of nesting classes.
-Effectively a `trait` is simply a set of methods implemented for a certain data type.
+In Rust the concept of `traits` [@traits] is fundamental, for the following reasons:
+Traits are definitions of shared behavior.
+Similar to interfaces in other languages, a trait defines a set of methods.
+One implements a trait for a certain type, by defining the behavior in the context of the type.
+Rust's support for generics[@generics] allows constraining arguments and structure fields to implementors of a certain trait allowing to abstract concrete behavior from its interface.
 
-Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@rust-ownership-model].
+Rust also excels due to its various safety features and performance, for the following reasons.
+Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@rust-ownership-model] and explicit memory handling.
+The developer in turn needs to be aware of the implications of stack or heap located variables and their size in memory.
 A different kind of safety is *type* safety which is an implication of Rust's strong type system and `trait` based generics.
+Finally, as Rust leverages the LLVM infrastructure and requires no runtime, its performance rivals the traditional C languages.
 
-Lastly, Rust has been employed by multiple LSP servers [@lib.rs#language-servers] which created a rich ecosystem of server abstractions.
 
 ### File processing
 
@@ -109,6 +117,16 @@ Similar to the file processing argument in [@sec:file-pressng], it is assumed th
 ## Illustrative example
 
 The example [@lst:nickel-complete-example] shows an illustrative high level configuration of a server.
+Using Nickel, this file would be used to define the schema of the configuration format of another program.
+Evaluation and validation is done in the context of Nickel, after which the evaluated structure is translated into a more common (but less expressive) format such as YAML or JSON.
+Here, the chema for a configuration of a Kubernetes-like [@kubernetes] tool is defined using contracts, making exemplary use of variables and functions.
+Specifically, it describes a way to provision named containers.
+The user is able to specify container images and opened ports, as well as define metadata of the deployment.
+The configuration is constrained by the `NobernetesConfig` contract.
+The contract in turn defines the required fields and field types.
+Notably, the fields `containers` and `replicas` are further constrained by individual contracts.
+The `Port` contract is a logical contract that ensures the value is in the range of valid port numbers.
+The example also shows different ways of declaring types (i.e. constraining record value types), string interpolation, as well as the usage of let bindings with standard types.
 Throughout this chapter, different sections about the NSL implementation will refer back to this example.
 
 ```{.nickel #lst:nickel-complete-example caption="Nickel example with most features shown"}
@@ -161,16 +179,28 @@ let image = "k8s.gcr.io/%{name_}" in
 
 ## Linearization
 
-The focus of the NLS as presented in this work is to implement a working language server with a comprehensive feature set.
-To answer requests, NLS needs to store more information than what is originally present in a Nickel AST such as information about references and types.
-Apart from missing data, an AST is not optimized for quick random access of nodes based on their position, which is a crucial operation for a language server.
-To that end NLS introduces an auxiliary data structure, the *linearization*, which is derived from the AST.
-It represents the original data linearly, performs an enrichment of the AST nodes and provides greater decoupling of the LSP functions from the implemented language.
-[Section @sec:transfer-from-ast] details the process of transforming the AST to a linearization.
-After NLS parsed a Nickel source files to an AST it starts to fill the linearization, which is in a *building* state during this phase.
-For reasons detailed in [@sec:post-processing], the linearization needs to be post-processed, yielding a *completed* state.
-The completed linearization acts as the basis to handle all supported LSP requests as explained in [@sec:lsp-server].
-[Section @sec:resolving-elements] explains how a completed linearization is accessed efficiently.
+The focus of the NLS as presented in this work is to implement a foundational set of LSP features as described in [@sec:capability].
+In order to process these capabilities efficiently as per [@sec:performance], NLS needs to store more information than what is originally present in a Nickel AST (cf. [@sec:nickel-ast]), such as information about references and types.
+While these can be deduced from the AST lazily, it would require the repeated traversal of arbitrarily large tree with an associated cost to performance.
+Therefore as hinted in [@sec:code-analysis], optimization is directed to efficient lookup from a pre-processed report.
+Since most LSP commands refer to code positions, the intermediate structure must allow efficient lookup of analysis results based on positions.
+
+
+To that end NLS introduces an auxiliary data structure, the so-called linearization.
+The linearization is a linear representation of the program and consists of linearization items.
+It is derived node by node, from the program's AST by the means of a recursive tree traversal.
+The transfer process generates a set of linearization items for every node.
+The kind of the items as well as any additional type information and metadata are determined by the state of the linearization, and the implementation of the process, also called linearizer.
+Transferring AST nodes into an intermediate structure has the additional advantage of establishing a boundary between the language dependent and generic part of the language server, since linearization items could be implemented entirely language independent.
+The transfer process is described in greater detail in [@sec:transfer-from-ast].
+
+The linearization can be in the following two different general states that align with the two phases of its life cycle.
+While NLS processes the AST, it is considered to be in a building state.
+After the AST is fully transferred, the linearization enters the second, phase in which it is referred to as completed and used by the server to facilitate answering LSP requests.
+The two states are syntactically separate and implementation dependent through the use of different types and the generic interface that allows the independent implementations of the linearizer.
+Since different types represent the two states, the building state is explicitly transformed into a completed type allowing for additional post-processing (cf. [@sec:post-processing]).
+To fully support all actions implemented by the server, the completed linearization provides several methods to access specific items efficiently.
+The implementation of these methods is explained in [@sec:resolving-elements].
 
 
 <!-- TODO mention lsif here? -->
