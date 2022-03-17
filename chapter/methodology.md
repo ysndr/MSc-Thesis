@@ -90,6 +90,9 @@ Rust also excels due to its various safety features and performance, for the fol
 Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@rust-ownership-model] and explicit memory handling.
 The developer in turn needs to be aware of the implications of stack or heap located variables and their size in memory.
 A different kind of safety is *type* safety which is an implication of Rust's strong type system and `trait` based generics.
+Type-safe languages such as Rust enforce explicit usage of data types for variables and function definitions.
+Type annotations ensure that methods and fields can be accessed as part of the compilation saving users from passing incompatible data to functions.
+This eliminating a common runtime failures as seen in dynamic languages like Python or JavaScript.
 Finally, as Rust leverages the LLVM infrastructure and requires no runtime, its performance rivals the traditional C languages.
 
 
