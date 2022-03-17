@@ -64,6 +64,7 @@ Also, the Language servers should not depend on the implementation of Nickel (e.
 
 [Section @sec:considerable-dimensions] introduced several considerations with respect to the implementation of language servers.
 Additionally, in [@sec:representative-lsp-projects] presents examples of different servers which guided the decisions made while implementing the NLS. 
+Additionally, in [@sec:representative-lsp-projects] presents examples of different servers which guided the decisions made while implementing the NLS. 
 
 ### Programming language
 
