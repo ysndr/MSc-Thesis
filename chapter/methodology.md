@@ -86,7 +86,7 @@ Rust's support for generics[@generics] allows constraining arguments and structu
 
 
 
-Rust also excels due to its various safety features and performane.
+Rust also excels due to its various safety features and performance, for the following reasons.
 Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@rust-ownership-model].
 A different kind of safety is *type* safety which is an implication of Rust's strong type system and `trait` based generics.
 Finally, as Rust leverages the LLVM infrastructure and requires no runtime, its performance rivals the traditional C languages.
