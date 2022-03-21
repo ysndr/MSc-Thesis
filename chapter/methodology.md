@@ -1052,6 +1052,12 @@ impl Completed {
 }
 ```
 
+
+\bls
+```{.plantuml #fig:element-lookup include="assets/element-lookup.plantuml" caption="Activity diagram of item resolution by position"}
+```
+\els
+
 #### Resolving by ID
 
 During the building process item IDs are equal to their index in the underlying array which allows for efficient access by ID.
