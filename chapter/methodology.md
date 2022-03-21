@@ -1061,8 +1061,14 @@ impl Completed {
 #### Resolving by ID
 
 During the building process item IDs are equal to their index in the underlying array which allows for efficient access by ID.
-To allow similarly efficient access to nodes with using IDs a `Completed` linearization maintains a mapping of IDs to their corresponding index in the reordered array.
-For instance NLS would represent the example [@lst:nickel-scope-example] as shown in :
+To allow similarly efficient dereferencing of node IDs, a `Completed` linearization maintains a mapping of IDs to their corresponding index in the reordered array.
+
+#### Resolving by scope
+
+During the construction from the AST, the syntactic scope of each element is eventually known.
+This allows to map an item's `ScopeId` to a list of elements defined in this scope by parent scopes.
+As discussed in [@sec:scopes], scopes are lists of scope path elements, where the prefixes correspond to parent scopes.
+For instance, NLS would represent the example [@lst:nickel-scope-example] as shown in [@lst:nls-scopes-elements] below.
 
 ```{.rust #lst:nls-scopes-elements caption="Items collected for each scope of the example. Simplified representation using concrete values"}
 /1 -> { Declaration("record") }
@@ -1072,14 +1078,8 @@ For instance NLS would represent the example [@lst:nickel-scope-example] as show
 /1/2 -> { Usage("record") }
 ```
 
-A queried ID is first looked up in this mapping which yields an index from which the actual item is read.
-
-#### Resolving by scope
-
-During the construction from the AST, the syntactic scope of each element is eventually known.
-This allows to map an item's `ScopeId` to a list of elements defined in this scope by parent scopes.
-As discussed in [@sec:scopes], scopes are lists of scope path elements, where the prefixes correspond to parent scopes.
 For any given scope the set of referable nodes is determined by unifying the associated IDs of all prefixes of the given scope, then resolving the IDs to elements.
+Concretely, the identifiers in scope of the value `123` in the [example @lst:nls-scopes-elements] are `{Declaration("record"), RecordField("key1"), RecordField("key2") }`{.rust}.
 The Rust implementation is given in [@lst:nls-resolve-scope] below.
 
 ```{.rust #lst:nls-resolve-scope caption="Resolution of all items in scope"}
