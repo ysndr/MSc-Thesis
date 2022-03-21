@@ -60,6 +60,17 @@ package "Language Server Abstraction" {
             + scope: Scope,
             + meta: Option<MetaValue>,
         }
+
+
+        class StubHost << (S,steelblue) >> {
+        }
+
+        class "Linearizer for StubHost" as impl_linearizer_for_StubHost << (I,lime) >> {
+            -- Associated Types --
+            type Building = ();
+            type Completed = ();
+        }
+
     }
 
     package "LSP Implementations" {
@@ -91,7 +102,6 @@ package nls {
         ~ receive(Request)
         ~ reply(Response)
     }
-    note right of Server: asd
 
     class AnalysisHost << (S,steelblue) >> {
         - env: Environment,
@@ -101,7 +111,6 @@ package nls {
         - let_binding: Option<ID>,
         - access: Option<Vec<Ident>>,
         - {field} record_fields: Option<(ID, Vec<(ID, Ident)>)>,
-
     }
 
     class "Linearizer for AnalysisHost" as impl_linearizer_for_AnalysisHost << (I,lime) >> {
@@ -136,10 +145,17 @@ package Nickel {
         type_check(S, Term)
     }
 
+    class "Nickel" as Nickel_bin << (S,steelblue) >>  {
+
+    }
+
 }
 
 AnalysisHost ..|> Linearizer
 impl_linearizer_for_AnalysisHost . (AnalysisHost, Linearizer) : "Implementation"
+
+StubHost ..|> Linearizer
+impl_linearizer_for_StubHost . (StubHost, Linearizer) : "Implementation"
 
 ' impl_linearizer_for_AnalysisHost ..> Building
 ' impl_linearizer_for_AnalysisHost ..> Completed
@@ -178,7 +194,7 @@ Scope o--> ScopeId
 Server o--> Completed
 Server ..> AnalysisHost
 Server ..> TypeChecker
-Server ..> Parser
+Server ..> Parser : "S = AnalysisHost"
 
 Server ..> GoToRef
 Server ..> GoToDef
@@ -193,6 +209,10 @@ Symbols ..|>"R = SymbolsParams" Handler
 Hover ..|> "R = HoverParams" Handler
 
 TypeChecker *..|> Linearizer
+
+Nickel_bin ..> StubHost
+Nickel_bin ..Parser : "S = StubHost"
+Nickel_bin ..> TypeChecker
 ' Parser ..> Term
 
 
