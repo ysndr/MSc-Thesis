@@ -11,6 +11,8 @@
         pkgs = nixpkgs.legacyPackages.${system};
         writing = writing-tools.packages.${system};
 
+        latex = (writing.latex.override { });
+
         compile-all = pkgs.writeShellScriptBin "compile-thesis" ''
           pandoc $(cat ./toc.txt) --defaults document.yaml -o "$@"
         '';
@@ -24,15 +26,18 @@
           pandoc prelude/metadata.yaml prelude/prelude.md $1 --defaults document.yaml -o "''${@:2}"
         '';
 
+
       in
       {
         devShell = pkgs.mkShell {
           nativeBuildInputs = [ pkgs.bashInteractive ];
           buildInputs = [
-            writing.latex
+            latex
             (writing.pandoc.override {
+              inherit latex;
               filters = [
                 "pandoc-include-code"
+                (builtins.fetchurl "https://raw.githubusercontent.com/ysndr/pandocfilters/7bee1ae/examples/plantuml.py")
                 (builtins.fetchurl "https://raw.githubusercontent.com/jgm/pandocfilters/f850b22/examples/graphviz.py")
                 (builtins.fetchurl "https://raw.githubusercontent.com/jgm/pandocfilters/f850b22/examples/tikz.py")
                 (builtins.fetchurl "https://raw.githubusercontent.com/timofurrer/pandoc-plantuml-filter/master/pandoc_plantuml_filter.py")
