@@ -34,7 +34,7 @@ else (possible match)
                 have been visited without a match
             end note
         endif
-    repeat while (idx > 0) is (hello)
+    repeat while (idx > 0) is (check next preceding element)
     end
     floating note right
        no match in all preceding items
