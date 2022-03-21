@@ -154,7 +154,7 @@ While these types currently appear throughout the entire architecture, in the fu
 [Section @sec:future-work] lays out a more detailed plan how this will be achieved.
 
 \bls
-```{.plantuml #fig:class-diagram include=assets/class-diagram.plantuml caption="Class Diagram"}
+```{.plantuml #fig:class-diagram include=assets/class-diagram.plantuml caption="Entity Diagram showing the architecture of NLS, explicit dependency arrows omitted for legibility."}
 ```
 \els
 
