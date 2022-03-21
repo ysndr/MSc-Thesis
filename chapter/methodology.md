@@ -115,7 +115,51 @@ Incremental parsing, type-checking and analysis can still be implemented as a se
 Code analysis approaches as introduced in [@sec:considerable-dimensions] can have both *lazy* and *eager* qualities.
 Lazy solutions are generally more compatible with an incremental processing model, since these aim to minimizing the change induced computation.
 NLS prioritizes to optimize for efficient queries to a pre-processed data model.
-Similar to the file processing argument in [@sec:file-pressng], it is assumed that Nickel project's size allows for efficient enoigh eager analysis prioritizing a more straight forward implementation  over optimized performance.
+Similar to the file processing argument in [@sec:file-pressng], it is assumed that Nickel project's size allows for efficient enoigh eager analysis prioritizing a more straight forward implementation over optimized performance.
+
+## High-Level Architecture
+
+This section describes The high-level architecture of NLS.
+The entity diagram depicted in [@fig:class-diagram] shows the main elements at play.
+
+NLS needs to meet the flexibility and generalizability requirements as discussed in [@sec:flexibility, @sec:generalizability].
+In short three main considerations have to be satisfied:
+
+1. To keep up with the frequent changes to the Nickel language and ensure compatibility at minimal cost, NLS needs to *integrate critical functions* of Nickel's runtime
+2. Adaptions to Nickel to accommodate the language server should be minimal not obstruct its development and *maintain performance of the runtime*.
+3. To allow the adoption in other languages, the core language server should be separable from the nickel specifics.
+
+The architecture of NLS reflects these goals, using conceptional groups.
+The core group labeled "Language Server", contains modules concerning both the source code analysis and LSP interaction.
+The analysis is base on an internal representation of source code called `Linearization` which can be in one of two states, namely `Building` or `Completed`.
+Either state manages an array of items (`LinearizationItems`) that are derived from AST nodes as well as various metadata facilitating the actions related to the state.
+The building of the linearization is abstracted in the `Linearizer` trait.
+Implementors of this trait convert AST nodes to linearization items and append said items to a shared linearization in the building state.
+Finally, linearizers define how to post-process and complete the linearization.
+The full linearization is described in detail in [@sec:linearization].
+The LSP capabilities are implemented as independent functions satisfying the same interface, accepting request parameters, and a reference to the completed linearization.
+A reference to the server finally allows the handlers to send responses to LSP clients.
+To facilitate most functions of the linearization and the LSP handlers, the language-server abstraction also defines a range of support types.
+
+Unlike the abstract language server module, the NLS module defines language specific implementations.
+In particular, it implements the `Linearizer` trait through `AnalysisHost` which is referred to in the following of this document simply as the "linearizer".
+The linearizer abstracts Nickel's AST nodes into linearization items.
+Since the linearizer implementation is the only interface between Nickel and NLS, changes to the language that affect the AST require changes to this module only.
+Representing the main binary, the Server module integrates the Nickel parser and type checker to perform deeper analysis based on an AST representation and to provide diagnostics to the client.
+Moreover, the integration of Nickel's original modules avoids the need to rewrite these functions which allows NLS to profit from improvements with minimal adaption.
+The analysis results are cached internally and used by the individual capability handlers to answer LSP requests.
+
+The Nickel module contains, apart from the parsing and type checking functions, a group of types related to AST nodes and the linearization process.
+While these types currently appear throughout the entire architecture, in the future the language server library will use different abstractions to remove this dependency.
+[Section @sec:future-work] lays out a more detailed plan how this will be achieved.
+
+\bls
+```{.plantuml #fig:class-diagram include=assets/class-diagram.plantuml caption="Class Diagram"}
+```
+\els
+
+
+
 
 ## Illustrative example
 
@@ -183,8 +227,7 @@ let image = "k8s.gcr.io/%{name_}" in
 ## Linearization
 
 The focus of the NLS as presented in this work is to implement a foundational set of LSP features as described in [@sec:capability].
-In order to process these capabilities efficiently as per [@sec:performance], NLS needs to store more information than what is originally present in a Nickel AST (cf. [@sec:nickel-ast]), such as information about references and types.
-While these can be deduced from the AST lazily, it would require the repeated traversal of arbitrarily large tree with an associated cost to performance.
+In order to process these capabilities efficiently as per [@sec:performance], NLS needs to store more information than what is originally present in a Nickel AST (cf. [@sec:nickel-ast]), such as information about references these can be deduced from the AST lazily, it would require the repeated traversal of arbitrarily large tree with an associated cost to performance.
 Therefore as hinted in [@sec:code-analysis], optimization is directed to efficient lookup from a pre-processed report.
 Since most LSP commands refer to code positions, the intermediate structure must allow efficient lookup of analysis results based on positions.
 
@@ -272,8 +315,7 @@ impl LinearizationState for Completed {}
 The NLS project aims to present a transferable architecture that can be adapted for future languages.
 Consequently, NLS faces the challenge of satisfying multiple goals
 
-1. To keep up with the frequent changes to the Nickel language and ensure compatibility at minimal cost, NLS needs to *integrate critical functions* of Nickel's runtime
-2. Adaptions to Nickel to accommodate the language server should be minimal not obstruct its development and *maintain performance of the runtime*.
+
 <!-- what is more? -->
 
 To accommodate these goals NLS comprises three different parts as shown in [@fig:nls-nickel-structure].
@@ -287,44 +329,6 @@ Nickel's type checking implementation
 A stub implementation
   ~ of the `Linearizer` trait is used during normal operation.
     Since most methods of this implementation are `no-op`s, the compiler should be able to optimize away all `Linearizer` calls in release builds.
-
-<!-- TODO: caption -->
-```{.graphviz #fig:nls-nickel-structure caption="Interaction of Components"}
-digraph {
-  splines="ortho"
-  node [shape=record]
-
-
-
-  {
-    node[style=dashed]
-    nls [label="NLS"]
-    host [label=Analysis]
-  }
-
-  {
-    node[style=dotted]
-    nickel [label="Nickel"]
-    stub [label="Stub interface"]
-  }
-
-
-  als [label="Linearizer | \<T\>"]
-
-//   {rank=same; host; stub; }
-
-  
-  
-  host ->  nickel  [label="imports", constraint = false]
-  
-  stub ->  als [label="implements | T = ()"]
-  nickel ->  als  [label="calls"]
-  nickel ->  stub  [label="defines", style=dashed, color=grey]
-  nls ->  host  [label="defines", style=dashed, color=grey]
-  host ->  als [label="implements | T = Nickel"]
-
-}
-```
 
 
 #### Usage Graph
