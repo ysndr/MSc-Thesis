@@ -3,7 +3,7 @@
 This chapter guides through the components of the Nickel Language Server (NLS) as well as the implementation details of the source code analysis and information querying.
 Aiming for an abstract interface, NLS defines its own data structure underpinning all higher level LSP interactions.
 [Section @sec:linearization] will introduce this `linearization` data structure and explain how NLS bridges the gap between the explicitly handled Nickel AST towards the abstract linearization.
-Finally, the implementation of current LSP features is discussed in [@sec:lsp-server].
+Finally, the implementation of current LSP features is discussed in [@sec:lsp-server-implementation].
 
 ## Key Objectives
 
@@ -160,7 +160,6 @@ While these types currently appear throughout the entire architecture, in the fu
 
 
 
-
 ## Illustrative example
 
 The example [@lst:nickel-complete-example] shows an illustrative high level configuration of a server.
@@ -228,7 +227,7 @@ let image = "k8s.gcr.io/%{name_}" in
 
 The focus of the NLS as presented in this work is to implement a foundational set of LSP features as described in [@sec:capability].
 In order to process these capabilities efficiently as per [@sec:performance], NLS needs to store more information than what is originally present in a Nickel AST (cf. [@sec:nickel-ast]), such as information about references these can be deduced from the AST lazily, it would require the repeated traversal of arbitrarily large tree with an associated cost to performance.
-Therefore as hinted in [@sec:code-analysis], optimization is directed to efficient lookup from a pre-processed report.
+Therefore, as hinted in [@sec:code-analysis], optimization is directed to efficient lookup from a pre-processed report.
 Since most LSP commands refer to code positions, the intermediate structure must allow efficient lookup of analysis results based on positions.
 
 
@@ -1103,23 +1102,31 @@ impl Completed {
 }
 ```
 
-## LSP Server
+## LSP Server Implementation
 
-[Section @sec:commands-and-notifications] introduced the concept of capabilities in the context of the language server protocol.
-This section describes how NSL uses the linearization described in [@sec:linearization] to implement a comprehensive set of features.
-NLS implements the most commonly compared capabilities *Code completion*, *Hover* *Jump to def*, *Find references*, *Workspace symbols* and *Diagnostics*.
+This section describes how NSL uses the linearization described in [@sec:linearization] to implement the set of features proposed in [@sec:capability].
+
+### Server Interface
+
+As mentioned in [@sec:programming-language] the Rust language ecosystem maintains several porjects supporting the development of LSP compliant servers.
+NLS is based on the `lsp-server` crate [@lsp-server-crate], a contribution by the Rust Analyzer, which promises long-term support and compliance with the latest LSP specification.
+
+Referring to [@fig:class-diagram], the `Server` module represents the main server binary.
+It integrates the analysis steps with Nickel's parsing and type-checking routines.
+The resulting analysis is used to serve LSP requests.
 
 ### Diagnostics and Caching
 
 NLS instructs the LSP client to notify the server once the user opens or modifies a file.
-Each notification contains the complete source code of the file as well as its location.
-NLS subsequently parses and type-checks the file using Nickel's libraries.
-Since Nickel deals with error reporting already, NLS converts any error generated in these processes into [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#diagnostic) items and sends them to the client as server notifications.
-Nickel errors provide detailed information about location of the issue as well as possible details which NLS can include in the Diagnostic items.
+An update notification contains the complete source code of the file as well as its location.
+Upon notification, NLS first attempts to create an AST from the source code contained in the request payload by passing to Nickel's parser module.
+NLS will then instantiate a new linearizer which is applied to Nickel's type-checking functions, which has the following benefits.
+Leveraging type checking serves as both provider of type diagnostics or complete tree traversal yielding a linearization of the entire code in the absence of errors.
+Moreover, inferred types computed during the type-checking, can be used to resolve element types of the linearization items.
+Errors arising in either step reported to the client as [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#diagnostic) including detailed information about location and possible details provided by the Nickel infrastructure.
 
 As discussed in [@sec:linearization] and [@sec:resolving-elements] the type-checking yields a `Completed` linearization which implements crucial methods to resolve elements.
-NLS will cache the linearization for each processed file.
-This way it can provide its LSP functions while a file is being edited.
+NLS will cache the linearization for each processed file so that it can provide its LSP functions even while a file is being edited, i.e, in a possibly invalid state.
 
 ### Commands
 
