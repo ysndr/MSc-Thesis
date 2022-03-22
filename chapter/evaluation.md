@@ -35,6 +35,31 @@ In particular, it details the survey ([@sec:qualitative]) which was conducted wi
 
 ### Qualitative
 
+Inspired by the work of Leimeister in [@leimeister], a survey aims to provide practical insights into the experience of future users.
+In order to get a clear picture of the users' needs and expectations independent of the experience, the survey consists of two parts -- a pre-evaluation and final survey.
+The pre-evaluation introduced participants in brief to the concept of language servers and asked them to write down their understanding of several LSP features.
+In total, six features were surveyed corresponding to the implementation as outlined in [@sec:capability].
+The item for the "Hover" feature for instance reads as follows:
+
+> Editors can show some additional information about code under the cursor.
+> The selection, kind, and formatting of that information is left to the Language Server.
+>
+> What kind of information do you expect to see when hovering code? Does the position or kind of element matter? If so, how?
+
+Items first introduce a feature on a high level followed by a request to the participant to describe their ideal implementation of the feature.
+
+For the final survey interested participants at Tweag were invited to a workshop introducing Nickel.
+As a preparation, they were asked to install the LSP.
+The workshop allowed participants unfamiliar with the Nickel language to use the language and experience NLS.
+Following the workshop, participants filled in a second survey which focused on particular experiences of every single feature.
+This evaluation focused on three main aspects.
+First, the general experience without weighing in expectations.
+The goal was to assess the extent to which the user was able to use the feature, since all usability metrics as discussed in [#sec:evaluation] depend on the respective feature being available in the first place.
+In the same category are the items surveying the perceived performance and stability on a linear scale hinting at possible usability issues.
+The scales span from "Very slow response" to "Very quick response" and "Never Crashed" to "Always Crashed" respectively.
+As a second aspect, the user was asked to explicitly reflect on their expectations, particularly, how satisfied their expectations were.
+In the final part participants could describe their perceived shortcomings or questions or remarks.
+
 ### Quantitative
 
 ## Process
