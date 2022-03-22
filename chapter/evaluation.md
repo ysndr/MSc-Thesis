@@ -54,11 +54,15 @@ The workshop allowed participants unfamiliar with the Nickel language to use the
 Following the workshop, participants filled in a second survey which focused on particular experiences of every single feature.
 This evaluation focused on three main aspects.
 First, the general experience without weighing in expectations.
-The goal was to assess the extent to which the user was able to use the feature, since all usability metrics as discussed in [#sec:evaluation] depend on the respective feature being available in the first place.
+The goal was to assess the extent to which the users were able to use the feature, since all usability metrics as discussed in [#sec:metrics] depend on the respective feature being available in the first place.
 In the same category are the items surveying the perceived performance and stability on a linear scale hinting at possible usability issues.
 The scales span from "Very slow response" to "Very quick response" and "Never Crashed" to "Always Crashed" respectively.
-As a second aspect, the user was asked to explicitly reflect on their expectations, particularly, how satisfied their expectations were.
+Under the second aspect, the users were asked to explicitly reflect on their expectations in order to contribute to the usability metric.
 In the final part participants could describe their perceived shortcomings or questions or remarks.
+
+Every feature was individually evaluated with two objectives in mind.
+First, a clear idea of the perceived maturity of individual features can support guiding future development of the language server as badly scoring features could be improved first.
+Then, asking participants to comment on features individually, could reveal general problems affecting multiple features by looking for similarities between responses for different features.
 
 ### Quantitative
 
