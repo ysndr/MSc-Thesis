@@ -95,6 +95,17 @@ In the final part participants could describe their perceived shortcomings or qu
 
 ### Quantitative
 
+To address the performance metrics introduced in [@sec:metrics], a quantitative study was conducted, that analyzes latencies in the LSP-Server-Client communication.
+The study complements the subjective reports collected through the survey (cf. [@sec:experience-survey]).
+The evaluation is possible due to the inclusion of a custom tracing module in NLS.
+The tracing module is used to create a report for every request, containing the processing time and a measure of the size of the analyzed document.
+If enabled, NLS records an incoming request with an identifier and time stamp.
+While processing the request, it adds additional data to the record, i.e., the type of request, the size of the linearization (cf. [@sec:linearization]) or processed file and possible errors that occured during the process.
+Once the server replies to a request, it records the total response time and writes the entire record to an external file.
+
+The tracing approach narrows the focus of the performance evaluation to the time spent by NLS.
+Consequently, the performance evaluation is independent of the LSP client (editor) that is used, which could introduce a bias in the results.
+
 ## Process
 
 ## Results
