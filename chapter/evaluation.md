@@ -47,6 +47,20 @@ Moreover, it was assumed that eager computation would have a negligible impact o
 
 ## Methods
 
+### Objectives
+
+The qualitative evaluation was conducted with a strong focus on the first metric in [sec:metrics].
+Usability proves hard to quantify, as it is tightly connected to subjective perception, expectations and tolerances.
+The structure of the survey is guided by two additional objectives, endorsing the separation of individual features.
+On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
+This data is important as for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) as well as a generic basis for other projects. 
+On the other hand, all features are implemented on top of the same base (cf. [@sec:implementation]).
+The survey should therefore show architectural deficits as well.
+
+The quantitative study in contrast focuses on measurable performance.
+Similarly to the survey bases evaluation it should reveal insight for different features and tasks separately.
+An additional objective, in line with the definition of the performance metric in [#sec:metrics], is to show the influence of growing file sizes in practice.
+
 ### Qualitative
 
 Inspired by the work of Leimeister in [@leimeister], a survey aims to provide practical insights into the experience of future users.
@@ -78,10 +92,6 @@ In the same category are the items surveying the perceived performance and stabi
 The scales span from "Very slow response" to "Very quick response" and "Never Crashed" to "Always Crashed" respectively.
 Under the second aspect, the users were asked to explicitly reflect on their expectations in order to contribute to the usability metric.
 In the final part participants could describe their perceived shortcomings or questions or remarks.
-
-Every feature was individually evaluated with two objectives in mind.
-First, a clear idea of the perceived maturity of individual features can support guiding future development of the language server as badly scoring features could be improved first.
-Then, asking participants to comment on features individually, could reveal general problems affecting multiple features by looking for similarities between responses for different features.
 
 ### Quantitative
 
