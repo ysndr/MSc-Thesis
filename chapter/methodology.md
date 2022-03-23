@@ -444,6 +444,7 @@ let record                                   |
   in record -------------------------- /1/2  |
                                              |
 ---------------------------------------------+
+```
 
 Additionally, to keep track of the variables in scope, and iteratively build a usage graph, NLS keeps track of the latest definition of each variable name and which `Declaration` node it refers to.
 
