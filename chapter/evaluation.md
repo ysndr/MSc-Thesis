@@ -31,6 +31,20 @@ The first section [@sec:methods] introduces methods employed for the evaluation.
 In particular, it details the survey ([@sec:qualitative]) which was conducted with the intent to gain qualitative opinions by users, as well as the tracing mechanism ([@sec:quantitative]) for factual quantitative insights.
 [Section @sec:results] summarises the results of these methods.
 
+## Evaluation Considerations
+
+Different methods to evaluate the abovementioned metrics were considered.
+While quantifying user experience yields statistically sound insights about the studied subject, it fails to point out specific user needs.
+Therefore, this work employs a more subjective evaluation based on a standardized experience report focusing on individual features.
+Contrasting the expectations with experiences allows the implementation more practically and guide the further development by highlighting well executed, immature or missing features.
+
+On the other hand it is more approachable to track runtime performance objectively through time measurements.
+In fact, runtime behavior was a central assumption underlying the server architecture. 
+As discussed in [@sec:considerations] an eager processing model was chosen over lazy analysis.
+It was hypothesized that analyzing Nickel source code eagerly allows to perform a single computation ahead of time instead of multiple partial ones.
+This way both analyzing and querying information could be implemented more efficiently.
+Moreover, it was assumed that eager computation would have a negligible impact on performance given the relatively small size of Nickel code bases in the current stage.
+
 ## Methods
 
 ### Qualitative
