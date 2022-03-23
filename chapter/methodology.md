@@ -432,7 +432,7 @@ A `ScopeId` in turn is a "scope path", a list of path elements where the prefix 
 
 
 ```{.nickel #lst:nickel-scope-example caption="Explicit display of Nickel scopes"}
----------------------------------------------+/1
+---------------------------------------------+ /1
                                              |
 let record                                   |
   = { -------------------------------+ /1/1  |
@@ -440,11 +440,10 @@ let record                                   |
     key1 = "value", -------- /1/1/1  |       |
     key2 = 123, ------------ /1/1/2  |       |
                                      |       |
-  }----------------------------------+       |
-  in record ------------------------/1/2     |
+  } ---------------------------------+       |
+  in record -------------------------- /1/2  |
                                              |
 ---------------------------------------------+
-```
 
 Additionally, to keep track of the variables in scope, and iteratively build a usage graph, NLS keeps track of the latest definition of each variable name and which `Declaration` node it refers to.
 
