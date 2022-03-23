@@ -45,7 +45,7 @@ jobs:
           branch=${{ github.head_ref }}
           input="${branch%%#*}"
           pdf_output="${{ env.PREVIEW_PATH }}/${branch}.pdf"
-
+          pdf_output_url=$(python -c "import urllib.parse; import sys; print(urllib.parse.quote(sys.argv[1]))" "$pdf_output")
           mode=$([[ "$input" == "chapter/"* ]] && echo "chapter" || echo "all")
 
           tag="${branch#*#}"
@@ -54,6 +54,7 @@ jobs:
           echo "::set-output name=ref::$branch"
           echo "::set-output name=input::$input"
           echo "::set-output name=pdf_output::$pdf_output"
+          echo "::set-output name=pdf_output_url::$pdf_output_url"
           echo "::set-output name=mode::$mode"
           echo "::set-output name=tag::$tag"
 
@@ -166,4 +167,4 @@ jobs:
           status: ${{ job.status }}
           auto_inactive: false
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-          env_url: "https://github.com/${{github.repository}}/tree/${{env.PREVIEW_REF}}/${{ steps.config.outputs.pdf_output }}"
+          env_url: "https://github.com/${{github.repository}}/tree/${{env.PREVIEW_REF}}/${{ steps.config.outputs.pdf_output_url }}"
