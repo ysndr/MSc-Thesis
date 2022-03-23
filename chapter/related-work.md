@@ -208,7 +208,9 @@ Through the use for such abstractions, servers can focus on the implementation o
 
 #### Language Independence
 
-The LSP is truly language independent.
+The LSP is defined with language independence in mind.
+Not only does it target a specific language, it neither imposes any restriction on the language used to implement a server.
+In fact servers don't even need to integrate any existing infrastructure of a language at all.
 Many language implementations do not expose the required language interfaces (parsing, AST, Types, etc..), or pose various other impediments such as a closed source, licensing, or the absence of LSP abstractions available for the host language.
 
 An instance of this type is the rnix-lsp[@rnix-git] language server for the nix[@nixos.org] programming language.
