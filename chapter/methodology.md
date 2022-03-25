@@ -36,12 +36,18 @@ This concept mitigates queuing but can lead to similarly bad user experience as 
 The second objective is to provide an LSP server that offers the most common LSP features as identified by [@langserver-org].
 Concretely, these capabilities are:
 
-1. Code completion,
-2. Hover information,
-3. Jump to definition,
-4. Find references,
-5. Workspace symbols,
+1. Code completion
+   Suggest identifiers, methods or values at the cursor position.
+2. Hover information
+   Present additional information about an item under the cursor, i.e., types, contracts and documentation.
+3. Jump to definition
+   Find and jump to the definition of a local variable or identifier.
+4. Find references
+   List all usages of a defined variable.
+5. Workspace symbols
+   List all variables in a workspace or document.
 6. Diagnostics
+   Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
 
 For the work on NLS these six capabilities were considered as the goal for a minimal viable product.
 
