@@ -86,7 +86,7 @@ For instance the largest and most advaced LSP implementation in Rust -- the Rust
 Additionally, lots of smaller languages [@gluon, @slint, @mojom] implement Language Servers in Rust.
 Rust appears to be a viable choice even for languages that are not originally implemented in Rust, such as Nix [@nix, @rninx-lsp].
 
-In Rust the concept of `traits` [@traits] is fundamental, for the following reasons:
+In Rust `traits` [@traits] are the fundamental concept used to abstract methods from the underlying data.  
 Traits are definitions of shared behavior.
 Similar to interfaces in other languages, a trait defines a set of methods.
 One implements a trait for a certain type, by defining the behavior in the context of the type.
