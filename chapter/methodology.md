@@ -1,4 +1,4 @@
-# Design implementation of NLS
+# Design and Implementation
 
 This chapter guides through the components of the Nickel Language Server (NLS) as well as the implementation details of the source code analysis and information querying.
 Aiming for an abstract interface, NLS defines its own data structure underpinning all higher level LSP interactions.
@@ -36,12 +36,18 @@ This concept mitigates queuing but can lead to similarly bad user experience as 
 The second objective is to provide an LSP server that offers the most common LSP features as identified by [@langserver-org].
 Concretely, these capabilities are:
 
-1. Code completion,
-2. Hover information,
-3. Jump to definition,
-4. Find references,
-5. Workspace symbols,
+1. Code completion
+   Suggest identifiers, methods or values at the cursor position.
+2. Hover information
+   Present additional information about an item under the cursor, i.e., types, contracts and documentation.
+3. Jump to definition
+   Find and jump to the definition of a local variable or identifier.
+4. Find references
+   List all usages of a defined variable.
+5. Workspace symbols
+   List all variables in a workspace or document.
 6. Diagnostics
+   Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
 
 For the work on NLS these six capabilities were considered as the goal for a minimal viable product.
 
@@ -119,7 +125,7 @@ Similar to the file processing argument in [@sec:file-pressng], it is assumed th
 
 ## High-Level Architecture
 
-This section describes The high-level architecture of NLS.
+This section describes the high-level architecture of NLS.
 The entity diagram depicted in [@fig:class-diagram] shows the main elements at play.
 
 NLS needs to meet the flexibility and generalizability requirements as discussed in [@sec:flexibility, @sec:generalizability].
@@ -165,7 +171,7 @@ While these types currently appear throughout the entire architecture, in the fu
 The example [@lst:nickel-complete-example] shows an illustrative high level configuration of a server.
 Using Nickel, this file would be used to define the schema of the configuration format of another program.
 Evaluation and validation is done in the context of Nickel, after which the evaluated structure is translated into a more common (but less expressive) format such as YAML or JSON.
-Here, the chema for a configuration of a Kubernetes-like [@kubernetes] tool is defined using contracts, making exemplary use of variables and functions.
+Here, the schema for a configuration of a Kubernetes-like [@kubernetes] tool is defined using contracts, making exemplary use of variables and functions.
 Specifically, it describes a way to provision named containers.
 The user is able to specify container images and opened ports, as well as define metadata of the deployment.
 The configuration is constrained by the `NobernetesConfig` contract.
