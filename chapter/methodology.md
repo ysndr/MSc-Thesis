@@ -333,7 +333,10 @@ impl LinearizationState for Completed {}
 The NLS project aims to present a transferable architecture that can be adapted for future languages as elaborated in [@sec:generalizability].
 Consequently, NLS faces the challenge of satisfying multiple goals
 
-
+1. The core of the server should be language independent.
+2. Language dependent features should serve the core abstractions.
+3. To keep up with Nickel's rapid development ensuring compatibility at minimal cost, critical functions should integrate with the Nickel language implementation.
+4. Adaptions to Nickel should be minimal not obstruct its development and runtime performance.
 <!-- what is more? -->
 
 To accommodate these goals NLS comprises three different parts as shown in [@fig:nls-nickel-structure].
