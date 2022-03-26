@@ -235,7 +235,8 @@ let image = "k8s.gcr.io/%{name_}" in
 ## Linearization
 
 The focus of the NLS as presented in this work is to implement a foundational set of LSP features as described in [@sec:capability].
-In order to process these capabilities efficiently as per [@sec:performance], NLS needs to store more information than what is originally present in a Nickel AST (cf. [@sec:nickel-ast]), such as information about references these can be deduced from the AST lazily, it would require the repeated traversal of arbitrarily large tree with an associated cost to performance.
+In order to process these capabilities efficiently as per [@sec:performance], NLS needs to store more information than what is originally present in a Nickel AST (cf. [@sec:nickel-ast]), such as information about references.
+Although this can be deduced from the AST lazily, working with Nickel's tree representation is inefficient, as it is not optimized for random access and search operations.
 Therefore, as hinted in [@sec:code-analysis], optimization is directed to efficient lookup from a pre-processed report.
 Since most LSP commands refer to code positions, the intermediate structure must allow efficient lookup of analysis results based on positions.
 
