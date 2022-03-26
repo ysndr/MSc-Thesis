@@ -327,7 +327,7 @@ impl LinearizationState for Completed {}
 
 ### Transfer from AST
 
-The NLS project aims to present a transferable architecture that can be adapted for future languages.
+The NLS project aims to present a transferable architecture that can be adapted for future languages as elaborated in [@sec:generalizability].
 Consequently, NLS faces the challenge of satisfying multiple goals
 
 
