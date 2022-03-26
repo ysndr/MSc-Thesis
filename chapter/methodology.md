@@ -297,6 +297,9 @@ post-processing phase:
   ~ Additionally, missing edges in the usage graph have been created and the types of items are fully resolved in a completed linearization.
 
 Type definitions of the `Linearization` as well as its type-states `Building` and `Completed` are listed in [@lst:nickel-definition-lineatization;@lst:nls-definition-building-type;@lst:nls-definition-completed-type].
+As hinted above, the `Linearization` struct acts as the overarching context only.
+Therefore it is similar to an enumeration where the concrete variants are unknown but statically determined at compile time.
+The `LinearizationState`s can be implemented according to the needs of the Linearizer implementation of the LSP server built on top of the core module.
 Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS.
 
 
