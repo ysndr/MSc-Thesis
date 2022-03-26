@@ -267,8 +267,8 @@ However, the exact structure of that array differs as an effect of the post-proc
 
 `LinearizationItem`s maintain the position of their AST counterpart as well as its type.
 Unlike in the AST ([sec:meta-information]), *metadata* is directly associated with the element.
-Further deviating from the AST representation, the *type* of the node and its *kind* are tracked separately.
-The latter is used to represent a usage graph on top of the linear structure.
+Further deviating from the AST representation, both the *type* of the node and its references to other items are encoded explicitly in the `LinearizationType`.
+The references form an implicit usage graph on top of the linear structure.
 It distinguishes between declarations (`let` bindings, function parameters, records) and variable usages.
 Any other kind of structure, for instance, primitive values (Strings, numbers, boolean, enumerations), is recorded as `Structure`.
 
