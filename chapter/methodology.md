@@ -282,7 +282,7 @@ The unit type `()` is a so called "zero sized type" [@zero-sized-type), it repre
 NLS provides a `Linearizer` implementation based on unit types and empty method definitions.
 As a result, the memory footprint of this linearizer is effectively zero and most method calls will be removed as part of compile time optimizations. 
 
-NLS implements separate type-states for the two phases of the linearization: `Building` and `Completed`.
+NLS defines two type-state variants according to the two phases of the linearization: `Building` and `Completed`.
 
 
 building phase:
@@ -297,6 +297,9 @@ post-processing phase:
   ~ Additionally, missing edges in the usage graph have been created and the types of items are fully resolved in a completed linearization.
 
 Type definitions of the `Linearization` as well as its type-states `Building` and `Completed` are listed in [@lst:nickel-definition-lineatization;@lst:nls-definition-building-type;@lst:nls-definition-completed-type].
+As hinted above, the `Linearization` struct acts as the overarching context only.
+Therefore it is similar to an enumeration where the concrete variants are unknown but statically determined at compile time.
+The `LinearizationState`s can be implemented according to the needs of the Linearizer implementation of the LSP server built on top of the core module.
 Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS.
 
 
@@ -330,7 +333,10 @@ impl LinearizationState for Completed {}
 The NLS project aims to present a transferable architecture that can be adapted for future languages as elaborated in [@sec:generalizability].
 Consequently, NLS faces the challenge of satisfying multiple goals
 
-
+1. The core of the server should be language independent.
+2. Language dependent features should serve the core abstractions.
+3. To keep up with Nickel's rapid development ensuring compatibility at minimal cost, critical functions should integrate with the Nickel language implementation.
+4. Adaptions to Nickel should be minimal not obstruct its development and runtime performance.
 <!-- what is more? -->
 
 To accommodate these goals NLS comprises three different parts as shown in [@fig:nls-nickel-structure].
@@ -342,8 +348,9 @@ Nickel's type checking implementation
   ~ was adapted to pass AST nodes to the `Linearizer`.
     Modifications to Nickel are minimal, comprising only few additional function calls and a slightly extended argument list.
 A stub implementation
-  ~ of the `Linearizer` trait is used during normal operation.
-    Since most methods of this implementation are `no-op`s, the compiler should be able to optimize away all `Linearizer` calls in release builds.
+  ~ of the `Linearizer` trait is used during normal operation of the interpreter.
+    Since most methods of this implementation are `no-op`s, the compiler is expected to be able to remove most `Linearizer` related method calls in optimized release builds.
+    This promises minimal runtime impact incurred by the integration of lsp APIs.
 
 
 #### Usage Graph
@@ -428,11 +435,12 @@ The Nickel language implements lexical scopes with name shadowing.
 1. A name can only be referred to after it has been defined
 2. A name can be redefined locally
 
-An AST inherently supports this logic.
+An AST supports this concept due to its hierarchical structure.
 A variable reference always refers to the closest parent node defining the name and scopes are naturally separated using branching.
 Each branch of a node represents a sub-scope of its parent, i.e., new declarations made in one branch are not visible in the other.
 
-When eliminating the tree structure, scopes have to be maintained in order to provide auto-completion of identifiers and list symbol names based on their scope as context.
+When eliminating the tree structure, scopes have to be maintained.
+This is to provide LSP capabilities such as auto-completion [@sec:auto-completion] of identifiers and list symbol names [@sec:document-symbols], which require the item's scope as context.
 Since the bare linear data structure cannot be used to deduce a scope, related metadata has to be tracked separately.
 The language server maintains a register for identifiers defined in every scope.
 This register allows NLS to resolve possible completion targets as detailed in [@sec:resolving-by-scope].
@@ -653,7 +661,7 @@ For either the linearizer generates `Declaration` items and updates its name reg
 However, type information is available for name bindings only, meaning pattern matches remain untyped.
 
 The same process applies for argument names in function declarations.
-Due to argument currying[^https://en.wikipedia.org/wiki/Currying], NLS linearizes only a single argument/pattern at a time.
+Due to argument currying [@currying], NLS linearizes only a single argument/pattern at a time.
 
 ##### Records
 
