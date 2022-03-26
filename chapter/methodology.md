@@ -274,7 +274,13 @@ Any other kind of structure, for instance, primitive values (Strings, numbers, b
 
 To separate the phases of the elaboration of the linearization in a type-safe way, the implementation is based on type-states[@typestate].
 Type-states were chosen over an enumeration based approach for the additional flexibility they provide to build a generic interface.
-Thanks to the generic interface, the adaptions to Nickel to integrate NLS are expected to have almost no influence on the runtime performance of the language in an optimized build.
+First, type-states allow to implement separate utility methods for either state and enforce specific states on the type level.
+Second the `Linearization` struct provides a common context for all states like an enumeration, yet statically determining the Variant.
+Additionally, the `Linearizer` trait can be implemented for arbitrary `LinearizationState`s.
+This allows other LSP implementations to base on the same core while providing, for example, more information during the building phase.
+The unit type `()` is a so called "zero sized type" [@zero-sized-type), it represents the absence of a value.
+NLS provides a `Linearizer` implementation based on unit types and empty method definitions.
+As a result, the memory footprint of this linearizer is effectively zero and most method calls will be removed as part of compile time optimizations. 
 
 NLS implements separate type-states for the two phases of the linearization: `Building` and `Completed`.
 
