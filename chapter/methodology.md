@@ -139,6 +139,9 @@ The architecture of NLS reflects these goals, using conceptional groups.
 The core group labeled "Language Server", contains modules concerning both the source code analysis and LSP interaction.
 The analysis is base on an internal representation of source code called `Linearization` which can be in one of two states, namely `Building` or `Completed`.
 Either state manages an array of items (`LinearizationItems`) that are derived from AST nodes as well as various metadata facilitating the actions related to the state.
+The `LinearizationItem` is an abstract representation of code units represented by AST nodes or generated to support an AST derived item.
+Items associate a certain span with its type, metadata, scope and a unique id, making it referable to.
+Additionally, `LinearizationItem`s are assigned a `TermKind` which distinguishes different functions of the item in the context of the linearization.
 The building of the linearization is abstracted in the `Linearizer` trait.
 Implementors of this trait convert AST nodes to linearization items and append said items to a shared linearization in the building state.
 Finally, linearizers define how to post-process and complete the linearization.
