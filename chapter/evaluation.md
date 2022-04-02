@@ -76,7 +76,20 @@ In order to get a clear picture of the users' needs and expectations independent
 #### Pre-Evaluation
 
 The pre-evaluation introduced participants in brief to the concept of language servers and asked them to write down their understanding of several LSP features.
-In total, six features were surveyed corresponding to the implementation as outlined in [@sec:capability].
+In total, six features were surveyed corresponding to the implementation as outlined in [@sec:capability], namely:
+
+1. Code completion
+   Suggest identifiers, methods or values at the cursor position.
+2. Hover information
+   Present additional information about an item under the cursor, i.e., types, contracts and documentation.
+3. Jump to definition
+   Find and jump to the definition of a local variable or identifier.
+4. Find references
+   List all usages of a defined variable.
+5. Workspace symbols
+   List all variables in a workspace or document.
+6. Diagnostics
+   Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
 The item for the "Hover" feature for instance reads as follows:
 
 > Editors can show some additional information about code under the cursor.
