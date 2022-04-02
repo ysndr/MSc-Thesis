@@ -64,7 +64,8 @@ On the other hand, all features are implemented on top of the same base (cf. [@s
 The survey should therefore show architectural deficits as well.
 
 The quantitative study in contrast focuses on measurable performance.
-Similarly to the survey bases evaluation it should reveal insight for different features and tasks separately.
+Similarly to the survey based evaluation it should reveal insight for different features and tasks separately.
+Yet, the focus lies on uncovering potential spikes in latencies, and making empirical observations about the influence of Nickel file sizes.
 An additional objective, in line with the definition of the performance metric in [#sec:metrics], is to show the influence of growing file sizes in practice.
 
 ### Qualitative
