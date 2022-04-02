@@ -64,7 +64,7 @@ An additional objective, in line with the definition of the performance metric i
 ### Qualitative
 
 Inspired by the work of Leimeister in [@leimeister], a survey aims to provide practical insights into the experience of future users.
-In order to get a clear picture of the users' needs and expectations independent of the experience, the survey consists of two parts -- a pre-evaluation and final survey.
+In order to get a clear picture of the users' needs and expectations independently of the experience, the survey consists of two parts -- a pre-evaluation and final survey.
 
 #### Pre-Evaluation
 
@@ -77,11 +77,11 @@ The item for the "Hover" feature for instance reads as follows:
 >
 > What kind of information do you expect to see when hovering code? Does the position or kind of element matter? If so, how?
 
-Items first introduce a feature on a high level followed by a request to the participant to describe their ideal implementation of the feature.
+Items first introduce a feature on a high level followed by asking the participant to describe their ideal implementation of the feature.
 
 #### Experience Survey
 
-For the final survey interested participants at Tweag were invited to a workshop introducing Nickel.
+For the final survey, interested participants at Tweag were invited to a workshop introducing Nickel.
 As a preparation, they were asked to install the LSP.
 The workshop allowed participants unfamiliar with the Nickel language to use the language and experience NLS.
 Following the workshop, participants filled in a second survey which focused on particular experiences of every single feature.
