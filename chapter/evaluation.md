@@ -40,10 +40,16 @@ Contrasting the expectations with experiences allows the implementation more pra
 
 On the other hand it is more approachable to track runtime performance objectively through time measurements.
 In fact, runtime behavior was a central assumption underlying the server architecture. 
-As discussed in [@sec:considerations] an eager processing model was chosen over lazy analysis.
-It was hypothesized that analyzing Nickel source code eagerly allows to perform a single computation ahead of time instead of multiple partial ones.
-This way both analyzing and querying information could be implemented more efficiently.
-Moreover, it was assumed that eager computation would have a negligible impact on performance given the relatively small size of Nickel code bases in the current stage.
+As discussed in [@sec:considerations] NLS follows an eager, non-incremental processing model.
+While incremental implementations are more efficient, as they do not require entire files to be updated, they require explicit language support, i.e., an incremental parser and analysis.
+Implementing these functions exceeds the scope of this work.
+Choosing a non-incremental model on the other hand allowed to reuse entire modules of the Nickel language.
+The analysis itself can be implemented both in a lazy or eager fashion.
+Lazy analysis implies that the majority of information is resolved only upon request instead of ahead of time.
+That is, an LSP request is delayed by the analysis before a response is made.
+Some lazy models also support memoizing requests, avoiding to recompute previously requested values.
+However, eager approaches preprocess the file ahead of time and store the analysis results such that requests can be handled mostly through value lookups.
+To fit Nickels' type-checking model and considering that in a typical Nickel workflow, the analysis should still be reasonably efficient, the eager processing model was chosen over a lazy one.
 
 ## Methods
 
@@ -58,7 +64,8 @@ On the other hand, all features are implemented on top of the same base (cf. [@s
 The survey should therefore show architectural deficits as well.
 
 The quantitative study in contrast focuses on measurable performance.
-Similarly to the survey bases evaluation it should reveal insight for different features and tasks separately.
+Similarly to the survey based evaluation it should reveal insight for different features and tasks separately.
+Yet, the focus lies on uncovering potential spikes in latencies, and making empirical observations about the influence of Nickel file sizes.
 An additional objective, in line with the definition of the performance metric in [#sec:metrics], is to show the influence of growing file sizes in practice.
 
 ### Qualitative
@@ -69,7 +76,20 @@ In order to get a clear picture of the users' needs and expectations independent
 #### Pre-Evaluation
 
 The pre-evaluation introduced participants in brief to the concept of language servers and asked them to write down their understanding of several LSP features.
-In total, six features were surveyed corresponding to the implementation as outlined in [@sec:capability].
+In total, six features were surveyed corresponding to the implementation as outlined in [@sec:capability], namely:
+
+1. Code completion
+   Suggest identifiers, methods or values at the cursor position.
+2. Hover information
+   Present additional information about an item under the cursor, i.e., types, contracts and documentation.
+3. Jump to definition
+   Find and jump to the definition of a local variable or identifier.
+4. Find references
+   List all usages of a defined variable.
+5. Workspace symbols
+   List all variables in a workspace or document.
+6. Diagnostics
+   Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
 The item for the "Hover" feature for instance reads as follows:
 
 > Editors can show some additional information about code under the cursor.
