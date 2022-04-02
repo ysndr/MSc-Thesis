@@ -40,10 +40,16 @@ Contrasting the expectations with experiences allows the implementation more pra
 
 On the other hand it is more approachable to track runtime performance objectively through time measurements.
 In fact, runtime behavior was a central assumption underlying the server architecture. 
-As discussed in [@sec:considerations] an eager processing model was chosen over lazy analysis.
-It was hypothesized that analyzing Nickel source code eagerly allows to perform a single computation ahead of time instead of multiple partial ones.
-This way both analyzing and querying information could be implemented more efficiently.
-Moreover, it was assumed that eager computation would have a negligible impact on performance given the relatively small size of Nickel code bases in the current stage.
+As discussed in [@sec:considerations] NLS follows an eager, non-incremental processing model.
+While incremental implementations are more efficient, as they do not require entire files to be updated, they require explicit language support, i.e., an incremental parser and analysis.
+Implementing these functions exceeds the scope of this work.
+Choosing a non-incremental model on the other hand allowed to reuse entire modules of the Nickel language.
+The analysis itself can be implemented both in a lazy or eager fashion.
+Lazy analysis implies that the majority of information is resolved only upon request instead of ahead of time.
+That is, an LSP request is delayed by the analysis before a response is made.
+Some lazy models also support memoizing requests, avoiding to recompute previously requested values.
+However, eager approaches preprocess the file ahead of time and store the analysis results such that requests can be handled mostly through value lookups.
+To fit Nickels' type-checking model and considering that in a typical Nickel workflow, the analysis should still be reasonably efficient, the eager processing model was chosen over a lazy one.
 
 ## Methods
 
