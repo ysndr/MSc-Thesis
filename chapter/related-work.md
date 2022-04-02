@@ -86,10 +86,6 @@ Clients can then provide efficient code intelligence using LSIF data provided in
 
 The LSIF specification [@lsif-spec] defines four principal goals:
 
-- The format should not imply the use of a certain persistence technology.
-- The data defined should be modeled as closely as possible to the Language Server Protocol to make it possible to serve the data through the LSP without further transformation.
-- The data stored is result data usually returned from an LSP request. 
-- The output format will be based on JSON as with the LSP.
 
 The LSIF format is a graph structure that links source code spans to language analysis results.
 The graph structure mimics LSP types.
