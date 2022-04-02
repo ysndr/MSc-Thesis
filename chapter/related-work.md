@@ -91,7 +91,8 @@ The LSIF specification [@lsif-spec] defines four principal goals:
 - The data stored is result data usually returned from an LSP request. 
 - The output format will be based on JSON as with the LSP.
 
-The format specifies a graph structure that comprises that links ranges of source code to language analysis results that are based on the data types defined by the LSP.
+The LSIF format is a graph structure that links source code spans to language analysis results.
+The graph structure mimics LSP types.
 Vertices represent higher level concepts such as `document`s, `range`s, `resultSet`s and actual results.
 The relation between vertices is expressed through the edges.
 
