@@ -121,7 +121,18 @@ Incremental parsing, type-checking and analysis can still be implemented as a se
 Code analysis approaches as introduced in [@sec:considerable-dimensions] can have both *lazy* and *eager* qualities.
 Lazy solutions are generally more compatible with an incremental processing model, since these aim to minimizing the change induced computation.
 NLS prioritizes to optimize for efficient queries to a pre-processed data model.
-Similar to the file processing argument in [@sec:file-pressng], it is assumed that Nickel project's size allows for efficient enoigh eager analysis prioritizing a more straight forward implementation over optimized performance.
+Similar to the file processing argument in [@sec:file-pressng], it is assumed that Nickel project's size allows for efficient enough eager analysis prioritizing a more straight forward implementation over optimized performance.
+
+An example workflow of both lazy and eager processing is examplified in the sequence diagrams [@fig:nls-lazy-processing-seq] and [@fig:nls-eager-processing-seq] respectively.
+As mentioned in the previous paragraph, it is assumed that the performance gains of direct lookup after an "Ahead of time analysis", outperform the lazy analysis in terms of responsiveness.
+At the same time the initial analysis is expected to complete in reasonably short time for typical Nickel workflows.
+
+```{.plantuml #fig:nls-lazy-processing-seq include=assets/lazy-analysis.plantuml caption="Sequence diagram depicting lazy handling of LSP requests."}
+```
+
+```{.plantuml #fig:nls-eager-processing-seq include=assets/eager-analysis.plantuml caption="Sequence diagram depicting eager analysis and handling of LSP requests."}
+```
+
 
 ## High-Level Architecture
 
