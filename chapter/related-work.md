@@ -128,13 +128,13 @@ The authors point out that while their approach specializes in specification lan
 
 ### Language Server Index Format
 
-The Language Server Index Format, or short LSIF, is an augmentation of the LSP.
-Since the LSP requires a language server to actively analyze files and answer requests, its use is typically constrained to local installations.
-As pointed out in the introducing blog post [@lsif-blog-post], several use cases exist where the LSP approach fails due to resource limits.
-The article explicitly names web based platforms such as GitHub[@github] or Sourcegraph[@sourcegraph].
-
-The LSIF aims to provide the features of the LSP without the need of actively running a language server.
-Instead, "language servers or other programming tools to emit their knowledge about a code workspace" as a LSIF compliant JSON report.
+Nowadays, code hosting platforms are an integral part of the developer toolset (GitHub[@github], Sourcegraph[@sourcegraph], GitLab, Sourceforge, etc.). 
+Those platforms commonly display code simply as text, highlighted at best.
+LSP-like features would make for a great improvement for code navigation and code reading online.
+Yet, building these features on language servers would incur redundant and wasteful as a server needed to be started each time a visitor loads a chunk of code. 
+Since the hosted code is most often static and precisely versioned, code analysis could be performed ahead of time, for all files of each version.
+The LSIF (Language Server index Format) specifies a schema for the output of such ahead of time code analysis.
+Clients can then provide efficient code intelligence using LSIF data provided in one shot by the server.
 
 The LSIF specification [@lsif-spec] defines four principal goals:
 
