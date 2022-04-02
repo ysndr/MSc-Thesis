@@ -124,7 +124,9 @@ While processing the request, it adds additional data to the record, i.e., the t
 Once the server replies to a request, it records the total response time and writes the entire record to an external file.
 
 The tracing approach narrows the focus of the performance evaluation to the time spent by NLS.
-Consequently, the performance evaluation is independent of the LSP client (editor) that is used, which could introduce a bias in the results.
+Consequently, the performance evaluation is independent of the LSP client (editor) that is used.
+Unlike differences in hardware which affects all operations similarly, LSP clients may implement different behaviors that may cause editor specific biases.
+For instance, the LSP does not specify the frequency at which file changes are detected, which in turn can lead to request queuing depending on the editor used.
 
 ## Process
 
