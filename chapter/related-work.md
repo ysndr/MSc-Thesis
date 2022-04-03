@@ -17,7 +17,7 @@ Additionally, this part aims to recognize alternative approaches to the LSP, in 
 
 Since the number of implementations of the LSP is continuously growing, this thesis will present a selected set of notable projects.
 The presented projects exemplify different approaches with respect to reusing and interacting with the existing language implementation of the targeted language.
-In particular the following five approaches are discussed:
+In particular, the following five approaches are discussed:
 
 1. Three complete implementations that tightly integrate with the implementation level tooling of the respective language:
    *rust-analyzer* [@rust-analyzer], *ocaml-lsp*/*merlin* [@ocaml-lsp,@merlin] and the *Haskell Language Server* [@hls]
