@@ -36,7 +36,8 @@ In particular, it details the survey ([@sec:qualitative]) which was conducted wi
 Different methods to evaluate the abovementioned metrics were considered.
 While quantifying user experience yields statistically sound insights about the studied subject, it fails to point out specific user needs.
 Therefore, this work employs a more subjective evaluation based on a standardized experience report focusing on individual features.
-Contrasting the expectations with experiences allows the implementation more practically and guide the further development by highlighting well executed, immature or missing features.
+Contrasting the expectations highlights well executed, immature or missing features.
+This allows more actionable planning of the future development to meet user expectations.
 
 On the other hand it is more approachable to track runtime performance objectively through time measurements.
 In fact, runtime behavior was a central assumption underlying the server architecture. 
@@ -61,7 +62,8 @@ The structure of the survey is guided by two additional objectives, endorsing th
 On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
 This data is important as for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) as well as a generic basis for other projects. 
 On the other hand, all features are implemented on top of the same base (cf. [@sec:implementation]).
-The survey should therefore show architectural deficits as well.
+The survey should therefore also uncover problems with the underlying architecture of NLS.
+This includes NLS language abstractions (cf. [@sec:linearization]) and functions referenced from the Nickel core.
 
 The quantitative study in contrast focuses on measurable performance.
 Similarly to the survey based evaluation it should reveal insight for different features and tasks separately.
