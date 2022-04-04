@@ -36,7 +36,8 @@ In particular, it details the survey ([@sec:qualitative]) which was conducted wi
 Different methods to evaluate the abovementioned metrics were considered.
 While quantifying user experience yields statistically sound insights about the studied subject, it fails to point out specific user needs.
 Therefore, this work employs a more subjective evaluation based on a standardized experience report focusing on individual features.
-Contrasting the expectations with experiences allows the implementation more practically and guide the further development by highlighting well executed, immature or missing features.
+Contrasting the expectations highlights well executed, immature or missing features.
+This allows more actionable planning of the future development to meet user expectations.
 
 On the other hand it is more approachable to track runtime performance objectively through time measurements.
 In fact, runtime behavior was a central assumption underlying the server architecture. 
