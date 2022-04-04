@@ -61,7 +61,8 @@ The structure of the survey is guided by two additional objectives, endorsing th
 On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
 This data is important as for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) as well as a generic basis for other projects. 
 On the other hand, all features are implemented on top of the same base (cf. [@sec:implementation]).
-The survey should therefore show architectural deficits as well.
+The survey should therefore also uncover problems with the underlying architecture of NLS.
+This includes NLS language abstractions (cf. [@sec:linearization]) and functions referenced from the Nickel core.
 
 The quantitative study in contrast focuses on measurable performance.
 Similarly to the survey based evaluation it should reveal insight for different features and tasks separately.
