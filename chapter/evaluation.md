@@ -104,16 +104,35 @@ Items first introduce a feature on a high level followed by asking the participa
 #### Experience Survey
 
 For the final survey, interested participants at Tweag were invited to a workshop introducing Nickel.
-As a preparation, they were asked to install the LSP.
-The workshop allowed participants unfamiliar with the Nickel language to use the language and experience NLS.
-Following the workshop, participants filled in a second survey which focused on particular experiences of every single feature.
-This evaluation focused on three main aspects.
-First, the general experience without weighing in expectations.
-The goal was to assess the extent to which the users were able to use the feature, since all usability metrics as discussed in [#sec:metrics] depend on the respective feature being available in the first place.
-In the same category are the items surveying the perceived performance and stability on a linear scale hinting at possible usability issues.
-The scales span from "Very slow response" to "Very quick response" and "Never Crashed" to "Always Crashed" respectively.
-Under the second aspect, the users were asked to explicitly reflect on their expectations in order to contribute to the usability metric.
-In the final part participants could describe their perceived shortcomings or questions or remarks.
+<!-- As a preparation, they were asked to install the LSP. -->
+The workshop allowed participants unfamiliar with the Nickel language to use the language and experience NLS in a more natural setting.
+Following the workshop, participants filled in a second survey which focused on three main aspects:
+
+First, the general experience of every individual feature.
+Without weighing their in expectations, the participants were asked to give a short statement of their experience.
+The item consists of a loose list of statements with the aim to achieve a rough quality classification:
+
+> - [ ] The feature did not work at all 
+> - [ ] The feature behaved unexpectedly
+> - [ ] The feature did not work in all cases
+> - [ ] The feature worked without an issue
+> - [ ] Other
+
+The following items survey the perceived performance and stability.
+The items were implemented as linear scales that span from "Very slow response" to "Very quick response" and "Never Crashed" to "Always Crashed" respectively.
+The second category asked participants to explicitly reflect on their expectations:
+
+> ◯ The feature did not work at all\
+> ◯ The feature behaved unexpectedly\
+> ◯ The feature did not work in all cases\
+> ◯ The feature worked without an issue
+> ◯ Other
+
+In the final part participants could elaborate on their answers.
+
+> Why were they (not) satisfied?\
+> What is missing, what did they not expect?
+
 
 ### Quantitative
 
