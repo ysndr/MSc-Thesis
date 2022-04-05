@@ -134,27 +134,67 @@ LSP-like features would make for a great improvement for code navigation and cod
 Yet, building these features on language servers would incur redundant and wasteful as a server needed to be started each time a visitor loads a chunk of code. 
 Since the hosted code is most often static and precisely versioned, code analysis could be performed ahead of time, for all files of each version.
 The LSIF (Language Server index Format) specifies a schema for the output of such ahead of time code analysis.
-Clients can then provide efficient code intelligence using LSIF data provided in one shot by the server.
+Clients can then provide efficient code intelligence using the pre-computed and standardized index.
 
-The LSIF specification [@lsif-spec] defines four principal goals:
-
-
-The LSIF format is a graph structure that links source code spans to language analysis results.
-The graph structure mimics LSP types.
+The LSIF format encodes a graphical structure which mimics LSP types.
 Vertices represent higher level concepts such as `document`s, `range`s, `resultSet`s and actual results.
-The relation between vertices is expressed through the edges.
+The relations between vertices are expressed through the edges.
 
-Referring to an example form the official specification [@lsif-spec], an analysis of the code sample in [@lst:lsif-code-sample] may produce hover information for the function `bar()`.
-Using the LSIF, the result would be encoded as seen in [@lst:lsif-result-sample].
-The graph structure encoded here is visualized in [@fig:lsif-example].
+For instance, hover information as introduced in [@sec:hover] for the interface declaration in [@lst:lsif-code-sample] can be represented using the LSIF.
+[Figure @fig:lsif-example] visualizes the result (cf. [@lst:lsif-result-sample]).
 Using this graph an LSIF tool is able to resolve statically determined hover information by performing the following steps.
 
-1. search for `textDocument/hover` edges
-2. select the edge that originates at a `range` vertex corresponding to the requested position.
-3. return the target vertex
+1. Search for `textDocument/hover` edges.
+2. Select the edge that originates at a `range` vertex corresponding to the requested position.
+3. Return the target vertex.
 
+
+```{.typescript #lst:lsif-code-sample caption="Exemplary code snippet to showing LSIF formatting"}
+export interface ResultSet {
+}
+```
+
+```{.plantuml #fig:lsif-example caption="LSIF encoded graph for the exemplary code"}
+@startuml
+(sample.ts [document]) as (document)
+(bar [def]) as (bar)
+([result set]) as (results)
+(hoverResult) as (result)
+
+(document) --> (bar) : contains
+(bar) --> (results) : next
+(results) --> (result) : textDocument/hover
+@enduml
+```
+
+```{.python #lst:lsif-result-sample caption="LSIF formated analysis result" }
+{ id: 1, type: "vertex", label: "document", uri: "file:///...", languageId: "typescript" }
+{ id: 2, type: "vertex", label: "resultSet" }
+{ 
+   id: 3, 
+  type: "vertex", 
+  label: "range",
+  start: { line: 0, character: 9}, 
+  end: { line: 0, character: 12 } 
+}
+{ id: 4, type: "edge", label: "contains", outV: 1, inVs: [3] }
+{ id: 5, type: "edge", label: "next", outV: 3, inV: 2 }
+{ 
+  id: 6, 
+  type: "vertex",
+  label: "hoverResult",
+  result: {
+    "contents":[
+      {"language":"typescript","value":"function bar(): void"},
+      ""
+    ]
+  }
+}
+{ id: 7, type: "edge", label: "textDocument/hover", outV: 2, inV: 6 }
+```
+
+An LSIF report is a mere list of `edge` and `vertex` nodes, which allows it to easily extend and connect more subgraphs, corresponding to more elements and analytics.
 As a consequence, a subset of LSP capabilities can be provided statically based on the preprocessed LSIF model.
-
 
 ### \*SP, Abstracting software development processes
 
