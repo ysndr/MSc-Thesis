@@ -42,7 +42,27 @@ In this case, the server should respond with a list of results matching each req
 ### Commands and Notifications
 
 The LSP builds on top of the JSON-RPC protocol described in the previous subsection.
+In total the LSP defines 33 [@lsp] "language features", i.e., source code related capabilities.
+In addition, the LSP specifies different capabilities to the server to control the editor.
+For instance, servers may instruct clients to show notifications or progress bars or open documents.
+Similarly, the client has multiple ways of notifying the server of file changes, including renaming r deletion of files.
 
+This thesis aims to implement a fundamental set of capabilities.
+The chosen capabilities are based on those identified as "key methods" by the authors of langserver [@langserver], specifically:
+
+
+1. Code completion
+   Suggest identifiers, methods or values at the cursor position.
+2. Hover information
+   Present additional information about an item under the cursor, i.e., types, contracts and documentation.
+3. Jump to definition
+   Find and jump to the definition of a local variable or identifier.
+4. Find references
+   List all usages of a defined variable.
+5. Workspace symbols
+   List all variables in a workspace or document.
+6. Diagnostics
+   Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
 
 #### File Notification
 
