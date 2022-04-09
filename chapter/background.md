@@ -71,7 +71,7 @@ The completion can be invoked manually or upon entering language defined trigger
 The completion request contains the current cursor position, allowing the language server to resolve contextual information based on an internal representation of the document.
 In the example ([@fig:lsp-capability-complete]) the completion feature suggests related identifiers for the incomplete function call "`pr`*`int`*".
 
-![](../examples/complete.png){#fig:lsp-capability-hover caption="Completion options resolved by the Python language server in Visual Studio Code"}
+![](examples/complete.png){#fig:lsp-capability-hover caption="Completion options resolved by the Python language server in Visual Studio Code"}
 
 
 #### Hover
@@ -81,7 +81,8 @@ If the language server has indexed any information corresponding to the position
 Language servers typically use this to communicate type-signatures or documentation.
 An example can be seen in [@fig:lsp-capability-hover].
 
-![](../examples/hover.png){#fig:lsp-capability-hover caption="Hover information displayed by the Python language server in Visual Studio Code"}
+![](examples/hover.png){#fig:lsp-capability-hover caption="Hover information displayed by the Python language server in Visual Studio Code"}
+
 
 #### File Notification
 
