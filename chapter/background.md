@@ -17,44 +17,27 @@ If supported by both server and client, the LSP now supports more than 24 langua
 
 ### JSON-RPC
 
-JSON-RPC (v2) [@json-rpc] is a JSON based lightweight transport independent remote procedure call protocol used by the LSP to communicate between a language server and a client.
+JSON-RPC (v2) [@json-rpc] is a JSON based lightweight transport independent remote procedure call [@rpc] protocol used by the LSP to communicate between a language server and a client.
 
-The protocol specifies the general format of messages exchanges as well as different kinds of messages.
-The following snippet [@lst:json-rpc-req] shows the schema for request messages.
+RPC is a well known paradigm that allows clients to virtually invoke a method at a connected process.
+The caller sends a well-defined message to a connected process which executes a procedure associated with the request, taking into account any transmitted arguments.
+Upon invoking a remote procedure, the client suspends the execution of its environment while it awaits an answer of the server, corresponding to a classical local procedure return.
 
-```{.typescript #lst:json-rpc-req caption="JSON-RPC Request"}
-// Requests
-{ 
-  "jsonrpc": "2.0"
-, "method": String
-, "params": List | Object 
-, "id": Number | String | Null 
-}
-```
+JSON-RPC is a JSON based implementation of RPC.
+The protocol specifies the format and meaning of the messages exchanged using the protocol, in particular *Request* and *Notification* and *Result* messages.
+Since the protocol is based on JSON, is possible to be used through any text based communication channel which includes streams or network sockets.
+In fact, JSON-RPC only specifies a message protocol, leaving the choice of the transport method to the application. 
 
-The main distinction in JSON-RPC are *Requests* and *Notifications*.
-Messages with an `id` field present are considered *requests*.
-Servers have to respond to requests with a message referencing the same `id` as well as a result, i.e. data or error.
-If the client does not require a response, it can omit the `id` field sending a *notification*, which servers cannot respond to, with the effect that clients cannot know the effect nor the reception of the message.
+All messages refer to a `method` and a set of `parameters`.
+Servers are expected to perform the same procedure associated with the requested `method` at any time.
+In return, clients have to follow the calling conventions for the requested method.
+Typically, messages are synchronous, i.e., the client awaits a result associated to the method and its parameters before it continues its execution of the calling environment.
+Hence, requests are marked with an `id` which is included in the result/error message necessarily sent by the server.
+If the client does not require a response, it can omit the `id` field.
+The message is then interpreted as a *notification*, which servers cannot respond to.
 
-Responses, as shown in [@lst:json-rpc-res], have to be sent by servers answering to any request.
-Any result or error of an operation is explicitly encoded in the response.
-Errors are represented as objects specifying the error kind using an error `code` and provide a human-readable descriptive `message` as well as optionally any procedure defined `data`.
-
-```{.typescript #lst:json-rpc-res caption="JSON-RPC Response and Error"}
-// Responses
-{ 
-  "jsonrpc": "2.0"
-  "result": any
-  "error": Error
-, "id": Number | String | Null
-}
-```
-
-Clients can choose to batch requests and send a list of request or notification objects.
-The server should respond with a list of results matching each request, yet is free to process requests concurrently.
-
-JSON-RPC only specifies a message protocol, hence the transport method can be freely chosen by the application. 
+Part of the JSON-RPC specification is the ability for clients to batch requests and send a list of request or notification objects.
+In this case, the server should respond with a list of results matching each request, yet is free to process requests concurrently.
 
 ### Commands and Notifications
 
