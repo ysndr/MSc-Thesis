@@ -268,11 +268,6 @@ The Monaco Editor supports the LSP as a client (that is, on the editor side).
 Such LSP-capable web editors make integrating DSLs directly into web applications easier than ever before.
 
 
-### Honorable mentions
-
-<!-- frege? -->
-
-
 ## Alternative approaches
 
 ### LSP Extensions
