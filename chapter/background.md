@@ -73,6 +73,16 @@ In the example ([@fig:lsp-capability-complete]) the completion feature suggests 
 
 ![](../examples/complete.png){#fig:lsp-capability-hover caption="Completion options resolved by the Python language server in Visual Studio Code"}
 
+
+#### Hover
+
+Hover requests are issued by editors when the user rests their mouse cursor on text in an opened document or issues a designated command in editors without mouse support.
+If the language server has indexed any information corresponding to the position, it can generate a report using plain text and code elements, which are then rendered by the editor.
+Language servers typically use this to communicate type-signatures or documentation.
+An example can be seen in [@fig:lsp-capability-hover].
+
+![](../examples/hover.png){#fig:lsp-capability-hover caption="Hover information displayed by the Python language server in Visual Studio Code"}
+
 #### File Notification
 
 ##### Diagnostics
