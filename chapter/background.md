@@ -64,6 +64,15 @@ The chosen capabilities are based on those identified as "key methods" by the au
 6. Diagnostics
    Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
 
+#### Code Completion
+
+This feature allows users to request a suggested identifier of variables or methods, concrete values or larger templates of generated code to be inserted at the position of the cursor.
+The completion can be invoked manually or upon entering language defined trigger characters, such as `.`, `::` or `->`.
+The completion request contains the current cursor position, allowing the language server to resolve contextual information based on an internal representation of the document.
+In the example ([@fig:lsp-capability-complete]) the completion feature suggests related identifiers for the incomplete function call "`pr`*`int`*".
+
+![](../examples/complete.png){#fig:lsp-capability-hover caption="Completion options resolved by the Python language server in Visual Studio Code"}
+
 #### File Notification
 
 ##### Diagnostics
