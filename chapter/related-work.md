@@ -2,9 +2,10 @@
 
 The Nickel Language Server follows a history of previous research and development in the domain of modern language tooling and editor integration.
 Most importantly, it is part of a growing set of LSP integrations.
-As such, it is important to get a picture of the field of current LSP projects.
-This chapter will survey a varied range of popular language servers, compare common capabilities, and implementation approaches.
-Additionally, this part aims to recognize alternative approaches to the LSP, in the form of legacy protocols, extensible development platforms LSP extensions and the emerging Language Server Index Format.
+As such, it is important to get a picture of the field of current LSP projects and the approaches leading up to the LSP.
+This chapter will first introduce and show the shortcomings of classical IDE based language tooling as well as early advances towards editor independent implementations.
+The following section displays particular instances of different approaches towards the implementation of language servers.
+Projects that extend and supplement or take inspiration from the LSP, are portrayed in the final section.
 
 
 ## Previous Approaches
@@ -265,11 +266,6 @@ The authors especially mention the Monaco Editor [@monaco-editor], a reusable HT
 It is used in products like VSCode [@vscode], Theia [@theia] and other web accessible code editors.
 The Monaco Editor supports the LSP as a client (that is, on the editor side).
 Such LSP-capable web editors make integrating DSLs directly into web applications easier than ever before.
-
-
-### Honorable mentions
-
-<!-- frege? -->
 
 
 ## Alternative approaches
