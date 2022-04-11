@@ -84,6 +84,22 @@ An example can be seen in [@fig:lsp-capability-hover].
 ![](examples/hover.png){#fig:lsp-capability-hover caption="Hover information displayed by the Python language server in Visual Studio Code"}
 
 
+### Jump to Definition
+
+The LSP allows users to navigate their code by the means of symbols by finding the definition of a requested symbol.
+Symbols can be for instance variable names or function calls.
+As seen in [@fig:lsp-capability-definition], editors can use the available information to enrich hover overlays with the hovered element's definition.
+
+![](examples/definition.png){#fig:lsp-capability-hover caption="Hover information enriched with the definition. Python language server in Visual Studio Code"}
+
+
+### Find References
+
+Finding references is the inverse operation to the previously discussed *Jump to Definition* ([cf. @sec:jump-to-definition]).
+For a given symbol definition, for example variable, function, function argument or record field the LSP provides all usages of the symbol allowing users to inspect or jump to the referencing code position.
+
+![](examples/references.png){#fig:lsp-capability-hover caption="Listing of all references to the method "hello". Python language server in Visual Studio Code"}
+
 #### File Notification
 
 ##### Diagnostics
