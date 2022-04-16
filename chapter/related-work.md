@@ -217,7 +217,7 @@ The Frege LSP then translates LSP requests into expressions, evaluates them in t
 Being written in Java, allows the server to make use of other community efforts such as the LSP4J project which provide abstractions over the interaction with LSP clients.
 Through the use of abstraction like the Frege REPL, servers can focus on the implementation of capabilities only, albeit with the limits set by the interactive environment.
 
-#### Runtime independent LSP implementations
+#### Runtime-independent LSP implementations
 
 While many projects do so, language servers do not need to reuse any existing infrastructure of a targeted language at all.
 Often, language implementations do not expose the required language interfaces (parsing, AST, Types, etc..), or pose various other impediments such as a closed source, licensing, or the absence of LSP abstractions available for the host language.
