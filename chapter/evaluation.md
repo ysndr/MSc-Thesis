@@ -68,7 +68,6 @@ This entails the use of language abstractions (cf. [@sec:linearization]) and the
 The quantitative study in contrast focuses on measurable performance.
 Similarly to the survey-based evaluation, the quantitative study should reveal insight for different features and tasks separately.
 The focus lies on uncovering potential spikes in latencies, and making empirical observations about the influence of Nickel file sizes.
-An additional objective, in line with the definition of the performance metric in [#sec:metrics], is to show the influence of growing file sizes in practice.
 
 ### Qualitative
 
