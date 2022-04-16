@@ -9,14 +9,14 @@ Usability
   ~ What is the real-world value of the language server?
   ~ Does it improve the experience of developers using Nickel?
     NLS offers several features, that are intended to help developers using the language.
-    The evaluation should assess whether developers experience any help due to the use of the server.
-  ~ Does NLS meet its users' expectations in terms of completeness and correctness and behavior?
-    Being marketed as a Language Server, invokes certain expectations due to previous experience with other languages and language servers.
+    The evaluation should assess whether the server does improve the experience of developers.
+  ~ Does NLS meet its users' expectations in terms of completeness, correctness and behavior?
+    Labeling NLS as a Language Server, invokes certain expectations built up by previous experience with other languages and language servers.
     Here, the evaluation should show whether NLS lives up to the expectations of its users.
 
 Performance
   ~ What are the typical latencies of standard tasks?
-    In this context *latency* refers to the time it takes from issuing an LSP command to return of the reply by the server.
+    In this context latency refers to the time it takes from issuing an LSP command to the reply of the server.
     The JSON-RPC protocol used by the LSP is synchronous, i.e. requires the server to return results of commands in the order it received them.
     Since most commands are sent implicitly, a quick processing is imperative to avoid commands queuing up.
   ~ Can single performance bottlenecks be identified?
@@ -60,14 +60,14 @@ The qualitative evaluation was conducted with a strong focus on the first metric
 Usability proves hard to quantify, as it is tightly connected to subjective perception, expectations and tolerances.
 The structure of the survey is guided by two additional objectives, endorsing the separation of individual features.
 On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
-This data is important as for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) as well as a generic basis for other projects. 
+This data is important for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) and a generic basis for other projects. 
 On the other hand, all features are implemented on top of the same base (cf. [@sec:implementation]).
 The survey should therefore also uncover problems with the underlying architecture of NLS.
 This includes NLS language abstractions (cf. [@sec:linearization]) and functions referenced from the Nickel core.
 
 The quantitative study in contrast focuses on measurable performance.
-Similarly to the survey based evaluation it should reveal insight for different features and tasks separately.
-Yet, the focus lies on uncovering potential spikes in latencies, and making empirical observations about the influence of Nickel file sizes.
+Similarly to the survey-based evaluation, the quantitative study should reveal insight for different features and tasks separately.
+The focus lies on uncovering potential spikes in latencies, and making empirical observations about the influence of Nickel file sizes.
 An additional objective, in line with the definition of the performance metric in [#sec:metrics], is to show the influence of growing file sizes in practice.
 
 ### Qualitative
@@ -146,7 +146,7 @@ Once the server replies to a request, it records the total response time and wri
 
 The tracing approach narrows the focus of the performance evaluation to the time spent by NLS.
 Consequently, the performance evaluation is independent of the LSP client (editor) that is used.
-Unlike differences in hardware which affects all operations similarly, LSP clients may implement different behaviors that may cause editor specific biases.
+Unlike differences in hardware which affects all operations similarly, LSP clients may implement different behaviors that may cause editor-specific biases.
 For instance, the LSP does not specify the frequency at which file changes are detected, which in turn can lead to request queuing depending on the editor used.
 
 ## Process
