@@ -61,9 +61,9 @@ Usability proves hard to quantify, as it is tightly connected to subjective perc
 The structure of the survey is guided by two additional objectives, endorsing the separation of individual features.
 On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
 This data is important for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) and a generic basis for other projects. 
-On the other hand, all features are implemented on top of the same base (cf. [@sec:implementation]).
-The survey should therefore also uncover problems with the underlying architecture of NLS.
-This includes NLS language abstractions (cf. [@sec:linearization]) and functions referenced from the Nickel core.
+On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:implementation), the implementation of this central structure is an essential consideration.```
+The survey should therefore also uncover apparent problems with this architecture.
+This entails the use of language abstractions (cf. [@sec:linearization]) and the integration of Nickel core functions such as the type checking procedure.
 
 The quantitative study in contrast focuses on measurable performance.
 Similarly to the survey-based evaluation, the quantitative study should reveal insight for different features and tasks separately.
