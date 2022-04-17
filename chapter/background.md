@@ -117,9 +117,30 @@ Unlike the preceding features discussed here, diagnostics are a passive feature,
 File updates and diagnostics are therefore specified as notifications to avoid blocking the communication. 
 
 
+### File Processing
 
+Most language servers handling source code analysis in different ways.
+The complexity of the language can be a main influence for the choice of the approach.
+Distinctions appear in the way servers process *file indexes and changes* and how they respond to *requests*.
 
+The LSP supports sending updates in form of diffs of atomic changes and complete transmission of changed files.
+The former requires incremental parsing and analysis, which are challenging to implement but make processing files much faster upon changes.
+An incremental approach makes use of an internal representation of the source code that allows efficient updates upon small changes to the source file.
 
+Additionally, to facilitate the parsing, an incremental approach must be able to provide a parser with the right context to correctly parse a changed fragment of code.
+In practice, most language servers process file changes by re-indexing the entire file, discarding the previous internal state entirely.
+This is a more approachable method, as it poses less requirements to the architects of the language server.
+Yet, it is far less performant.
+Unlike incremental processing (which updates only the affected portion of its internal structure), the smallest changes, including adding or removing lines effect the _reprocessing of the entire file_.
+While sufficient for small languages and codebases, non-incremental processing quickly becomes a performance bottleneck.
+
+For code analysis LSP implementers have to decide between *lazy* or *greedy* approaches for processing files and answering requests.
+Dominantly greedy implementations resolve most available information during the indexing of the file.
+The server can then utilize this model to answer requests using mere lookups.
+This stands in contrast to lazy approaches where only minimal local information is resolved during the indexing.
+Requests invoke an ad-hoc resolution the results of which may be memoized for future requests.
+Lazy resolution is more prevalent in conjunction with incremental indexing, since it further reduces the work associated with file changes.
+This is essential in complex languages that would otherwise perform a great amount of redundant work.
 
 ## Configuration programming languages
 
