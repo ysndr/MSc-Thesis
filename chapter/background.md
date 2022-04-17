@@ -84,7 +84,7 @@ An example can be seen in [@fig:lsp-capability-hover].
 ![](examples/hover.png){#fig:lsp-capability-hover caption="Hover information displayed by the Python language server in Visual Studio Code"}
 
 
-### Jump to Definition
+#### Jump to Definition
 
 The LSP allows users to navigate their code by the means of symbols by finding the definition of a requested symbol.
 Symbols can be for instance variable names or function calls.
@@ -93,14 +93,13 @@ As seen in [@fig:lsp-capability-definition], editors can use the available infor
 ![](examples/definition.png){#fig:lsp-capability-hover caption="Hover information enriched with the definition. Python language server in Visual Studio Code"}
 
 
-### Find References
+#### Find References
 
 Finding references is the inverse operation to the previously discussed *Jump to Definition* ([cf. @sec:jump-to-definition]).
 For a given symbol definition, for example variable, function, function argument or record field the LSP provides all usages of the symbol allowing users to inspect or jump to the referencing code position.
 
 ![](examples/references.png){#fig:lsp-capability-hover caption="Listing of all references to the method "hello". Python language server in Visual Studio Code"}
 
-#### File Notification
 #### Workspace/Document symbols
 
 The symbols capability allows language servers to expose a list if symbols declared in the open document or workspace.
@@ -109,7 +108,6 @@ Symbols are associated with a span of source code of the symbol itself and its c
 Moreover, the server can annotate the items with additional attributes such as symbol kinds, tags and even child-references (e.g. for the fields of a record or class).
 
 
-#### Hover
 #### Diagnostics
 
 Diagnostics is the collective term for report statements about the analyzed language of varying severity.
@@ -118,15 +116,10 @@ This can be parsing or compilation or type-checking n errors, as well as errors 
 Unlike the preceding features discussed here, diagnostics are a passive feature, since most often the information stems from external tools being invoked after source code changes.
 File updates and diagnostics are therefore specified as notifications to avoid blocking the communication. 
 
-#### Completion
 
-#### Go-To-\*
 
-#### Symbols
 
-#### code lenses
 
-### Shortcomings
 
 ## Configuration programming languages
 
