@@ -327,7 +327,12 @@ error: non mergeable terms
 
 #### Gradual typing
 
-##### Row types
+The typing approach followed by Nickel was introduce by Siek and Taha [@gradual-typing] as a combination of static and dynamic typing.
+The choice between both type systems is traditionally debated since either approach imposes specific drawbacks.
+Static typing lacks the flexibility given by fully dynamic systems yet allow to ensure greater correctness by enforcing value domains.
+While dynamic typing is often used for prototyping, once an application or schema stabilizes, the ability to validate data schemas is usually preferred, often requiring the switch to a different statically typed language.
+Gradual typing allows introducing statically checked types to a program while allowing other parts of the language to remain untyped and thus interpreted dynamically.
+
 
 #### Contracts
 
