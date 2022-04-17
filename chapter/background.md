@@ -101,8 +101,13 @@ For a given symbol definition, for example variable, function, function argument
 ![](examples/references.png){#fig:lsp-capability-hover caption="Listing of all references to the method "hello". Python language server in Visual Studio Code"}
 
 #### File Notification
+#### Workspace/Document symbols
 
-##### Diagnostics
+The symbols capability allows language servers to expose a list if symbols declared in the open document or workspace.
+The granularity of the listed items is determined by the server.
+Symbols are associated with a span of source code of the symbol itself and its context, for example a function name representing the function body. 
+Moreover, the server can annotate the items with additional attributes such as symbol kinds, tags and even child-references (e.g. for the fields of a record or class).
+
 
 #### Hover
 
