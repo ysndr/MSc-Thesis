@@ -59,7 +59,7 @@ The chosen capabilities are based on those identified as "key methods" by the au
    Find and jump to the definition of a local variable or identifier.
 4. Find references
    List all usages of a defined variable.
-5. Workspace symbols
+5. Workspace/Document symbols
    List all variables in a workspace or document.
 6. Diagnostics
    Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
