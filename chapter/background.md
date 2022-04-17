@@ -254,6 +254,77 @@ However, Nickel sets itself apart from the existing projects by combining and ad
 The language addresses concerns drawn from the experiences with Nix which employs a sophisticated modules system [@nixos-modules] to provide type-safe, composed (system) configuration files.
 Nickel implements gradual type annotations, with runtime checked contracts to ensure even complex configurations remain correct.
 Additionally, considering record merging on a language level facilitates modularization and composition of configurations.
+
+#### Record Merging
+
+Nickel considers record merging as a fundamental operation that combines two records (i.e. JSON objects).
+Merging is a commutative operation between two records which takes the fields of both records and returns a new record that contains the fields of both operands (cf. [@lst:nickel-merging-simple])
+
+```{.nickel #lst:nickel-merging-simple caption="Merging of two records without shared fields"}
+{ enable = true } & { port = 40273 }
+>>
+{
+  enable = true,
+  port = 40273
+}
+```
+
+If both operands contain a nested record referred to under the same name, the merging operation will be applied to these records recursively (cf. [@lst:nickel-merging-recursive]).
+
+```{.nickel #lst:nickel-merging-recursive caption="Merging of two records without shared nested records"}
+let enableGollum = {
+  service = {
+    gollum = {
+      enable = true
+    }
+  } 
+} in
+
+let setGollumPort = {
+  service = {
+    gollum = {
+      port = 40273
+    }
+  } 
+} in 
+
+enableGollum & setGollumPort
+
+>> 
+{
+  service = {
+    gollum = {
+      enable = true,
+      port = 40273
+    }
+  } 
+} 
+```
+
+However, if both operands contain a field with the same name that is not a mergeable record, the operation fails since both fields have the same priority making it impossible for Nickel to chose one over the other (cf. [@lst:nickel-merging-failing-names])
+Specifying one of the fields as a `default` value allows a single override (cf. [@lst:nickel-merging-default] ).
+In future versions of Nickel ([@nickel-rfc-0001]) it will be possible to specify priorities in even greater detail and provide custom merge functions. 
+
+```{.nickel #lst:nickel-merging-failing-names caption="Failing merge of two records with common field"}
+{ port = 40273 } & { port = 8080 }
+
+>>
+error: non mergeable terms
+  |
+1 | { port = 40273 } & { port = 8080 }
+  |          ^^^^^              ^^^^ with this expression
+  |          |                   
+  |          cannot merge this expression
+```
+
+
+```{.nickel #lst:nickel-merging-default caption="Succeeding merge of two records with default value for common field"}
+{ port | default = 40273 } & { port = 8080 }
+
+>>
+{ port = 8080 }
+```
+
 #### Gradual typing
 
 ##### Row types
