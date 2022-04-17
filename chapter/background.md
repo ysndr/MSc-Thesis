@@ -110,6 +110,13 @@ Moreover, the server can annotate the items with additional attributes such as s
 
 
 #### Hover
+#### Diagnostics
+
+Diagnostics is the collective term for report statements about the analyzed language of varying severity.
+This can be parsing or compilation or type-checking n errors, as well as errors and warnings issued by a linting tool.
+
+Unlike the preceding features discussed here, diagnostics are a passive feature, since most often the information stems from external tools being invoked after source code changes.
+File updates and diagnostics are therefore specified as notifications to avoid blocking the communication. 
 
 #### Completion
 
