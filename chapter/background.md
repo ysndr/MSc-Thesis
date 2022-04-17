@@ -193,6 +193,9 @@ Configurations like this are abstractions over many manual steps and the Nix lan
   defaults = 
     { config, pkgs, ... }:
     {
+      # Configuration of a specific deployment implementation
+      # here: AWS EC2
+
       deployment.targetEnv = "ec2";
       deployment.ec2.accessKeyId = "AKIA...";
       deployment.ec2.keyPair = "...";
@@ -201,10 +204,11 @@ Configurations like this are abstractions over many manual steps and the Nix lan
       deployment.ec2.region = pkgs.lib.mkDefault "eu-west-1";
       deployment.ec2.instanceType = pkgs.lib.mkDefault "t2.large";
     };
-
   gollum =
     { config, pkgs, ... }:
     {
+      # Nix based setup of the gollum server
+
       services.gollum = {
         enable = true;
         port = 40273;
@@ -218,7 +222,8 @@ Configurations like this are abstractions over many manual steps and the Nix lan
       gollumPort = nodes.gollum.config.services.gollum.port;
     in
     {
-      deployment.ec2.instanceType = "t1.medium";
+      # Nix based setup of a nginx reverse proxy
+
       services.nginx = {
         enable = true;
         virtualHosts."wiki.example.net".locations."/" = {
@@ -226,6 +231,9 @@ Configurations like this are abstractions over many manual steps and the Nix lan
         };
       };
       networking.firewall.allowedTCPPorts = [ 80 ];
+      
+      # Instance can override default deployment options 
+      deployment.ec2.instanceType = "t1.medium";
     };
 }
 ```
