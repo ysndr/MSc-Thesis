@@ -59,7 +59,7 @@ The chosen capabilities are based on those identified as "key methods" by the au
    Find and jump to the definition of a local variable or identifier.
 4. Find references
    List all usages of a defined variable.
-5. Workspace symbols
+5. Workspace/Document symbols
    List all variables in a workspace or document.
 6. Diagnostics
    Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
@@ -84,21 +84,63 @@ An example can be seen in [@fig:lsp-capability-hover].
 ![](examples/hover.png){#fig:lsp-capability-hover caption="Hover information displayed by the Python language server in Visual Studio Code"}
 
 
-#### File Notification
+#### Jump to Definition
 
-##### Diagnostics
+The LSP allows users to navigate their code by the means of symbols by finding the definition of a requested symbol.
+Symbols can be for instance variable names or function calls.
+As seen in [@fig:lsp-capability-definition], editors can use the available information to enrich hover overlays with the hovered element's definition.
 
-#### Hover
+![](examples/definition.png){#fig:lsp-capability-hover caption="Hover information enriched with the definition. Python language server in Visual Studio Code"}
 
-#### Completion
 
-#### Go-To-\*
+#### Find References
 
-#### Symbols
+Finding references is the inverse operation to the previously discussed *Jump to Definition* ([cf. @sec:jump-to-definition]).
+For a given symbol definition, for example variable, function, function argument or record field the LSP provides all usages of the symbol allowing users to inspect or jump to the referencing code position.
 
-#### code lenses
+![](examples/references.png){#fig:lsp-capability-hover caption="Listing of all references to the method "hello". Python language server in Visual Studio Code"}
 
-### Shortcomings
+#### Workspace/Document symbols
+
+The symbols capability allows language servers to expose a list if symbols declared in the open document or workspace.
+The granularity of the listed items is determined by the server.
+Symbols are associated with a span of source code of the symbol itself and its context, for example a function name representing the function body. 
+Moreover, the server can annotate the items with additional attributes such as symbol kinds, tags and even child-references (e.g. for the fields of a record or class).
+
+
+#### Diagnostics
+
+Diagnostics is the collective term for report statements about the analyzed language of varying severity.
+This can be parsing or compilation or type-checking n errors, as well as errors and warnings issued by a linting tool.
+
+Unlike the preceding features discussed here, diagnostics are a passive feature, since most often the information stems from external tools being invoked after source code changes.
+File updates and diagnostics are therefore specified as notifications to avoid blocking the communication. 
+
+
+### File Processing
+
+Most language servers handling source code analysis in different ways.
+The complexity of the language can be a main influence for the choice of the approach.
+Distinctions appear in the way servers process *file indexes and changes* and how they respond to *requests*.
+
+The LSP supports sending updates in form of diffs of atomic changes and complete transmission of changed files.
+The former requires incremental parsing and analysis, which are challenging to implement but make processing files much faster upon changes.
+An incremental approach makes use of an internal representation of the source code that allows efficient updates upon small changes to the source file.
+
+Additionally, to facilitate the parsing, an incremental approach must be able to provide a parser with the right context to correctly parse a changed fragment of code.
+In practice, most language servers process file changes by re-indexing the entire file, discarding the previous internal state entirely.
+This is a more approachable method, as it poses less requirements to the architects of the language server.
+Yet, it is far less performant.
+Unlike incremental processing (which updates only the affected portion of its internal structure), the smallest changes, including adding or removing lines effect the _reprocessing of the entire file_.
+While sufficient for small languages and codebases, non-incremental processing quickly becomes a performance bottleneck.
+
+For code analysis LSP implementers have to decide between *lazy* or *greedy* approaches for processing files and answering requests.
+Dominantly greedy implementations resolve most available information during the indexing of the file.
+The server can then utilize this model to answer requests using mere lookups.
+This stands in contrast to lazy approaches where only minimal local information is resolved during the indexing.
+Requests invoke an ad-hoc resolution the results of which may be memoized for future requests.
+Lazy resolution is more prevalent in conjunction with incremental indexing, since it further reduces the work associated with file changes.
+This is essential in complex languages that would otherwise perform a great amount of redundant work.
 
 ## Configuration programming languages
 
@@ -151,6 +193,9 @@ Configurations like this are abstractions over many manual steps and the Nix lan
   defaults = 
     { config, pkgs, ... }:
     {
+      # Configuration of a specific deployment implementation
+      # here: AWS EC2
+
       deployment.targetEnv = "ec2";
       deployment.ec2.accessKeyId = "AKIA...";
       deployment.ec2.keyPair = "...";
@@ -159,10 +204,11 @@ Configurations like this are abstractions over many manual steps and the Nix lan
       deployment.ec2.region = pkgs.lib.mkDefault "eu-west-1";
       deployment.ec2.instanceType = pkgs.lib.mkDefault "t2.large";
     };
-
   gollum =
     { config, pkgs, ... }:
     {
+      # Nix based setup of the gollum server
+
       services.gollum = {
         enable = true;
         port = 40273;
@@ -176,7 +222,8 @@ Configurations like this are abstractions over many manual steps and the Nix lan
       gollumPort = nodes.gollum.config.services.gollum.port;
     in
     {
-      deployment.ec2.instanceType = "t1.medium";
+      # Nix based setup of a nginx reverse proxy
+
       services.nginx = {
         enable = true;
         virtualHosts."wiki.example.net".locations."/" = {
@@ -184,6 +231,9 @@ Configurations like this are abstractions over many manual steps and the Nix lan
         };
       };
       networking.firewall.allowedTCPPorts = [ 80 ];
+      
+      # Instance can override default deployment options 
+      deployment.ec2.instanceType = "t1.medium";
     };
 }
 ```
@@ -197,9 +247,92 @@ This suggests that techniques[@aws-cloud-formation-security-tests] to automatica
 
 ### Nickel
 
+The Nickel[@nickel] language is a configuration programming language (cf. [@sec:configuration-programming-languages]) with the aims of providing composable, verifiable and validatable configuration files.
+The language draws inspiration from existing projects such as Cue [@cue], Dhall [@Dhall] and most importantly Nix [@nix].
+Nickel implements a pure functional language with JSON-like data types and turing-complete lambda calculus.
+However, Nickel sets itself apart from the existing projects by combining and advancing their strengths.
+The language addresses concerns drawn from the experiences with Nix which employs a sophisticated modules system [@nixos-modules] to provide type-safe, composed (system) configuration files.
+Nickel implements gradual type annotations, with runtime checked contracts to ensure even complex configurations remain correct.
+Additionally, considering record merging on a language level facilitates modularization and composition of configurations.
+
+#### Record Merging
+
+Nickel considers record merging as a fundamental operation that combines two records (i.e. JSON objects).
+Merging is a commutative operation between two records which takes the fields of both records and returns a new record that contains the fields of both operands (cf. [@lst:nickel-merging-simple])
+
+```{.nickel #lst:nickel-merging-simple caption="Merging of two records without shared fields"}
+{ enable = true } & { port = 40273 }
+>>
+{
+  enable = true,
+  port = 40273
+}
+```
+
+If both operands contain a nested record referred to under the same name, the merging operation will be applied to these records recursively (cf. [@lst:nickel-merging-recursive]).
+
+```{.nickel #lst:nickel-merging-recursive caption="Merging of two records without shared nested records"}
+let enableGollum = {
+  service = {
+    gollum = {
+      enable = true
+    }
+  } 
+} in
+
+let setGollumPort = {
+  service = {
+    gollum = {
+      port = 40273
+    }
+  } 
+} in 
+
+enableGollum & setGollumPort
+
+>> 
+{
+  service = {
+    gollum = {
+      enable = true,
+      port = 40273
+    }
+  } 
+} 
+```
+
+However, if both operands contain a field with the same name that is not a mergeable record, the operation fails since both fields have the same priority making it impossible for Nickel to chose one over the other (cf. [@lst:nickel-merging-failing-names])
+Specifying one of the fields as a `default` value allows a single override (cf. [@lst:nickel-merging-default] ).
+In future versions of Nickel ([@nickel-rfc-0001]) it will be possible to specify priorities in even greater detail and provide custom merge functions. 
+
+```{.nickel #lst:nickel-merging-failing-names caption="Failing merge of two records with common field"}
+{ port = 40273 } & { port = 8080 }
+
+>>
+error: non mergeable terms
+  |
+1 | { port = 40273 } & { port = 8080 }
+  |          ^^^^^              ^^^^ with this expression
+  |          |                   
+  |          cannot merge this expression
+```
+
+
+```{.nickel #lst:nickel-merging-default caption="Succeeding merge of two records with default value for common field"}
+{ port | default = 40273 } & { port = 8080 }
+
+>>
+{ port = 8080 }
+```
+
 #### Gradual typing
 
-##### Row types
+The typing approach followed by Nickel was introduce by Siek and Taha [@gradual-typing] as a combination of static and dynamic typing.
+The choice between both type systems is traditionally debated since either approach imposes specific drawbacks.
+Static typing lacks the flexibility given by fully dynamic systems yet allow to ensure greater correctness by enforcing value domains.
+While dynamic typing is often used for prototyping, once an application or schema stabilizes, the ability to validate data schemas is usually preferred, often requiring the switch to a different statically typed language.
+Gradual typing allows introducing statically checked types to a program while allowing other parts of the language to remain untyped and thus interpreted dynamically.
+
 
 #### Contracts
 
