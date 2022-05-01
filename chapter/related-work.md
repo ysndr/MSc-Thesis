@@ -13,22 +13,22 @@ Projects that extend and supplement or take inspiration from the LSP, are portra
 ### IDEs
 
 Before the invention of the Language Server Protocol, language intelligence used to be provided by an IDE.
-Yet, the range of officially supported languages remained relatively small [@intellij-supported-languages].
+Yet, the range of officially supported languages remained relatively small [@AllDeveloperTools].
 While integration for popular languages was common, top-tier support for less popular ones was all but guaranteed and relied mainly on community efforts.
-In fact Eclipse[@eclipse-a-platform,eclipse-www], IntelliJ[@intelliJ], and Visual Studio[@VisualStudio], to this day the most popular IDE choices, focus on a narrow subset of languages, historically Java and .NET.
-Additional languages can be integrated by custom (third-party) plugins or derivatives of the base platform ([@list-of-eclipse,@jetbrains-all-products]).
+In fact Eclipse[@desrivieresEclipsePlatformIntegrating2004,@guindonReleaseEclipseIDE], IntelliJ[@IntelliJIDEACapable], and Visual Studio[@VisualStudioIDE], to this day the most popular IDE choices, focus on a narrow subset of languages, historically Java and .NET.
+Additional languages can be integrated by custom (third-party) plugins or derivatives of the base platform ([@ListEclipsebasedSoftware2021,@AllDeveloperTools]).
 Due to the technical implications, plugins are generally not compatible between different platforms.
 Many less popular languages therefore saw redundant implementations of what is essentially the same.
-For Haskell separate efforts produced an eclipse based IDE [@haskell-ide-eclips], as well as independent IntelliJ plugins [@intellij-haskell,@HaskForce].
+For Haskell separate efforts produced an eclipse based IDE [@EclipseFP], as well as independent IntelliJ plugins [@IntelliJHaskellIntelliJIDEs,@HaskForceHaskellPlugin].
 Importantly, the implementers of the former reported troubles with the language barrier between Haskell and the Eclipse base written in Java.
 
-The Haskell language is an exceptional example since there is also a native Haskell IDE[@haskell-for-mac] albeit that it is available only to the MacOS operating system.
+The Haskell language is an exceptional example since there is also a native Haskell IDE[@HaskellMacIDE] albeit that it is available only to the MacOS operating system.
 This showcases the difficulties of language tooling and its provision, since all of these projects are platform dependent and differ in functionality.
 Moreover, effectively the same tool is developed multiple times wasting resources.
 
 In general, developing language integrations, both as the vendor of an IDE or a third-party plugin developer requires extensive resources.
 [Table @tbl:plugins-size] gives an idea of the efforts required.
-Since the IntelliJ platform is based on the JVM, its plugin system requires the use of JVM languages [@custom-language-support], making it hard to reuse the code of e.g. a reference compiler or interpreter.
+Since the IntelliJ platform is based on the JVM, its plugin system requires the use of JVM languages [@CustomLanguageSupport], making it hard to reuse the code of e.g. a reference compiler or interpreter.
 The Rust and Haskell integrations for instance contain at best only a fraction of code in their respective language.
 
 | Plugin                    | lines of code                                                |
@@ -48,11 +48,11 @@ Editor-specific approaches also tend to lock-in programmers into a specific plat
 
 #### Monto
 
-The authors of the Monto project[@monto,@monto-disintegrated] call this the "IDE Portability Problem".
+The authors of the Monto project[@keidelIDEPortabilityProblem2016,@sloaneMontoDisintegratedDevelopment2014] call this the "IDE Portability Problem".
 They compare the situation with the task of compiling different high level languages to a set of CPU architectures.
 In Compilers, the answer to that problem was the use of an intermediate representation (IR).
-A major compiler toolchain making use of this is the LLVM [@llvm].
-Compiler frontends for different languages -- e.g. Clang[@clang], Rustc[@rustc], NVCC[@nvcc],... -- compile input languages into LLVM IR, a low level language with additional capabilities to provide optimization hints but independent of a particular architecture.
+A major compiler toolchain making use of this is the LLVM [@lattnerLLVMCompilationFramework2004].
+Compiler frontends for different languages -- e.g. Clang[@lattnerLLVMClangNext,@lattnerLLVMClangNext], Rustc[@matsakisRustLanguage2014], NVCC[@nvcc],... -- compile input languages into LLVM IR, a low level language with additional capabilities to provide optimization hints but independent of a particular architecture.
 LLVM performs optimization of the IR and passes it to a compiler backend which in turn generates bytecode for specific architectures e.g. `x86_64`, `MIPS`, `aarch64`, `wasm`, etc.
 Notably through this mechanism, languages gain support for a range of architectures and profit from existing optimizations developed for the IR.
 
@@ -70,15 +70,15 @@ Since Monto performs all work on the IR, independent of the editor, and serializ
 
 The Editor extension's responsibility is to act as a source and sink for data.
 It sends Monto compliant messages to the broker and receives processing results such as (error) reports.
-The communication is based on the ZeroMQ[zeromq] technology which was chosen because it is lightweight and available in manly languages [@monto-disintegrated] allowing to make use of existing language tools.
+The communication is based on the ZeroMQ[@hintjensZeroMQMessagingMany2013] technology which was chosen because it is lightweight and available in manly languages [@sloaneMontoDisintegratedDevelopment2014] allowing to make use of existing language tools.
 
 #### Merlin
 
-The Merlin tool [@merlin,@merlin-website] is in many ways a more specific version of the idea presented in Monto.
+The Merlin tool [@Merlin,@bourMerlinLanguageServer2018a] is in many ways a more specific version of the idea presented in Monto.
 Merlin is a language server for the Ocaml language, yet predates the Language Server Protocol.
 
 The authors of Merlin postulate that implementing "tooling support traditionally provided by IDEs" for "niche languages" demands to "share the language-awareness logic" between implementations.
-As an answer to that, they describe the architecture of Merlin in [@merlin].
+As an answer to that, they describe the architecture of Merlin in [@bourMerlinLanguageServer2018a].
 
 Similarly to Monto, Merlin separates editor extensions from language analysis.
 However, Merlin uses a command line interface instead of message passing for interaction.
@@ -98,16 +98,16 @@ In fact, Merlin explicitly specializes in a single language and provides a compl
 
 ## Language Servers
 
-The LSP project was announced [@lsp-announced] in 2016 to establish a common protocol over which language tooling could communicate with editors.
+The LSP project was announced [@vaughan-nicholsOpensourceMicrosoftProtocol,@CodenvyMicrosoftRed2016] in 2016 to establish a common protocol over which language tooling could communicate with editors.
 The LSP helps the language intelligence tooling to fully concentrate on source analysis instead of integration with specific editors by building custom GUI elements and being restricted to editors extension interface.
 
-At the time of writing the LSP is available in version `3.16` [@Spec].
-Microsoft's official website lists 172 implementations of the LSP[@implementations] for an equally impressive number of languages.
+At the time of writing the LSP is available in version `3.16` [@Specification].
+Microsoft's official website lists 172 implementations of the LSP[@LanguageServers] for an equally impressive number of languages.
 
 An in-depth survey of these is outside the scope of this work.
 Yet, a few implementations stand out due to their sophisticate architecture, features, popularity or closeness to the presented work.
 
-#
+
 ### Representative LSP Projects
 
 Since the number of implementations of the LSP is continuously growing, this thesis will present a selected set of notable projects.
@@ -115,15 +115,15 @@ The presented projects exemplify different approaches with respect to reusing an
 In particular, the following five approaches are discussed:
 
 1. Three complete implementations that tightly integrate with the implementation level tooling of the respective language:
-   *rust-analyzer* [@rust-analyzer], *ocaml-lsp*/*merlin* [@ocaml-lsp,@merlin] and the *Haskell Language Server* [@hls]
+   *rust-analyzer* [@Rustanalyzer], *ocaml-lsp*/*merlin* [@OCamlLSP2022,@bourMerlinLanguageServer2018a] and the *Haskell Language Server* [@mitchellBuildingIntegratedDevelopment2020]
 2. A project that indirectly interacts with the language implementation through an interactive programming shell (REPL).
-   *Frege LSP [@frege-lsp]*
+   *Frege LSP [@wechsungFregeProgrammingLanguage,@gagnauxDevelopingMinimalLanguage]*
 3. A Language Server that is completely independent of the target language's runtime.
    Highlighting how basic LSP support can be implemented even for small languages in terms of userbase and complexity.
-   *rnix-lsp* [@rnix-lsp]
+   *rnix-lsp* [@dolstraNixSafePolicyFree2004,@Rnixlsp2022]
 4. Two projects that facilitate the LSP as an interface to an existing tool via HTTP or command line.
-   *CPAchecker*[@cpachecker-lsp] and *CodeCompass*[@comprehension-features]
-5. An approach to generate language servers from domain specific language specifications [@multi-editor-support].
+   *CPAchecker*[@beyerCPAcheckerToolConfigurable2009,@leimeisterLanguageServerIDE] and *CodeCompass*[@porkolabCodecompassOpenSoftware2018]
+5. An approach to generate language servers from domain specific language specifications [@bunderMultieditorSupportDomainSpecific2020].
 
 
 #### Integrating with the Compiler/Runtime
@@ -146,7 +146,7 @@ Here, the advantages of employing existing language components have been explore
 
 ##### Rust-Analyzer
 
-The rust-analyzer [@rust-analyzer] takes an intermediate approach.
+The rust-analyzer [@Rustanalyzer] takes an intermediate approach.
 It does not reuse or modify the existing compiler, but instead implements analysis functionality based on low level components.
 This way the developers of rust-analyzer have greater freedom to adapt for more advanced features.
 For instance rust-analyzer implements an analysis optimized parser with support for incremental processing.
@@ -157,12 +157,12 @@ For these kinds of analysis, rust-analyzer falls back to calls to the rust build
 ##### Frege LSP
 
 While the previous projects integrated into the compiler pipeline and processed the results separately, other approaches explored the possiblity to shift the entire analysis to existing modules.
-A good example for this method is given by the Frege language [@frege-github].
+A good example for this method is given by the Frege language [@WhatFrege2022].
 
-Frege as introduced in [@frege-paper] is a JVM based functional language with a Haskell-like syntax.
+Frege as introduced in [@wechsungFregeProgrammingLanguage] is a JVM based functional language with a Haskell-like syntax.
 It features lazy evaluation, user-definable operators, type classes and integration with Java.  
-While previously providing an eclipse plugin [@frege-eclipse], the tooling efforts have since been put towards an LSP implementation.
-The initial development of this language server has been reported on in [@frege-lsp-report].
+While previously providing an eclipse plugin [@WhatFregIDE2020], the tooling efforts have since been put towards an LSP implementation.
+The initial development of this language server has been reported on in [@gagnauxDevelopingMinimalLanguage].
 The author shows though multiple increments how they utilized the JVM to implement a language server in Java for the (JVM based) Frege language.
 In the final proof-of-concept, the authors build a minimal language server through the use of Frege's existing REPL and interpreter modules.
 The file loaded into the REPL environment providing basic syntax and type error reporting.
@@ -175,8 +175,8 @@ Through the use of abstraction like the Frege REPL, servers can focus on the imp
 While many projects do so, language servers do not need to reuse any existing infrastructure of a targeted language at all.
 Often, language implementations do not expose the required language interfaces (parsing, AST, Types, etc..), or pose various other impediments such as a closed source, licensing, or the absence of LSP abstractions available for the host language.
 
-An instance of this type is the rnix-lsp[@rnix-git] language server for the Nix[@nixos.org] programming language.
-Despite the Nix language being written in C++ [@nix-repo], its language server builds on a custom parser called "rnix" [@rnix] in Rust.
+An instance of this type is the rnix-lsp[@Rnixlsp2022] language server for the Nix[@NixOSNixOSLinux,@dolstraNixSafePolicyFree2004] programming language.
+Despite the Nix language being written in C++ [@Nix2022], its language server builds on a custom parser called "rnix" [@Rnixparser2022] in Rust.
 However, since rnix does not implement an interpreter for nix expressions the rnix based language server is limited to syntactic analysis and changes. 
 
 #### Language Server as an Interface to CLI tools
@@ -186,8 +186,8 @@ These programs may provide common LSP features or be used to extend past the LSP
 
 ##### CPAchecker
 
-The work presented by Leimeister in [@cpachecker-lsp] exemplifies how LSP functionality can be provided by external tools.
-The server can be used to automatically perform software verification in the background using CPAchecker[@cpachecker].
+The work presented by Leimeister in [@leimeisterLanguageServerIDE] exemplifies how LSP functionality can be provided by external tools.
+The server can be used to automatically perform software verification in the background using CPAchecker[@beyerCPAcheckerToolConfigurable2009].
 CPAchecker is a platform for automatic and extensible software verification.
 The program is written in Java and provides a command line interface to be run locally.
 Additionally, it is possible to execute resource intensive verification through an HTTP-API on more powerful machines or clusters [@cpa-google-cloud,@cpa-clusters].
@@ -196,10 +196,10 @@ While it can interface directly with the Java modules provided by the CPAchecker
 
 ##### CodeCompass
 
-Similar to the work by Leimeister (c.f. [@sec:cpachecker]), in [@comprehension-features] Mészáros et al. present a proof of concept leveraging the LSP to integrate (stand-alone) code comprehension tools with the LSP compliant VSCode editor.
+Similar to the work by Leimeister (c.f. [@sec:cpachecker]), in [@meszarosDeliveringComprehensionFeatures2019] Mészáros et al. present a proof of concept leveraging the LSP to integrate (stand-alone) code comprehension tools with the LSP compliant VSCode editor.
 Code comprehension tools support the work with complex code bases by "providing various textual information, visualization views and source code metrics on multiple abstraction levels".
 Pushing the boundaries of LSP use-cases, code comprehension tools do not only analyze specific source code, but also take into account contextual information.
-One of such tools is CodeCompass [@code-compass].
+One of such tools is CodeCompass [@porkolabCodecompassOpenSoftware2018].
 The works of Mészáros yielded a language server that allowed to access the analysis features of CodeCompass in VSCode.
 In their paper they specifically describe the generation of source code diagrams.
 Commands issued by the client are processed by a CodeCompass plugin which acts as an LSP server and interacts with CodeCompass through internal APIs.
@@ -207,15 +207,15 @@ Commands issued by the client are processed by a CodeCompass plugin which acts a
 
 #### Language Servers generation for Domain Specific Languages
 
-Bünder and Kuchen [@multi-editor-support] highlight the importance of the LSP in the area of Domain Specific Languages (DSL).
+Bünder and Kuchen [@bunderMultieditorSupportDomainSpecific2020] highlight the importance of the LSP in the area of Domain Specific Languages (DSL).
 Compared to general purpose languages, DSLs often targets both technical and non-technical users.
 While DSL creation workbenches like Xtext [@eclipse-xtext], Spoofax [@spoofax] or MPS[@jetpbrains-mps] allow for the implementation and provision of Eclipse or IntelliJ based DSLs, tooling for these languages is usually tied to the underlying platform.
 Requiring a specific development platform does not satisfy every user of the language.
 Developers have their editor of choice, that they don't easily give up on.
 Non-technical users could easily be overwhelmed by a complex software like Eclipse.
 For those non-technical users, a light editor would be more adapted, or even one that is directly integrated into their business application.
-The authors of [@multi-editor-support] present how Xtext can generate an LSP server for a custom DSL, providing multi-editor support.
-The authors especially mention the Monaco Editor [@monaco-editor], a reusable HTML component for code editing using web technologies.
+The authors of [@bunderMultieditorSupportDomainSpecific2020] present how Xtext can generate an LSP server for a custom DSL, providing multi-editor support.
+The authors especially mention the Monaco Editor [@MonacoEditor2022], a reusable HTML component for code editing using web technologies.
 It is used in products like VSCode [@vscode], Theia [@theia] and other web accessible code editors.
 The Monaco Editor supports the LSP as a client (that is, on the editor side).
 Such LSP-capable web editors make integrating DSLs directly into web applications easier than ever before.
@@ -251,10 +251,10 @@ Missing features of the protocol such as the ones pointed out by Mészáros et a
 
 The rust-analyzer defines almost thirty non-standard commands [@rust-analyzer-extensions], to enable different language specific actions.
 
-Taking the idea of the CodeCompass project further, Rodriguez-Echeverria et al. propose a generic extension of the LSP for graphical modeling [@lsp-for-graphical-modeling].
+Taking the idea of the CodeCompass project further, Rodriguez-Echeverria et al. propose a generic extension of the LSP for graphical modeling [@rodriguez-echeverriaLanguageServerProtocol2018].
 Their approach is based on a generic intermediate representation of graphs which can be generated by language servers and turned into a graphical representation by the client implementation.
 
-Similarly, in [@Specification-Language-Server-Protocol,@decoupling-core-analysis-support] the authors describe a method to develop language agnostic LSP extensions.
+Similarly, in [@raskSpecificationLanguageServer2021,@raskDecouplingCoreAnalysis2021] the authors describe a method to develop language agnostic LSP extensions.
 In their work they defined a language server protocol for specification languages (SLSP) which builds on top of the existing LSP.
 The SLSP defines several extensions that each group the functionality of specific domains.
 However, unlike other LSP extensions that are added to facilitate functions of a specific server, SLSP is language agnostic.
@@ -337,7 +337,7 @@ Since its introduction the Language Server Protocol has become a standard format
 Meanwhile, as hinted in [@sec:lsp-extensions], the LSP is not able to fully satisfy every use-case sparking the development of various LSP extensions.
 Following the success of language servers, similar advances have been made in other parts of the software development process.
 
-For instance, many Java build tools expose software build abstractions through the Build Server Protocol [@build-server-protocol], allowing IDEs to integrate more languages more easily by leveraging the same principle as the LSP.
+For instance, many Java build tools expose software build abstractions through the Build Server Protocol [@BuildServerProtocol], allowing IDEs to integrate more languages more easily by leveraging the same principle as the LSP.
 The BSP provides abstractions over dependencies, build targets, compilation and running of projects.
 While the LSP provides `run` or `test` integration for selected languages through Code Lenses, this is not part of the intended responsibilities of the protocol.
 In contrast, those tasks are explicitly targeted by the BSP.
@@ -347,9 +347,9 @@ Similar to the other tasks, most actions and user interfaces related to debuggin
 Hence, the Debug Adapter Protocol, as maintained by Microsoft and implemented in the VSCode Editor, aims to separate the language specific implementation of debuggers from the UI integration.
 Following the idea of the LSP, the DAP specifies a communication format between debuggers and editors.
 Since debuggers are fairly complicated software, the integration of editor communication should not prompt new developments of debuggers.
-Instead, the DAP assumes a possible intermediate debugger adapter do perform and interface with existing debuggers such as `LLDB`, `GDB`, `node-debug` and others[@DAP-impls].
+Instead, the DAP assumes a possible intermediate debugger adapter do perform and interface with existing debuggers such as `LLDB`, `GDB`, `node-debug` and others[@DebugAdapters].
 
-Following the named protocols, Jeanjean et al. envision a future [@reifying] where all kinds of software tools are developed as protocol based services independent of and shared by different IDEs and Editors.
+Following the named protocols, Jeanjean et al. envision a future [@jeanjeanIDECodeReifying2021] where all kinds of software tools are developed as protocol based services independent of and shared by different IDEs and Editors.
 Taking this idea further, they call for a Protocol Specification that allows to describe language protocols on a higher level.
 Such a protocol, they claim, could enable editor maintainers to implement protocol clients more easily by utilizing automated generation from Language Service Protocol Specifications.
 Additionally, it could allow different Language Services to interact with and depend on other services.
