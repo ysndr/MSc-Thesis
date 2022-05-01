@@ -5,3 +5,5 @@ variables:
 number-sections: true
 
 top-level-division: chapter
+
+bibliography: ./Thesis.bib
