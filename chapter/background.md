@@ -10,6 +10,14 @@ The second part is dedicated to Nickel, elaborating on the context and use-cases
 
 ## Language Server Protocol
 
+The Language Server Protocol is a JSON-RPC based communication specification comprising an LSP client (i.e. editors) and server (also called language server for simplicity).
+The LSP decouples the development of clients and servers, allowing developers to focus on either side.
+The LSP defines several capabilities -- standardized functions which are remotely executed by the language server.
+LSP Clients are often implemented as editor extensions facilitating abstraction libraries helping with the interaction with the protocol and editor interface.
+Language Servers analyse source code sent by the client and may implement any number of 
+capabilities relevant to the language.
+Since the LSP is both language and editor independent, the same server implementation can serve all LSP compliant clients eliminating the need to redundantly recreate the same code intelligence for every editor.
+  
 Language servers are today's standard of integrating support for programming languages into code editors.
 Initially developed by Microsoft for the use with their polyglot editor Visual Studio Code^[https://code.visualstudio.com/] before being released to the public in 2016 by Microsoft, RedHat and Codeenvy, the LSP decouples language analysis and provision of IDE-like features from the editor.
 Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], the protocol allows developers of editors and languages to work independently on the support for new languages.
@@ -17,9 +25,10 @@ If supported by both server and client, the LSP now supports more than 24 langua
 
 ### JSON-RPC
 
-JSON-RPC (v2) [@json-rpc] is a JSON based lightweight transport independent remote procedure call [@rpc] protocol used by the LSP to communicate between a language server and a client.
+the LSP uses JSON-RPC to communicate between a language server and a client.
+JSON-RPC (v2) [@json-rpc] is a JSON based lightweight transport independent remote procedure call [@rpc] protocol. 
 
-RPC is a well known paradigm that allows clients to virtually invoke a method at a connected process.
+RPC is a paradigm that allows clients to virtually invoke a method at a connected process.
 The caller sends a well-defined message to a connected process which executes a procedure associated with the request, taking into account any transmitted arguments.
 Upon invoking a remote procedure, the client suspends the execution of its environment while it awaits an answer of the server, corresponding to a classical local procedure return.
 
@@ -42,13 +51,23 @@ In this case, the server should respond with a list of results matching each req
 ### Commands and Notifications
 
 The LSP builds on top of the JSON-RPC protocol described in the previous subsection.
-In total the LSP defines 33 [@lsp] "language features", i.e., source code related capabilities.
-In addition, the LSP specifies different capabilities to the server to control the editor.
-For instance, servers may instruct clients to show notifications or progress bars or open documents.
-Similarly, the client has multiple ways of notifying the server of file changes, including renaming r deletion of files.
+It defines four sets of commands: 
 
-This thesis aims to implement a fundamental set of capabilities.
-The chosen capabilities are based on those identified as "key methods" by the authors of langserver [@langserver], specifically:
+The largest group are commands that are relevant in the scope of the currently opened document, e.g. autocompletion, refactoring, inline values and more.
+In total the LSP defines 33 [@lsp] of such "Language Features".
+Editors will notify the server about file changes and client side interaction, i.e., opening, closing and renaming files using "Document Synchronization" methods.
+While most commands are defined in the document scope, i.e., a single actively edited file, the LSP allows clients to communicate changes to files in the opened project.
+This so called workspace comprises on or more root folders managed by the editor and all files contained in them.
+"Workspace Features" allow the server to intercept file creation, renaming or deletion to make changes to existing sources in other files.
+Use cases of these features include updating import paths, changing class names and other automations that are not necessary local to a single file.
+In addition, the LSP specifies so called "Window Features" which allow the server to control parts of the user interface of the connected editor.
+For instance, servers may instruct clients to show notifications and progress bars or open files.
+
+
+### Description of Key Methods
+
+the authors of langserver.org [@langserver] identified six "key methods" of the LSP.
+The methods represent a fundamental set of capabilities, specifically:
 
 
 1. Code completion
@@ -66,6 +85,8 @@ The chosen capabilities are based on those identified as "key methods" by the au
 
 #### Code Completion
 
+*RPC Method: [`textDocument/Completion`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion)*
+
 This feature allows users to request a suggested identifier of variables or methods, concrete values or larger templates of generated code to be inserted at the position of the cursor.
 The completion can be invoked manually or upon entering language defined trigger characters, such as `.`, `::` or `->`.
 The completion request contains the current cursor position, allowing the language server to resolve contextual information based on an internal representation of the document.
@@ -75,6 +96,8 @@ In the example ([@fig:lsp-capability-complete]) the completion feature suggests 
 
 
 #### Hover
+
+*RPC Method: [`textDocument/hover`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover)*
 
 Hover requests are issued by editors when the user rests their mouse cursor on text in an opened document or issues a designated command in editors without mouse support.
 If the language server has indexed any information corresponding to the position, it can generate a report using plain text and code elements, which are then rendered by the editor.
@@ -86,6 +109,8 @@ An example can be seen in [@fig:lsp-capability-hover].
 
 #### Jump to Definition
 
+*RPC Method: [`textDocument/definition`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition)*
+
 The LSP allows users to navigate their code by the means of symbols by finding the definition of a requested symbol.
 Symbols can be for instance variable names or function calls.
 As seen in [@fig:lsp-capability-definition], editors can use the available information to enrich hover overlays with the hovered element's definition.
@@ -95,6 +120,8 @@ As seen in [@fig:lsp-capability-definition], editors can use the available infor
 
 #### Find References
 
+*RPC Method: [`textDocument/references`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_references)*
+
 Finding references is the inverse operation to the previously discussed *Jump to Definition* ([cf. @sec:jump-to-definition]).
 For a given symbol definition, for example variable, function, function argument or record field the LSP provides all usages of the symbol allowing users to inspect or jump to the referencing code position.
 
@@ -102,8 +129,12 @@ For a given symbol definition, for example variable, function, function argument
 
 #### Workspace/Document symbols
 
-The symbols capability allows language servers to expose a list if symbols declared in the open document or workspace.
-The granularity of the listed items is determined by the server.
+*RPC Method: [`workspace_symbol`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_symbol) or [`textDocument_documentSymbol`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol)*
+
+The symbols capability is defined as both a "Language Feature" and "Workspace Feature" which mainly differ in the scope they represent.
+The `textDocument/documentSymbol` command lists symbols solely found in the currently opened file, while the `workspace/symbol` takes into account all files in the opened set of folders.
+The granularity of the listed items is determined by the server and possibly different for either scope.
+For instance, document symbols could be as detailed as listing any kind of method or property found in the document, while workspace symbols take visibility rules into account which might expose public entities only.
 Symbols are associated with a span of source code of the symbol itself and its context, for example a function name representing the function body. 
 Moreover, the server can annotate the items with additional attributes such as symbol kinds, tags and even child-references (e.g. for the fields of a record or class).
 
@@ -142,44 +173,82 @@ Requests invoke an ad-hoc resolution the results of which may be memoized for fu
 Lazy resolution is more prevalent in conjunction with incremental indexing, since it further reduces the work associated with file changes.
 This is essential in complex languages that would otherwise perform a great amount of redundant work.
 
-## Configuration programming languages
+## Text based Configuration
 
-Nickel [@nickel], the language targeted by the language server detailed in this thesis, defines itself as "configuration language" used to automize the generation of static configuration files.
 
-Static configuration languages such as XML[@xml], JSON[@json], or YAML[@yaml] are language specifications defining how to textually represent structural data used to configure parameters of a system^[some of the named languages may have been designed as a data interchange format which is absolutely compatible with also acting as a configuration language].
-Applications of configuration languages are ubiquitous especially in the vicinity of software development. While XML and JSON are often used by package managers [@npm, @maven, @composer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@travis, @ghaction, @gitlab-runner] or machine configurations in software defined networks such as Kubernetes and docker compose.
+Configuration languages such as XML[@xml], JSON[@json], or YAML[@yaml] are textual representations of structural data used to configure parameters of a system or application.
+The objective of such languages is to be machine readable, yet also intuitive enough for humans to write.
 
-Such static formats are used due to some significant advantages compared to other formats.
-Most strikingly, the textual representation allows inspection of a configuration without the need of a separate tool but a text editor and be version controlled using VCS software like Git.
-For software configuration this is well understood as being preferable over databases or other binary formats. Linux service configurations (files in `/etc`) and MacOS `*.plist` files which can be serialized as XML or a JSON-like format, especially exemplify that claim.
+### Common Configuration Languages
 
-Yet, despite these formats being simple to parse and widely supported [@json], their static nature rules out any dynamic content such as generated fields, functions and the possibility to factorize and reuse.
+#### JSON
+
+According to the JSON specification [@json] the language was designed as a data-interchange format that is easy to read and write both for humans and machines.
+Since it is a subset of the JavaScript language, its use is particularly straight forward and wide spread in JavaScript based environments such as web applications.
+But due to its simplicity implementations are available and for all major languages,  motivating its use for configuration files.
+
+#### YAML
+
+YAML is another popular language, mainly used for configuration files.
+According to its goals [@yaml-goals] it should be human readable and independent of the programming language making use of it.
+It should be efficient to parse and easy to implement while being expressive and extensible.
+
+YAML also features a very flexible syntax which allows for many alternative ways to declare semantically equivalent data.
+For example boolean expressions can be written as any of the following values: 
+
+> `y|Y|yes|Yes|YES|n|N|no|No|NO`
+> `true|True|TRUE|false|False|FALSE`
+> `on|On|ON|off|Off|OFF`
+
+Since YAML facilitates indentation as a way to express objects or lists and does not require object keys (and even strings) to be quoted, it is considered easier to write than JSON at the expense of parser complexity.
+Yet, YAML is compatible with JSON since as subset of its specification defines a JSON equivalent syntax that permits the use of `{..}` and `[..]` to describe objects and lists respectively. 
+### Applications of Configuration Languages 
+
+Applications of configuration languages are ubiquitous especially in the vicinity of software development.
+While XML and JSON are often used by package managers [@npm, @maven, @composer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@travis, @ghaction, @gitlab-runner] or machine configurations in software defined networks such as Kubernetes[@kubernetes] and docker compose [@docker-compose].
+
+Such formats are used due to some significant advantages compared to other binary formats such as databases.
+Most strikingly, the textual representation allows inspection of a configuration without the need of a separate tool but a text editor.
+Moreover textual configuration can be version controlled using VCS software like Git which allows changes to be tracked over time.
+Linux service configurations (files in `/etc`) and MacOS `*.plist` files which can be serialized as XML or a JSON-like format, especially exemplify that claim.
+
+### Configuration *Programming* Languages
+
+Despite the above-mentioned formats being simple to parse and widely supported [@json], their static nature rules out any dynamic content such as generated fields, functions and the possibility to factorize and reuse.
 Moreover, content validation has to be developed separately, which led to the design of complementary schema specification languages like json-schema [@json-schema] or XSD [@xsd].
 
 These qualities require an evaluated language.
 In fact, some applications make heavy use of config files written in the native programming language which gives them access to language features and existing analysis tools.
 Examples include JavaScript frameworks such as webpack [@webpack] or Vue [@vue] and python package management using `setuptools`[@setuptools].
+Yet, the versatility of general purpose languages poses new security risks if used in this context as configurations could now contain malicious code requiring additional verification.
+Beyond this, not all languages serve as a configuration language, e.g. compiled languages. 
 
-Despite this, not all languages serve as a configuration language, e.g. compiled languages and some domains require language agnostic formats.
-For particularly complex products, both language independence and advanced features are desirable.
-Alternatively to generating configurations using high level languages, this demand is addressed by more domain specific languages.
-Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such domain specific languages (DSL), that offer varying support for string interpolation, (strict) typing, functions and validation.
+However, for particularly complex applications, both advanced features and language independence are desirable.
+Alternatively to using high level general purpose languages, this demand is addressed by domain specific languages (DSL).
+Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such domain specific languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
+Most of these languages are used as a templating system which means a configuration file in a more portable format is generated using an evaluation of the more expressive configuration source.
+The added expressiveness manifests in the ability to evaluate expression and the availability of imports, variables and functions.
+These features allow to refactor and simplify repetitive configuration files.
 
 ### Infrastructure as Code
 
-A prime example for the application of configuration languages are IaaS^[Infrastructure as a Service] products.
-These solutions offer great flexibility with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling of (virtual) servers.
-Although the primary interaction with those systems is imperative, maintaining entire applications' or company's environments manually comes with obvious drawbacks.
+The shift to an increasing application of IaaS^[Infrastructure as a Service] products started the desire for declarative machine configuration in a bid to simplify the setup and reproducibility of such systems.
+This configuration based setup of infrastructure is commonly summarized as infrastructure as code or IaC.
+As the name suggests, IaC puts cloud configuration closer to the domain of software development [@IaC-book].
+
+In principle, IaaS solutions offer great flexibility with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling of (virtual) servers.
+However, since the primary interaction with those systems is imperative and based on command line or web interfaces, maintaining entire applications' or company's environments manually comes with obvious drawbacks.
 
 Changing and undoing changes to existing networks requires intricate knowledge about its topology which in turn has to be meticulously documented.
 Undocumented modification pose a significant risk for *config drift* which is particularly difficult to undo imperatively.
 Beyond that, interacting with a system through its imperative interfaces demands qualified skills of specialized engineers.
 
-The concept of "Infrastructure as Code" (*IaC*) serves the DevOps principles.
+The concept of "Infrastructure as Code" (*IaC*) align with the principles of DevOps.
 IaC tools help to overcome the need for dedicated teams for *Dev*elopment and *Op*erations by allowing to declaratively specify the dependencies, topology and virtual resources.
 Optimally, different environments for testing, staging and production can be derived from a common base and changes to configurations are atomic.
 As an additional benefit, configuration code is subject to common software engineering tooling;
 It can be statically analyzed, refactored and version controlled to ensure reproducibility.
+A subset of IaC is focused on largely declarative configuration based on configuration files that are interpreted and "converted" into imperative platform dependent instructions. 
 
 As a notable instance, the Nix[@nix] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@nixops].
 
@@ -247,13 +316,203 @@ This suggests that techniques[@aws-cloud-formation-security-tests] to automatica
 
 ### Nickel
 
-The Nickel[@nickel] language is a configuration programming language (cf. [@sec:configuration-programming-languages]) with the aims of providing composable, verifiable and validatable configuration files.
-The language draws inspiration from existing projects such as Cue [@cue], Dhall [@Dhall] and most importantly Nix [@nix].
+The Nickel[@nickel] language is a configuration programming language as defined in  [@sec:configuration-programming-languages] with the aims of providing composable, verifiable and validatable configuration files.
 Nickel implements a pure functional language with JSON-like data types and turing-complete lambda calculus.
+The language draws inspiration from existing projects such as Cue [@cue], Dhall [@Dhall] and most importantly Nix [@nix].
 However, Nickel sets itself apart from the existing projects by combining and advancing their strengths.
 The language addresses concerns drawn from the experiences with Nix which employs a sophisticated modules system [@nixos-modules] to provide type-safe, composed (system) configuration files.
 Nickel implements gradual type annotations, with runtime checked contracts to ensure even complex configurations remain correct.
 Additionally, considering record merging on a language level facilitates modularization and composition of configurations.
+
+#### Nickel AST
+
+Nickel's syntax tree is a single sum type, i.e., an enumeration of node types.
+Each enumeration variant may refer to child nodes, representing a branch or hold terminal values in which case it is considered a leaf of the tree.
+Additionally, tree nodes hold information about their position in the underlying code.
+
+##### Basic Elements
+
+The primitive values of the Nickel language are closely related to JSON.
+On the leaf level, Nickel defines `Boolean`, `Number`, `String` and `Null`.
+In addition to that the language implements native support for `Enum` values which are serialized as plain strings in less expressive formats such as JSON.
+Each of these are terminal leafs in the syntax tree.
+
+Completing JSON compatibility, `List` and `Record` constructs are present as well.
+Records on a syntax level are Dictionaries, uniquely associating an identifier with a sub-node.
+
+These data types constitute a static subset of Nickel which allows writing JSON compatible expressions as shown in [@lst:nickel-static].
+
+```{.nickel #lst:nickel-static caption="Example of a static Nickel expression"}
+{
+  list = [ 1, "string", null],
+  "some key" = "value"
+} 
+```
+
+Beyond these basic elements, Nickel implements variables and functions as well as a special syntax for attaching metadata and recursive records.
+
+
+##### Identifiers
+
+The inclusion of variables to the language, implies an understanding of identifiers.
+Such name bindings can be declared in multiple ways, e.g. `let` bindings, function arguments and records.
+The usage of a name is always parsed as a single `Var` node wrapping the identifier.
+Span information of identifiers is preserved by the parser and encoded in the `Ident` type. 
+
+##### Variable Reference
+
+```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
+
+// simple bindings
+let name = <expr> in <expr>
+let func = fun arg => <expr> in <expr>
+
+// or with patterns
+let name @ { field, with_default = 2 } = <expr> in <expr>
+let func = fun arg @ { field, with_default = 2 } => 
+  <expr> in 
+  <expr>
+```
+
+Let bindings in their simplest form merely bind a name to a value expression and expose the name to the inner expression.
+Hence, the `Let` node contains the binding and links to both implementation and scope subtrees.
+The binding can be a simple name, a pattern or both by naming the pattern as shown in [@lst:nickel-let-binding].
+
+
+```{.nickel #lst:nickel-args-function caption="Parsed representation of functions with multiple arguments"}
+fun first second => first + second
+// ...is parsed as
+fun first =>
+  fun second => first + second
+```
+
+Functions in Nickel are curried lambda expressions.
+A function with multiple arguments gets broken down into nested single argument functions as seen in [@lst:nickel-args-function].
+Function argument name binding therefore looks the same as in `let` bindings.
+
+##### Meta Information
+
+One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
+Complementing type information, it is possible to annotate values with contracts and additional metadata such as contracts, documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
+
+
+```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
+let Contract = { 
+  foo | Num 
+      | doc "I am foo",
+  hello | Str
+        | default = "world"
+}
+| doc "Just an example Contract"
+in 
+let value | #Contract = { foo = 9, }
+in value == { foo = 9, hello = "world", } 
+
+> true
+```
+
+Internally, the addition of annotations wraps the annotated term in a `MetaValue`, an additional tree node which describes its subtree. 
+The expression shown in [@lst:nickel-meta-typed] translates to the AST in [@fig:nickel-meta-typed].
+
+```{.nickel #lst:nickel-meta-typed caption="Example of a typed expression"}
+let x: Num = 5 in x
+```
+
+
+```{.graphviz #fig:nickel-meta-typed caption="AST of typed expression" height=4.5cm}
+strict digraph { 
+  graph [fontname = "Fira Code"];
+  node [fontname = "Fira Code"];
+  edge [fontname = "Fira Code"];
+
+  meta [label="MetaValue", color="green", shape="box"]
+  let [label = "Let('x')"]
+  num [label = "Num(5)"]
+  var [label = "Var('x')"]
+
+  meta -> let
+  let -> num
+  let -> var
+}
+```
+
+##### Nested Record Access
+
+Nickel supports both static and dynamic access to record fields.
+If the field name is statically known, the access is said to be *static* accordingly.
+Conversely, if the name requires evaluating a string from an expression the access is called *dynamic*.
+An example is given in [@lst:nickel-static-dynamic]
+
+```{.nickel #lst:nickel-static-dynamic caption="Examples for static and dynamic record access"}
+let r = { foo = 1, "bar space" = 2} in
+r.foo // static
+r."bar space" // static
+let field = "fo" ++ "o" in r."#{field}" // dynamic
+```
+
+The destruction of record fields is represented using a special set of AST nodes depending on whether the access is static or dynamic.
+Static analysis does not evaluate dynamic fields and thus prevents the analysis of any deeper element starting with dynamic access.
+Static access however can be used to resolve any intermediate reference.
+
+Notably, Nickel represents static access chains in inverse order as unary operations which in turn puts the terminal `Var` node as a leaf in the tree.
+[Figure @fig:nickel-static-access] shows the representation of the static access performed in [@lst:nickel-static-access] with the rest of the tree omitted.
+
+```{.nickel #lst:nickel-static-access caption="Nickel static access"}
+let x = {
+  y = {
+    z = 1,
+  }
+} in x.y.z
+```
+
+
+```{.graphviz #fig:nickel-static-access caption="AST of typed expression" height=6cm}
+strict digraph { 
+  graph [fontname = "Fira Code"];
+  node [fontname = "Fira Code", margin=0.25];
+  edge [fontname = "Fira Code"];
+
+  rankdir="TD"
+
+  let [label = "Let", color="grey"]
+  rec [label = "omitted", color="grey", style="dashed", shape="box"]
+
+  x [label = "Var('x')"]
+  unop_x_y [label = ".y", shape = "triangle", margin=0.066]
+  unop_y_z [label = ".z", shape = "triangle", margin=0.066]
+
+
+  let -> rec
+  let -> unop_y_z
+  unop_y_z -> unop_x_y
+  unop_x_y -> x
+}
+```
+
+##### Record Shorthand
+
+Nickel supports a shorthand syntax to efficiently define nested records similarly to how nested record fields are accessed.
+As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand syntax which resolves to the semantically equivalent record defined in [@lst:nickel-record-no-shorthand]
+
+```{.nickel #lst:nickel-record-shorthand caption="Nickel record defined using shorthand"}
+{
+  deeply.nested.record.field = true,
+}
+```
+
+```{.nickel #lst:nickel-record-no-shorthand caption="Nickel record defined explicitly"}
+{
+  deeply = {
+    nested = {
+      record = { 
+        field = true,
+      }
+    }
+  }
+}
+```
+
+Yet, on a syntax level Nickel generates a different representation.
 
 #### Record Merging
 
@@ -412,196 +671,3 @@ note:
 
 
 
-#### Nickel AST
-
-Nickel's syntax tree is a single sum type, i.e., an enumeration of node types.
-Each enumeration variant may refer to child nodes, representing a branch or hold terminal values in which case it is considered a leaf of the tree.
-Additionally, tree nodes hold information about their position in the underlying code.
-
-##### Basic Elements
-
-The primitive values of the Nickel language are closely related to JSON.
-On the leaf level, Nickel defines `Boolean`, `Number`, `String` and `Null`.
-In addition to that the language implements native support for `Enum` values which are serialized as plain strings.
-Each of these are terminal leafs in the syntax tree.
-
-Completing JSON compatibility, `List` and `Record` constructs are present as well.
-Records on a syntax level are HashMaps, uniquely associating an identifier with a sub-node.
-
-These data types constitute a static subset of Nickel which allows writing JSON compatible expressions as shown in [@lst:nickel-static].
-
-```{.nickel #lst:nickel-static caption="Example of a static Nickel expression"}
-{
-  list = [ 1, "string", null],
-  "some key" = "value"
-} 
-```
-
-
-
-Building on that Nickel also supports variables and functions.
-
-##### Identifiers
-
-The inclusion of Variables to the language, implies some sort of identifiers.
-Such name bindings can be declared in multiple ways, e.g. `let` bindings, function arguments and records.
-The usage of a name is always parsed as a single `Var` node wrapping the identifier.
-Span information of identifiers is preserved by the parser and encoded in the `Ident` type. 
-
-##### Variable Reference
-
-```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
-
-// simple bindings
-let name = <expr> in <expr>
-let func = fun arg => <expr> in <expr>
-
-// or with patterns
-let name @ { field, with_default = 2 } = <expr> in <expr>
-let func = fun arg @ { field, with_default = 2 } => 
-  <expr> in 
-  <expr>
-```
-
-Let bindings in their simplest form merely bind a name to a value expression and expose the name to the inner expression.
-Hence, the `Let` node contains the binding and links to both implementation and scope subtrees.
-The binding can be a simple name, a pattern or both by naming the pattern as shown in [@lst:nickel-let-binding].
-
-
-```{.nickel #lst:nickel-args-function caption="Parsed representation of functions with multiple arguments"}
-fun first second => first + second
-// ...is parsed as
-fun first =>
-  fun second => first + second
-```
-
-Functions in Nickel are curried lambda expressions.
-A function with multiple arguments gets broken down into nested single argument functions as seen in [@lst:nickel-args-function].
-Function argument name binding therefore looks the same as in `let` bindings.
-
-
-##### Meta Information
-
-One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
-Complementing type information, it is possible to annotate values with contracts and additional metadata such as contracts, documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
-
-
-```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
-let Contract = { 
-  foo | Num 
-      | doc "I am foo",
-  hello | Str
-        | default = "world"
-}
-| doc "Just an example Contract"
-in 
-let value | #Contract = { foo = 9, }
-in value == { foo = 9, hello = "world", } 
-
-> true
-```
-
-Internally, the addition of annotations wraps the annotated term in a `MetaValue`, an additional tree node which describes its subtree. 
-The expression shown in [@lst:nickel-meta-typed] translates to the AST in [@fig:nickel-meta-typed].
-
-```{.nickel #lst:nickel-meta-typed caption="Example of a typed expression"}
-let x: Num = 5 in x
-```
-
-
-```{.graphviz #fig:nickel-meta-typed caption="AST of typed expression" height=4.5cm}
-strict digraph { 
-  graph [fontname = "Fira Code"];
-  node [fontname = "Fira Code"];
-  edge [fontname = "Fira Code"];
-
-  meta [label="MetaValue", color="green", shape="box"]
-  let [label = "Let('x')"]
-  num [label = "Num(5)"]
-  var [label = "Var('x')"]
-
-  meta -> let
-  let -> num
-  let -> var
-}
-```
-
-##### Nested Record Access
-
-Nickel supports both static and dynamic access to record fields.
-If the field name is statically known, the access is said to be *static* accordingly.
-Conversely, if the name requires evaluating a string from an expression the access is called *dynamic*.
-An example is given in [@lst:nickel-static-dynamic]
-
-```{.nickel #lst:nickel-static-dynamic caption="Examples for static and dynamic record access"}
-let r = { foo = 1, "bar space" = 2} in
-r.foo // static
-r."bar space" // static
-let field = "fo" ++ "o" in r."#{field}" // dynamic
-```
-
-The destruction of record fields is represented using a special set of AST nodes depending on whether the access is static or dynamic.
-Static analysis does not evaluate dynamic fields and thus prevents the analysis of any deeper element starting with dynamic access.
-Static access however can be used to resolve any intermediate reference.
-
-Notably, Nickel represents static access chains in inverse order as unary operations which in turn puts the terminal `Var` node as a leaf in the tree.
-[Figure @fig:nickel-static-access] shows the representation of the static access performed in [@lst:nickel-static-access] with the rest of the tree omitted.
-
-```{.nickel #lst:nickel-static-access caption="Nickel static access"}
-let x = {
-  y = {
-    z = 1,
-  }
-} in x.y.z
-```
-
-
-```{.graphviz #fig:nickel-static-access caption="AST of typed expression" height=6cm}
-strict digraph { 
-  graph [fontname = "Fira Code"];
-  node [fontname = "Fira Code", margin=0.25];
-  edge [fontname = "Fira Code"];
-
-  rankdir="TD"
-
-  let [label = "Let", color="grey"]
-  rec [label = "omitted", color="grey", style="dashed", shape="box"]
-
-  x [label = "Var('x')"]
-  unop_x_y [label = ".y", shape = "triangle", margin=0.066]
-  unop_y_z [label = ".z", shape = "triangle", margin=0.066]
-
-
-  let -> rec
-  let -> unop_y_z
-  unop_y_z -> unop_x_y
-  unop_x_y -> x
-}
-```
-
-
-
-##### Record Shorthand
-
-Nickel supports a shorthand syntax to efficiently define nested records similarly to how nested record fields are accessed.
-As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand syntax which resolves to the semantically equivalent record defined in [@lst:nickel-record-no-shorthand]
-
-```{.nickel #lst:nickel-record-shorthand caption="Nickel record defined using shorthand"}
-{
-  deeply.nested.record.field = true,
-}
-```
-
-```{.nickel #lst:nickel-record-no-shorthand caption="Nickel record defined explicitly"}
-{
-  deeply = {
-    nested = {
-      record = { 
-        field = true,
-      }
-    }
-  }
-}
-```
-
-Yet, on a syntax level Nickel generates a different representation.
