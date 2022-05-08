@@ -133,7 +133,8 @@ For a given symbol definition, for example variable, function, function argument
 
 The symbols capability is defined as both a "Language Feature" and "Workspace Feature" which mainly differ in the scope they represent.
 The `textDocument/documentSymbol` command lists symbols solely found in the currently opened file, while the `workspace/symbol` takes into account all files in the opened set of folders.
-The granularity of the listed items is determined by the server.
+The granularity of the listed items is determined by the server and possibly different for either scope.
+For instance, document symbols could be as detailed as listing any kind of method or property found in the document, while workspace symbols take visibility rules into account which might expose public entities only.
 Symbols are associated with a span of source code of the symbol itself and its context, for example a function name representing the function body. 
 Moreover, the server can annotate the items with additional attributes such as symbol kinds, tags and even child-references (e.g. for the fields of a record or class).
 
