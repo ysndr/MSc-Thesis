@@ -51,10 +51,17 @@ In this case, the server should respond with a list of results matching each req
 ### Commands and Notifications
 
 The LSP builds on top of the JSON-RPC protocol described in the previous subsection.
-In total the LSP defines 33 [@lsp] "language features", i.e., source code related capabilities.
-In addition, the LSP specifies different capabilities to the server to control the editor.
-For instance, servers may instruct clients to show notifications or progress bars or open documents.
-Similarly, the client has multiple ways of notifying the server of file changes, including renaming r deletion of files.
+It defines four sets of commands: 
+
+The largest group are commands that are relevant in the scope of the currently opened document, e.g. autocompletion, refactoring, inline values and more.
+In total the LSP defines 33 [@lsp] of such "Language Features".
+Editors will notify the server about file changes and client side interaction, i.e., opening, closing and renaming files using "Document Synchronization" methods.
+While most commands are defined in the document scope, i.e., a single actively edited file, the LSP allows clients to communicate changes to files in the opened project.
+This so called workspace comprises on or more root folders managed by the editor and all files contained in them.
+"Workspace Features" allow the server to intercept file creation, renaming or deletion to make changes to existing sources in other files.
+Use cases of these features include updating import paths, changing class names and other automations that are not necessary local to a single file.
+In addition, the LSP specifies so called "Window Features" which allow the server to control parts of the user interface of the connected editor.
+For instance, servers may instruct clients to show notifications and progress bars or open files.
 
 This thesis aims to implement a fundamental set of capabilities.
 The chosen capabilities are based on those identified as "key methods" by the authors of langserver [@langserver], specifically:
