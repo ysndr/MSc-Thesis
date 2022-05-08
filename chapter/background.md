@@ -63,8 +63,11 @@ Use cases of these features include updating import paths, changing class names 
 In addition, the LSP specifies so called "Window Features" which allow the server to control parts of the user interface of the connected editor.
 For instance, servers may instruct clients to show notifications and progress bars or open files.
 
-This thesis aims to implement a fundamental set of capabilities.
-The chosen capabilities are based on those identified as "key methods" by the authors of langserver [@langserver], specifically:
+
+### Description of Key Methods
+
+the authors of langserver.org [@langserver] identified six "key methods" of the LSP.
+The methods represent a fundamental set of capabilities, specifically:
 
 
 1. Code completion
