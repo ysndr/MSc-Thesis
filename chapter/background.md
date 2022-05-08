@@ -173,11 +173,35 @@ Requests invoke an ad-hoc resolution the results of which may be memoized for fu
 Lazy resolution is more prevalent in conjunction with incremental indexing, since it further reduces the work associated with file changes.
 This is essential in complex languages that would otherwise perform a great amount of redundant work.
 
-## Configuration programming languages
+## Text based Configuration
 
-Nickel [@nickel], the language targeted by the language server detailed in this thesis, defines itself as "configuration language" used to automize the generation of static configuration files.
 
-Static configuration languages such as XML[@xml], JSON[@json], or YAML[@yaml] are language specifications defining how to textually represent structural data used to configure parameters of a system^[some of the named languages may have been designed as a data interchange format which is absolutely compatible with also acting as a configuration language].
+Configuration languages such as XML[@xml], JSON[@json], or YAML[@yaml] are textual representations of structural data used to configure parameters of a system or application.
+The objective of such languages is to be machine readable, yet also intuitive enough for humans to write.
+
+### Common Configuration Languages
+
+#### JSON
+
+According to the JSON specification [@json] the language was designed as a data-interchange format that is easy to read and write both for humans and machines.
+Since it is a subset of the JavaScript language, its use is particularly straight forward and wide spread in JavaScript based environments such as web applications.
+But due to its simplicity implementations are available and for all major languages,  motivating its use for configuration files.
+
+#### YAML
+
+YAML is another popular language, mainly used for configuration files.
+According to its goals [@yaml-goals] it should be human readable and independent of the programming language making use of it.
+It should be efficient to parse and easy to implement while being expressive and extensible.
+
+YAML also features a very flexible syntax which allows for many alternative ways to declare semantically equivalent data.
+For example boolean expressions can be written as any of the following values: 
+
+> `y|Y|yes|Yes|YES|n|N|no|No|NO`
+> `true|True|TRUE|false|False|FALSE`
+> `on|On|ON|off|Off|OFF`
+
+Since YAML facilitates indentation as a way to express objects or lists and does not require object keys (and even strings) to be quoted, it is considered easier to write than JSON at the expense of parser complexity.
+Yet, YAML is compatible with JSON since as subset of its specification defines a JSON equivalent syntax that permits the use of `{..}` and `[..]` to describe objects and lists respectively. 
 Applications of configuration languages are ubiquitous especially in the vicinity of software development. While XML and JSON are often used by package managers [@npm, @maven, @composer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@travis, @ghaction, @gitlab-runner] or machine configurations in software defined networks such as Kubernetes and docker compose.
 
 Such static formats are used due to some significant advantages compared to other formats.
