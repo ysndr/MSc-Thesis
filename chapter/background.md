@@ -316,9 +316,9 @@ This suggests that techniques[@aws-cloud-formation-security-tests] to automatica
 
 ### Nickel
 
-The Nickel[@nickel] language is a configuration programming language (cf. [@sec:configuration-programming-languages]) with the aims of providing composable, verifiable and validatable configuration files.
-The language draws inspiration from existing projects such as Cue [@cue], Dhall [@Dhall] and most importantly Nix [@nix].
+The Nickel[@nickel] language is a configuration programming language as defined in  [@sec:configuration-programming-languages] with the aims of providing composable, verifiable and validatable configuration files.
 Nickel implements a pure functional language with JSON-like data types and turing-complete lambda calculus.
+The language draws inspiration from existing projects such as Cue [@cue], Dhall [@Dhall] and most importantly Nix [@nix].
 However, Nickel sets itself apart from the existing projects by combining and advancing their strengths.
 The language addresses concerns drawn from the experiences with Nix which employs a sophisticated modules system [@nixos-modules] to provide type-safe, composed (system) configuration files.
 Nickel implements gradual type annotations, with runtime checked contracts to ensure even complex configurations remain correct.
