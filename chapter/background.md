@@ -85,6 +85,8 @@ The methods represent a fundamental set of capabilities, specifically:
 
 #### Code Completion
 
+*RPC Method: [`textDocument/Completion`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion)*
+
 This feature allows users to request a suggested identifier of variables or methods, concrete values or larger templates of generated code to be inserted at the position of the cursor.
 The completion can be invoked manually or upon entering language defined trigger characters, such as `.`, `::` or `->`.
 The completion request contains the current cursor position, allowing the language server to resolve contextual information based on an internal representation of the document.
@@ -94,6 +96,8 @@ In the example ([@fig:lsp-capability-complete]) the completion feature suggests 
 
 
 #### Hover
+
+*RPC Method: [`textDocument/hover`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover)*
 
 Hover requests are issued by editors when the user rests their mouse cursor on text in an opened document or issues a designated command in editors without mouse support.
 If the language server has indexed any information corresponding to the position, it can generate a report using plain text and code elements, which are then rendered by the editor.
@@ -105,6 +109,8 @@ An example can be seen in [@fig:lsp-capability-hover].
 
 #### Jump to Definition
 
+*RPC Method: [`textDocument/definition`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_definition)*
+
 The LSP allows users to navigate their code by the means of symbols by finding the definition of a requested symbol.
 Symbols can be for instance variable names or function calls.
 As seen in [@fig:lsp-capability-definition], editors can use the available information to enrich hover overlays with the hovered element's definition.
@@ -114,12 +120,16 @@ As seen in [@fig:lsp-capability-definition], editors can use the available infor
 
 #### Find References
 
+*RPC Method: [`textDocument/references`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_references)*
+
 Finding references is the inverse operation to the previously discussed *Jump to Definition* ([cf. @sec:jump-to-definition]).
 For a given symbol definition, for example variable, function, function argument or record field the LSP provides all usages of the symbol allowing users to inspect or jump to the referencing code position.
 
 ![](examples/references.png){#fig:lsp-capability-hover caption="Listing of all references to the method "hello". Python language server in Visual Studio Code"}
 
 #### Workspace/Document symbols
+
+*RPC Method: [`workspace_symbol`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_symbol) or [`textDocument_documentSymbol`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol)*
 
 The symbols capability allows language servers to expose a list if symbols declared in the open document or workspace.
 The granularity of the listed items is determined by the server.
