@@ -190,7 +190,7 @@ The work presented by Leimeister in [@leimeisterLanguageServerIDE] exemplifies h
 The server can be used to automatically perform software verification in the background using CPAchecker[@beyerCPAcheckerToolConfigurable2009].
 CPAchecker is a platform for automatic and extensible software verification.
 The program is written in Java and provides a command line interface to be run locally.
-Additionally, it is possible to execute resource intensive verification through an HTTP-API on more powerful machines or clusters [@cpa-google-cloud,@cpa-clusters].
+Additionally, it is possible to execute resource intensive verification through an HTTP-API on more powerful machines or clusters [@beyerSoftwareVerificationGoogle2014,@CPAcheckerVerifierCloud].
 The LSP server supports both modes of operation.
 While it can interface directly with the Java modules provided by the CPAchecker library, it is also  able to utilize an HTTP-API provided by a server instance of the verifier.
 
