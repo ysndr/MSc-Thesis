@@ -321,6 +321,196 @@ The language addresses concerns drawn from the experiences with Nix which employ
 Nickel implements gradual type annotations, with runtime checked contracts to ensure even complex configurations remain correct.
 Additionally, considering record merging on a language level facilitates modularization and composition of configurations.
 
+#### Nickel AST
+
+Nickel's syntax tree is a single sum type, i.e., an enumeration of node types.
+Each enumeration variant may refer to child nodes, representing a branch or hold terminal values in which case it is considered a leaf of the tree.
+Additionally, tree nodes hold information about their position in the underlying code.
+
+##### Basic Elements
+
+The primitive values of the Nickel language are closely related to JSON.
+On the leaf level, Nickel defines `Boolean`, `Number`, `String` and `Null`.
+In addition to that the language implements native support for `Enum` values which are serialized as plain strings in less expressive formats such as JSON.
+Each of these are terminal leafs in the syntax tree.
+
+Completing JSON compatibility, `List` and `Record` constructs are present as well.
+Records on a syntax level are Dictionaries, uniquely associating an identifier with a sub-node.
+
+These data types constitute a static subset of Nickel which allows writing JSON compatible expressions as shown in [@lst:nickel-static].
+
+```{.nickel #lst:nickel-static caption="Example of a static Nickel expression"}
+{
+  list = [ 1, "string", null],
+  "some key" = "value"
+} 
+```
+
+Beyond these basic elements, Nickel implements variables and functions as well as a special syntax for attaching metadata and recursive records.
+
+
+##### Identifiers
+
+The inclusion of variables to the language, implies an understanding of identifiers.
+Such name bindings can be declared in multiple ways, e.g. `let` bindings, function arguments and records.
+The usage of a name is always parsed as a single `Var` node wrapping the identifier.
+Span information of identifiers is preserved by the parser and encoded in the `Ident` type. 
+
+##### Variable Reference
+
+```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
+
+// simple bindings
+let name = <expr> in <expr>
+let func = fun arg => <expr> in <expr>
+
+// or with patterns
+let name @ { field, with_default = 2 } = <expr> in <expr>
+let func = fun arg @ { field, with_default = 2 } => 
+  <expr> in 
+  <expr>
+```
+
+Let bindings in their simplest form merely bind a name to a value expression and expose the name to the inner expression.
+Hence, the `Let` node contains the binding and links to both implementation and scope subtrees.
+The binding can be a simple name, a pattern or both by naming the pattern as shown in [@lst:nickel-let-binding].
+
+
+```{.nickel #lst:nickel-args-function caption="Parsed representation of functions with multiple arguments"}
+fun first second => first + second
+// ...is parsed as
+fun first =>
+  fun second => first + second
+```
+
+Functions in Nickel are curried lambda expressions.
+A function with multiple arguments gets broken down into nested single argument functions as seen in [@lst:nickel-args-function].
+Function argument name binding therefore looks the same as in `let` bindings.
+
+##### Meta Information
+
+One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
+Complementing type information, it is possible to annotate values with contracts and additional metadata such as contracts, documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
+
+
+```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
+let Contract = { 
+  foo | Num 
+      | doc "I am foo",
+  hello | Str
+        | default = "world"
+}
+| doc "Just an example Contract"
+in 
+let value | #Contract = { foo = 9, }
+in value == { foo = 9, hello = "world", } 
+
+> true
+```
+
+Internally, the addition of annotations wraps the annotated term in a `MetaValue`, an additional tree node which describes its subtree. 
+The expression shown in [@lst:nickel-meta-typed] translates to the AST in [@fig:nickel-meta-typed].
+
+```{.nickel #lst:nickel-meta-typed caption="Example of a typed expression"}
+let x: Num = 5 in x
+```
+
+
+```{.graphviz #fig:nickel-meta-typed caption="AST of typed expression" height=4.5cm}
+strict digraph { 
+  graph [fontname = "Fira Code"];
+  node [fontname = "Fira Code"];
+  edge [fontname = "Fira Code"];
+
+  meta [label="MetaValue", color="green", shape="box"]
+  let [label = "Let('x')"]
+  num [label = "Num(5)"]
+  var [label = "Var('x')"]
+
+  meta -> let
+  let -> num
+  let -> var
+}
+```
+
+##### Nested Record Access
+
+Nickel supports both static and dynamic access to record fields.
+If the field name is statically known, the access is said to be *static* accordingly.
+Conversely, if the name requires evaluating a string from an expression the access is called *dynamic*.
+An example is given in [@lst:nickel-static-dynamic]
+
+```{.nickel #lst:nickel-static-dynamic caption="Examples for static and dynamic record access"}
+let r = { foo = 1, "bar space" = 2} in
+r.foo // static
+r."bar space" // static
+let field = "fo" ++ "o" in r."#{field}" // dynamic
+```
+
+The destruction of record fields is represented using a special set of AST nodes depending on whether the access is static or dynamic.
+Static analysis does not evaluate dynamic fields and thus prevents the analysis of any deeper element starting with dynamic access.
+Static access however can be used to resolve any intermediate reference.
+
+Notably, Nickel represents static access chains in inverse order as unary operations which in turn puts the terminal `Var` node as a leaf in the tree.
+[Figure @fig:nickel-static-access] shows the representation of the static access performed in [@lst:nickel-static-access] with the rest of the tree omitted.
+
+```{.nickel #lst:nickel-static-access caption="Nickel static access"}
+let x = {
+  y = {
+    z = 1,
+  }
+} in x.y.z
+```
+
+
+```{.graphviz #fig:nickel-static-access caption="AST of typed expression" height=6cm}
+strict digraph { 
+  graph [fontname = "Fira Code"];
+  node [fontname = "Fira Code", margin=0.25];
+  edge [fontname = "Fira Code"];
+
+  rankdir="TD"
+
+  let [label = "Let", color="grey"]
+  rec [label = "omitted", color="grey", style="dashed", shape="box"]
+
+  x [label = "Var('x')"]
+  unop_x_y [label = ".y", shape = "triangle", margin=0.066]
+  unop_y_z [label = ".z", shape = "triangle", margin=0.066]
+
+
+  let -> rec
+  let -> unop_y_z
+  unop_y_z -> unop_x_y
+  unop_x_y -> x
+}
+```
+
+##### Record Shorthand
+
+Nickel supports a shorthand syntax to efficiently define nested records similarly to how nested record fields are accessed.
+As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand syntax which resolves to the semantically equivalent record defined in [@lst:nickel-record-no-shorthand]
+
+```{.nickel #lst:nickel-record-shorthand caption="Nickel record defined using shorthand"}
+{
+  deeply.nested.record.field = true,
+}
+```
+
+```{.nickel #lst:nickel-record-no-shorthand caption="Nickel record defined explicitly"}
+{
+  deeply = {
+    nested = {
+      record = { 
+        field = true,
+      }
+    }
+  }
+}
+```
+
+Yet, on a syntax level Nickel generates a different representation.
+
 #### Record Merging
 
 Nickel considers record merging as a fundamental operation that combines two records (i.e. JSON objects).
@@ -478,196 +668,3 @@ note:
 
 
 
-#### Nickel AST
-
-Nickel's syntax tree is a single sum type, i.e., an enumeration of node types.
-Each enumeration variant may refer to child nodes, representing a branch or hold terminal values in which case it is considered a leaf of the tree.
-Additionally, tree nodes hold information about their position in the underlying code.
-
-##### Basic Elements
-
-The primitive values of the Nickel language are closely related to JSON.
-On the leaf level, Nickel defines `Boolean`, `Number`, `String` and `Null`.
-In addition to that the language implements native support for `Enum` values which are serialized as plain strings.
-Each of these are terminal leafs in the syntax tree.
-
-Completing JSON compatibility, `List` and `Record` constructs are present as well.
-Records on a syntax level are HashMaps, uniquely associating an identifier with a sub-node.
-
-These data types constitute a static subset of Nickel which allows writing JSON compatible expressions as shown in [@lst:nickel-static].
-
-```{.nickel #lst:nickel-static caption="Example of a static Nickel expression"}
-{
-  list = [ 1, "string", null],
-  "some key" = "value"
-} 
-```
-
-
-
-Building on that Nickel also supports variables and functions.
-
-##### Identifiers
-
-The inclusion of Variables to the language, implies some sort of identifiers.
-Such name bindings can be declared in multiple ways, e.g. `let` bindings, function arguments and records.
-The usage of a name is always parsed as a single `Var` node wrapping the identifier.
-Span information of identifiers is preserved by the parser and encoded in the `Ident` type. 
-
-##### Variable Reference
-
-```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
-
-// simple bindings
-let name = <expr> in <expr>
-let func = fun arg => <expr> in <expr>
-
-// or with patterns
-let name @ { field, with_default = 2 } = <expr> in <expr>
-let func = fun arg @ { field, with_default = 2 } => 
-  <expr> in 
-  <expr>
-```
-
-Let bindings in their simplest form merely bind a name to a value expression and expose the name to the inner expression.
-Hence, the `Let` node contains the binding and links to both implementation and scope subtrees.
-The binding can be a simple name, a pattern or both by naming the pattern as shown in [@lst:nickel-let-binding].
-
-
-```{.nickel #lst:nickel-args-function caption="Parsed representation of functions with multiple arguments"}
-fun first second => first + second
-// ...is parsed as
-fun first =>
-  fun second => first + second
-```
-
-Functions in Nickel are curried lambda expressions.
-A function with multiple arguments gets broken down into nested single argument functions as seen in [@lst:nickel-args-function].
-Function argument name binding therefore looks the same as in `let` bindings.
-
-
-##### Meta Information
-
-One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
-Complementing type information, it is possible to annotate values with contracts and additional metadata such as contracts, documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
-
-
-```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
-let Contract = { 
-  foo | Num 
-      | doc "I am foo",
-  hello | Str
-        | default = "world"
-}
-| doc "Just an example Contract"
-in 
-let value | #Contract = { foo = 9, }
-in value == { foo = 9, hello = "world", } 
-
-> true
-```
-
-Internally, the addition of annotations wraps the annotated term in a `MetaValue`, an additional tree node which describes its subtree. 
-The expression shown in [@lst:nickel-meta-typed] translates to the AST in [@fig:nickel-meta-typed].
-
-```{.nickel #lst:nickel-meta-typed caption="Example of a typed expression"}
-let x: Num = 5 in x
-```
-
-
-```{.graphviz #fig:nickel-meta-typed caption="AST of typed expression" height=4.5cm}
-strict digraph { 
-  graph [fontname = "Fira Code"];
-  node [fontname = "Fira Code"];
-  edge [fontname = "Fira Code"];
-
-  meta [label="MetaValue", color="green", shape="box"]
-  let [label = "Let('x')"]
-  num [label = "Num(5)"]
-  var [label = "Var('x')"]
-
-  meta -> let
-  let -> num
-  let -> var
-}
-```
-
-##### Nested Record Access
-
-Nickel supports both static and dynamic access to record fields.
-If the field name is statically known, the access is said to be *static* accordingly.
-Conversely, if the name requires evaluating a string from an expression the access is called *dynamic*.
-An example is given in [@lst:nickel-static-dynamic]
-
-```{.nickel #lst:nickel-static-dynamic caption="Examples for static and dynamic record access"}
-let r = { foo = 1, "bar space" = 2} in
-r.foo // static
-r."bar space" // static
-let field = "fo" ++ "o" in r."#{field}" // dynamic
-```
-
-The destruction of record fields is represented using a special set of AST nodes depending on whether the access is static or dynamic.
-Static analysis does not evaluate dynamic fields and thus prevents the analysis of any deeper element starting with dynamic access.
-Static access however can be used to resolve any intermediate reference.
-
-Notably, Nickel represents static access chains in inverse order as unary operations which in turn puts the terminal `Var` node as a leaf in the tree.
-[Figure @fig:nickel-static-access] shows the representation of the static access performed in [@lst:nickel-static-access] with the rest of the tree omitted.
-
-```{.nickel #lst:nickel-static-access caption="Nickel static access"}
-let x = {
-  y = {
-    z = 1,
-  }
-} in x.y.z
-```
-
-
-```{.graphviz #fig:nickel-static-access caption="AST of typed expression" height=6cm}
-strict digraph { 
-  graph [fontname = "Fira Code"];
-  node [fontname = "Fira Code", margin=0.25];
-  edge [fontname = "Fira Code"];
-
-  rankdir="TD"
-
-  let [label = "Let", color="grey"]
-  rec [label = "omitted", color="grey", style="dashed", shape="box"]
-
-  x [label = "Var('x')"]
-  unop_x_y [label = ".y", shape = "triangle", margin=0.066]
-  unop_y_z [label = ".z", shape = "triangle", margin=0.066]
-
-
-  let -> rec
-  let -> unop_y_z
-  unop_y_z -> unop_x_y
-  unop_x_y -> x
-}
-```
-
-
-
-##### Record Shorthand
-
-Nickel supports a shorthand syntax to efficiently define nested records similarly to how nested record fields are accessed.
-As a comparison the example in [@lst:nickel-record-shorthand] uses the shorthand syntax which resolves to the semantically equivalent record defined in [@lst:nickel-record-no-shorthand]
-
-```{.nickel #lst:nickel-record-shorthand caption="Nickel record defined using shorthand"}
-{
-  deeply.nested.record.field = true,
-}
-```
-
-```{.nickel #lst:nickel-record-no-shorthand caption="Nickel record defined explicitly"}
-{
-  deeply = {
-    nested = {
-      record = { 
-        field = true,
-      }
-    }
-  }
-}
-```
-
-Yet, on a syntax level Nickel generates a different representation.
