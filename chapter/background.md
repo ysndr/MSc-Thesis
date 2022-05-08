@@ -202,23 +202,33 @@ For example boolean expressions can be written as any of the following values:
 
 Since YAML facilitates indentation as a way to express objects or lists and does not require object keys (and even strings) to be quoted, it is considered easier to write than JSON at the expense of parser complexity.
 Yet, YAML is compatible with JSON since as subset of its specification defines a JSON equivalent syntax that permits the use of `{..}` and `[..]` to describe objects and lists respectively. 
-Applications of configuration languages are ubiquitous especially in the vicinity of software development. While XML and JSON are often used by package managers [@npm, @maven, @composer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@travis, @ghaction, @gitlab-runner] or machine configurations in software defined networks such as Kubernetes and docker compose.
+### Applications of Configuration Languages 
 
-Such static formats are used due to some significant advantages compared to other formats.
-Most strikingly, the textual representation allows inspection of a configuration without the need of a separate tool but a text editor and be version controlled using VCS software like Git.
-For software configuration this is well understood as being preferable over databases or other binary formats. Linux service configurations (files in `/etc`) and MacOS `*.plist` files which can be serialized as XML or a JSON-like format, especially exemplify that claim.
+Applications of configuration languages are ubiquitous especially in the vicinity of software development.
+While XML and JSON are often used by package managers [@npm, @maven, @composer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@travis, @ghaction, @gitlab-runner] or machine configurations in software defined networks such as Kubernetes[@kubernetes] and docker compose [@docker-compose].
 
-Yet, despite these formats being simple to parse and widely supported [@json], their static nature rules out any dynamic content such as generated fields, functions and the possibility to factorize and reuse.
+Such formats are used due to some significant advantages compared to other binary formats such as databases.
+Most strikingly, the textual representation allows inspection of a configuration without the need of a separate tool but a text editor.
+Moreover textual configuration can be version controlled using VCS software like Git which allows changes to be tracked over time.
+Linux service configurations (files in `/etc`) and MacOS `*.plist` files which can be serialized as XML or a JSON-like format, especially exemplify that claim.
+
+### Configuration *Programming* Languages
+
+Despite the above-mentioned formats being simple to parse and widely supported [@json], their static nature rules out any dynamic content such as generated fields, functions and the possibility to factorize and reuse.
 Moreover, content validation has to be developed separately, which led to the design of complementary schema specification languages like json-schema [@json-schema] or XSD [@xsd].
 
 These qualities require an evaluated language.
 In fact, some applications make heavy use of config files written in the native programming language which gives them access to language features and existing analysis tools.
 Examples include JavaScript frameworks such as webpack [@webpack] or Vue [@vue] and python package management using `setuptools`[@setuptools].
+Yet, the versatility of general purpose languages poses new security risks if used in this context as configurations could now contain malicious code requiring additional verification.
+Beyond this, not all languages serve as a configuration language, e.g. compiled languages. 
 
-Despite this, not all languages serve as a configuration language, e.g. compiled languages and some domains require language agnostic formats.
-For particularly complex products, both language independence and advanced features are desirable.
-Alternatively to generating configurations using high level languages, this demand is addressed by more domain specific languages.
-Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such domain specific languages (DSL), that offer varying support for string interpolation, (strict) typing, functions and validation.
+However, for particularly complex applications, both advanced features and language independence are desirable.
+Alternatively to using high level general purpose languages, this demand is addressed by domain specific languages (DSL).
+Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such domain specific languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
+Most of these languages are used as a templating system which means a configuration file in a more portable format is generated using an evaluation of the more expressive configuration source.
+The added expressiveness manifests in the ability to evaluate expression and the availability of imports, variables and functions.
+These features allow to refactor and simplify repetitive configuration files.
 
 ### Infrastructure as Code
 
