@@ -232,9 +232,12 @@ These features allow to refactor and simplify repetitive configuration files.
 
 ### Infrastructure as Code
 
-A prime example for the application of configuration languages are IaaS^[Infrastructure as a Service] products.
-These solutions offer great flexibility with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling of (virtual) servers.
-Although the primary interaction with those systems is imperative, maintaining entire applications' or company's environments manually comes with obvious drawbacks.
+The shift to an increasing application of IaaS^[Infrastructure as a Service] products started the desire for declarative machine configuration in a bid to simplify the setup and reproducibility of such systems.
+This configuration based setup of infrastructure is commonly summarized as infrastructure as code or IaC.
+As the name suggests, IaC puts cloud configuration closer to the domain of software development [@IaC-book].
+
+In principle, IaaS solutions offer great flexibility with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling of (virtual) servers.
+However, since the primary interaction with those systems is imperative and based on command line or web interfaces, maintaining entire applications' or company's environments manually comes with obvious drawbacks.
 
 Changing and undoing changes to existing networks requires intricate knowledge about its topology which in turn has to be meticulously documented.
 Undocumented modification pose a significant risk for *config drift* which is particularly difficult to undo imperatively.
