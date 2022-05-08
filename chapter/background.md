@@ -28,7 +28,7 @@ If supported by both server and client, the LSP now supports more than 24 langua
 the LSP uses JSON-RPC to communicate between a language server and a client.
 JSON-RPC (v2) [@json-rpc] is a JSON based lightweight transport independent remote procedure call [@rpc] protocol. 
 
-RPC is a well known paradigm that allows clients to virtually invoke a method at a connected process.
+RPC is a paradigm that allows clients to virtually invoke a method at a connected process.
 The caller sends a well-defined message to a connected process which executes a procedure associated with the request, taking into account any transmitted arguments.
 Upon invoking a remote procedure, the client suspends the execution of its environment while it awaits an answer of the server, corresponding to a classical local procedure return.
 
