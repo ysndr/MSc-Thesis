@@ -158,6 +158,44 @@ For instance, the LSP does not specify the frequency at which file changes are d
 
 ## Results
 
+### Process
 ### Qualitative
+
+
+As outlined in [#sec:qualitative-study-outline], the qualitative study consists of two parts conducted before and after an introductory workshop.
+The pre-evaluation aimed to catch the users's expected features and behaviours, while the main survey asked users about their concrete experiences with the NLS.
+
+#### Pre-Evaluation
+
+Responding to the first point (c.f. [#sec:expected-features]), the participants unanimously identified four of the six foundational language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications, @langserverorg] );
+
+Type-information on hover
+  ~ was named almost uniformly.
+    The participants showed a special interest in this feature describing specific behaviours.
+    The desired information exposed by this feature are value types including applied contracts and documentation as well as function signatures.
+  ~ When asked about the hover LSP method in particular, participants name additional function documentation, default values and the visualization of scopes as an additional features.
+
+Diagnostics
+  ~ are widely understood as an important feature.
+    Participant had very particular opinions about the behavior and detail of diagnostics including error message at the correct location in the code signaling syntax errors or possibly evaluation errors and contract breaches.
+    In either case the diagnostic should be produced "On-the-fly" while typing or upon saving the document.
+  ~ When asked about the diagnostics feature of language servers directly, the answers corroborated these initial opinions.
+    In addition some participants named code linting, i.e. warnings about code style, unused variables, deprecated code and undocumented elements, as well as structural analysis hints as possible features.
+    Structural analysis was imagined to go that far as being able to "suggest how to fix" mistakes in the code.
+
+Code Completion
+  ~ was equally name in all but one response.
+    It was described as a way to chose from possible completion candidates 
+    of options.
+    The anwers included aspirational vague descriptions of such a feature including the a way to automatically prioritize specific items.
+  ~ Responding about the concrete LSP feature, participants listed variables, record fields, types, functions and function argument candiates as possible completion candidates.
+    Moreover, some suggested the inclusion of the completion context to guide priorization as well as auto-generated contract and function skeletons.
+
+Jump-to-Definition
+   ~ was named significantly often.
+   ~ The specific feature survey revealed the exoected behaviour in more detail;
+     In general, the participants expect the feature to work with any kind of reference, i.e., variable usages, function calls, function arguments and type annotations.
+     Record fields ale equally desired although the ability to define self referencing records was pointed out as a challenge.
+     However, subjects expect statically defined nested fields to point to the correct respective definition.
 
 ### Quantitative
