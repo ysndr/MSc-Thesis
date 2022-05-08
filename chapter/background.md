@@ -10,6 +10,14 @@ The second part is dedicated to Nickel, elaborating on the context and use-cases
 
 ## Language Server Protocol
 
+The Language Server Protocol is a JSON-RPC based communication specification comprising an LSP client (i.e. editors) and server (also called language server for simplicity).
+The LSP decouples the development of clients and servers, allowing developers to focus on either side.
+The LSP defines several capabilities -- standardized functions which are remotely executed by the language server.
+LSP Clients are often implemented as editor extensions facilitating abstraction libraries helping with the interaction with the protocol and editor interface.
+Language Servers analyse source code sent by the client and may implement any number of 
+capabilities relevant to the language.
+Since the LSP is both language and editor independent, the same server implementation can serve all LSP compliant clients eliminating the need to redundantly recreate the same code intelligence for every editor.
+  
 Language servers are today's standard of integrating support for programming languages into code editors.
 Initially developed by Microsoft for the use with their polyglot editor Visual Studio Code^[https://code.visualstudio.com/] before being released to the public in 2016 by Microsoft, RedHat and Codeenvy, the LSP decouples language analysis and provision of IDE-like features from the editor.
 Developed under open source license on GitHub^[https://github.com/microsoft/language-server-protocol/], the protocol allows developers of editors and languages to work independently on the support for new languages.
