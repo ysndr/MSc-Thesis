@@ -206,4 +206,29 @@ Beyond features that were explicitly targeted by this work, syntax highlighting 
 Error tolerance was detailed as the capability of the language server to continue processing and delivering analysis of invalid sources restricting the computation to the correct parts of the program.
 
 
+#### Experience Survey
+
+##### Results
+
+The above figures show the turnout of three items from the survey for each of the relevant features.
+Neither of them shows clear trends with positive and negative reults distributed almost evenly between positive and negative sentiments.
+
+The first graph ([@fig:results-comp-experience]) represents the participants' general experience with the relevant features.
+It shows that each feature worked without issue in at least one instance.
+Yet, three features were reported to not work at all and no feature  left the users unsurprised.
+Participant found the hover and diagnostic features to behave particularly unexpectedly. 
+
+For the second item of each feature, the survey asked the subject to rate the quality of the language server based on their expectations.
+Apart from the same three occasions in which a feature did not work for one participant, the majority of responses show that NLS met its user's expectations at least partially.
+The results are however highly polarized as the Jump-to-Definition and Hover features demonstrate; Each received equally many votes for being inapt and fully able to hold up to the participants expectations at the same time.
+Other features were left with with a nuniformly distributed assessment (e.g. Completion and Find-References).
+The clearest result was achieved by the Diagnostics feature, which received a slight but uncontended positive sentiment.
+
+Asking about the general satisfaction with each feature, results in the same mixed answers.
+While a slight majority of responses falls into the upper half of the possible spectrum, two features (of the three that have previously been reported without function) were given the lowest possible rating.
+
+##### Comments
+
+
+
 ### Quantitative
