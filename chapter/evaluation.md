@@ -61,7 +61,7 @@ Usability proves hard to quantify, as it is tightly connected to subjective perc
 The structure of the survey is guided by two additional objectives, endorsing the separation of individual features.
 On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
 This data is important for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) and a generic basis for other projects. 
-On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:implementation), the implementation of this central structure is an essential consideration.```
+On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:implementation), the implementation of this central structure is an essential consideration.
 The survey should therefore also uncover apparent problems with this architecture.
 This entails the use of language abstractions (cf. [@sec:linearization]) and the integration of Nickel core functions such as the type checking procedure.
 
@@ -69,15 +69,20 @@ The quantitative study in contrast focuses on measurable performance.
 Similarly to the survey-based evaluation, the quantitative study should reveal insight for different features and tasks separately.
 The focus lies on uncovering potential spikes in latencies, and making empirical observations about the influence of Nickel file sizes.
 
-### Qualitative
+### Qualitative Evaluation Setup
 
 Inspired by the work of Leimeister in [@leimeister], a survey aims to provide practical insights into the experience of future users.
 In order to get a clear picture of the users' needs and expectations independently of the experience, the survey consists of two parts -- a pre-evaluation and final survey.
 
 #### Pre-Evaluation
 
+
+##### Expected features
+
 The pre-evaluation introduced participants in brief to the concept of language servers and asked them to write down their understanding of several LSP features.
 In total, six features were surveyed corresponding to the implementation as outlined in [@sec:capability], namely:
+
+##### Expected behaviour
 
 1. Code completion
    Suggest identifiers, methods or values at the cursor position.
@@ -122,9 +127,10 @@ The items were implemented as linear scales that span from "Very slow response" 
 The second category asked participants to explicitly reflect on their expectations:
 
 > ◯ The feature did not work at all\
-> ◯ The feature behaved unexpectedly\
-> ◯ The feature did not work in all cases\
-> ◯ The feature worked without an issue
+> ◯ Little of my expectation was met\
+> ◯ Some expectations were mete, enough to keep using NLS for this feature\
+> ◯ Most to all expectations were met
+> ◯ NLS surpassed the expectations
 > ◯ Other
 
 In the final part participants could elaborate on their answers.
