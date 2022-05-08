@@ -198,4 +198,12 @@ Jump-to-Definition
      Record fields ale equally desired although the ability to define self referencing records was pointed out as a challenge.
      However, subjects expect statically defined nested fields to point to the correct respective definition.
 
+The other two features Find-References and Workspace/Document Symbols on the contrary were sparingly commented.
+Participands noted that they did not use these capabilities.
+The features were however well understood, as shown by some responsess naming very particular distinctions of symbol types.
+
+Beyond features that were explicitly targeted by this work, syntax highlighting and code formatting as well as error tolerance were named as further desireable features of a language server.
+Error tolerance was detailed as the capability of the language server to continue processing and delivering analysis of invalid sources restricting the computation to the correct parts of the program.
+
+
 ### Quantitative
