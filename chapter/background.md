@@ -131,7 +131,8 @@ For a given symbol definition, for example variable, function, function argument
 
 *RPC Method: [`workspace_symbol`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_symbol) or [`textDocument_documentSymbol`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol)*
 
-The symbols capability allows language servers to expose a list if symbols declared in the open document or workspace.
+The symbols capability is defined as both a "Language Feature" and "Workspace Feature" which mainly differ in the scope they represent.
+The `textDocument/documentSymbol` command lists symbols solely found in the currently opened file, while the `workspace/symbol` takes into account all files in the opened set of folders.
 The granularity of the listed items is determined by the server.
 Symbols are associated with a span of source code of the symbol itself and its context, for example a function name representing the function body. 
 Moreover, the server can annotate the items with additional attributes such as symbol kinds, tags and even child-references (e.g. for the fields of a record or class).
