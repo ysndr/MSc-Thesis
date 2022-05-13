@@ -187,12 +187,12 @@ Code Completion
   ~ was equally name in all but one response.
     It was described as a way to chose from possible completion candidates 
     of options.
-    The anwers included aspirational vague descriptions of such a feature including the a way to automatically prioritize specific items.
+    The answers included aspirational vague descriptions of such a feature including the a way to automatically prioritize specific items.
   ~ Responding about the concrete LSP feature, participants listed variables, record fields, types, functions and function argument candiates as possible completion candidates.
     Moreover, some suggested the inclusion of the completion context to guide priorization as well as auto-generated contract and function skeletons.
 
 Jump-to-Definition
-   ~ was named significantly often.
+   ~ was included in three fourth of responses.
    ~ The specific feature survey revealed the exoected behaviour in more detail;
      In general, the participants expect the feature to work with any kind of reference, i.e., variable usages, function calls, function arguments and type annotations.
      Record fields ale equally desired although the ability to define self referencing records was pointed out as a challenge.
@@ -218,7 +218,8 @@ It shows that each feature worked without issue in at least one instance.
 Yet, three features were reported to not work at all and no feature  left the users unsurprised.
 Participant found the hover and diagnostic features to behave particularly unexpectedly. 
 
-For the second item of each feature, the survey asked the subject to rate the quality of the language server based on their expectations.
+For the second item of each feature, the survey asked the subjects to rate the quality of the language server based on their expectations.
+[Figure @fig:results-comp-expectations] summarizes the results.
 Apart from the same three occasions in which a feature did not work for one participant, the majority of responses show that NLS met its user's expectations at least partially.
 The results are however highly polarized as the Jump-to-Definition and Hover features demonstrate; Each received equally many votes for being inapt and fully able to hold up to the participants expectations at the same time.
 Other features were left with with a nuniformly distributed assessment (e.g. Completion and Find-References).
