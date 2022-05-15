@@ -208,6 +208,15 @@ Error tolerance was detailed as the capability of the language server to continu
 
 #### Experience Survey
 
+:::{#fig:expe-survey-results}
+
+![Number of votes for each experience category and feature](log_analysis/figures/results-comp-experience.svg){#fig:results-comp-experience width=50%}
+![Number of votes for each satisfaction category and feature](log_analysis/figures/results-comp-satisfaction.svg){#fig:results-comp-satisfaction width=50%}
+
+![Number of votes for each expectations category and feature](log_analysis/figures/results-comp-expectations.svg){#fig:results-comp-expectations width=75%}
+
+User responses regarding general experience, fulfillment of expectations and general satisfaction.
+:::
 
 The above figures show the turnout of three items from the survey for each of the relevant features.
 Neither of them shows clear trends with positive and negative reults distributed almost evenly between positive and negative sentiments.
