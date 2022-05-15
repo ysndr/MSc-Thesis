@@ -264,3 +264,71 @@ Others pointed out that documentation was slow to resolve while the server itsel
 
 
 ### Quantitative
+
+The quantitative evaluation focuses on the performance characteristics of NLS.
+As described in [@sec:eval-methods-quantitative] a tracing module was embedded into the NLS binary which recorded the runtime together with the size of the analyzed data, i.e., the number of linearization items [@sec:linearization] or size of the analyzed file.
+
+#### Dataset
+
+The underlying data set consists of 16760 unique trace records.
+Since the `textDocument/didOpen` method is executed on every update of the source, it greatly outnumbers the other events.
+The final distrubution of methods traced is:
+
+| Method                    | count | linearization based |
+| ------------------------- | ----- | ------------------- |
+| `textDocument/didOpen`    | 13436 | no                  |
+| `textDocument/completion` | 2981  | yes                 |
+| `textDocument/hover`      | 227   | yes                 |
+| `textDocument/definition` | 68    | yes                 |
+| `textDocument/references` | 49    | yes                 |
+
+: Number of traces per LSP method
+
+![Distribution of linearization based LSP requests](log_analysis/figures/distribution-by-lin-size.svg){#fig:distribution-by-lin-size}
+
+![Distribution of file analysis requests](log_analysis/figures/distribution-by-file-size.svg){#fig:distribution-by-file-size}
+
+
+[Figures @fig:distribution-by-lin-size, @fig:distribution-by-file-size] break up these numbers by method and linearization size or file size respectively.
+The first figure shows a peak number of traces for completion events between $0$ to $1$ linearization items as well as local maxima around a linearization size of $20$ to $30$ and sustained usage of completion requests in files of $90-400$ items.
+Similar to the completion requests (but well outnumbered in total counts), other other methods were used mainly in the range between $200$ and $400$ linearization items.
+A visualization of the Empirical Cumulative Distribution Function (ECFD) ([@fig:ecdf-distribution-by-lin-size] corroborates these findings.
+Moreover, it shows an additional hike of Jump-to-Definition and Find-References calls at on files with around 1500 linearization items.
+The findings for linearization based methods line up with those depicting linearization events (identified as `textDocument/didOpen`).
+An initial peak referring to rather small input files between $300$ and $400$ bytes in size is followed by a sustained usage of the NLS on files with $2$ to $6$ kiloBytes of content topped with a final application on $35$ kiloByte large data.
+
+#### Big Picture Latencies
+
+![Statistical runtime of different LSP methods](log_analysis/figures/boxplot-latencies.svg){#fig:boxplot-latencies width=\textwidth}
+
+Comparing the runtime of the individual methods alone in [@fig:boxplot-latencies], reveals three key findings.
+First, all linearization based methods exhibit a sub-millisecond latency in at least $95%$ of all invocations and median response times fo less than $100µs$
+However, maximum latencies of completion invocations reached tens of milliseconds and in one recorded case about $300ms$.
+Finally, document linearization as associated with the `textDocument/didOpen` method shows a great range with maxima of $1.5 * 10^5µs$ (about $2.5$ minutes) and a generally greater inter quartile range spanning more than tow orders of magnitude.
+
+#### Special cases
+
+<div id="fig:correlation-linearization-methods">
+![Runtime latencies of completion requests at differnet linearization sizes](log_analysis/figures/correlation-completions.svg){#fig:correlation-completions width=50%}
+![Runtime latencies of hover requests at differnet linearization sizes](log_analysis/figures/correlation-hovers.svg){#fig:correlation-hovers width=50%}
+
+![Runtime latencies of find-references requests at differnet linearization sizes](log_analysis/figures/correlation-references.svg){#fig:correlation-references width=50%}
+![Runtime latencies of jump-to-definition requests at differnet linearization sizes](log_analysis/figures/correlation-definitions.svg){#fig:correlation-definition width=50%}
+
+
+Runtime latencies of different linearization based methods 
+</div>
+
+![Runtime latencies of file update handlings at different file sizes](log_analysis/figures/correlation-opens.svg){#fig:correlation-opens width=50%}
+
+
+Setting the runtime of completion requests in relation to the linearization size on which the command was performed, shows no clear correlation between the dimensions.
+In fact the correlation coefficient between both variables measures $0.01617$ on a linear scale and $0.26$ on a $\log_{10}\log_{10}$ scale.
+Instead, vertical colums stand out in the correlation graph [@fig:correlation-completions].
+The height of these colums varies from one to five orders of magnitude.
+Considering the item density shows that especially high columns form whenever the server receives a higher load of requests.
+Additionally color coding the individual requests by time reveils that the trace points of each column were recorded at a short time interval.
+Applying the same analysis to the other methods in [@fig:correlation-hovers;@fig:correlation-references; @fig:correlation-definitions] returns similar findings, although the columns remain more compact in comparison to the Completions method.
+In case of the `didOpen` method columns are clearly visible too.
+However, here they appear leaning as suggesting an increase in computation time as the file grows during a single series of changes to the file.
+
