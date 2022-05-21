@@ -238,33 +238,33 @@ The clearest result was achieved by the Diagnostics feature, which received a sl
 Asking about the general satisfaction with each feature, results in the same mixed answers as seen in [@fig:results-comp-satisfaction].
 While a slight majority of responses falls into the upper half of the possible spectrum, two features (of the three that have previously been reported without function) were given the lowest possible rating.
 
-#### Hover
+##### Hover {#sec:hover@res}
 
 As apparent in ([@fig:results-comp-experience]), most participants experienced unexpected behavior by the LSP when using the hover functionality.
 In the comments, extraneous debug output and incorrect displaying of the output by the IDE are pointed out as concrete examples.
 However one answer suggests that the feature was working with "usually useful" output.
 
-#### Diagnostics
+##### Diagnostics {#sec:diagnostics@res}
 
 While the diagnostics shown by NLS appear to behave unexpectedly for some users in [@fig:results-comp-experience], all participants marked that those did not deter from keep using NLS for it as displayed in [@fig:results-comp-expectations].
 In the comments some respondents praised the "quick" and "direct feedback" as well as the visual error markers pointing to the exact locations of possible issues while others mentioned "unclear messages".
 However, it was pointed out that it contracts were not checked by the Language Server.
 Moreover, a performance issue was brought up noting that in some situations NLS "queues a lot of work and does not respond".
 
-#### Code Completion
+##### Code Completion {#sec:code-completion@res}
 
 Comments about the Code Completion feature were unanimously critical.
 Some participants noted the little gained "value over the token based completion built into the editor" while others specifically pointed at "missing type information and docs".
 Additionally record field completion was found to be missing, yet highly valued.
 
-#### Document Navigation
+##### Document Navigation {#sec:document-navigation@res}
 
 Results and comments about the Go-To-Definition and Find-Referneces were polarized.
-On the one hand users reported no issues while others experienced unexpected behavior or were unabke to use the feature at all (cf. [@fig:results-comp-experience]).
+On the one hand users reported no issues while others experienced unexpected behavior or were unable to use the feature at all (cf. [@fig:results-comp-experience]).
 Similarly, the comments on one hand suggest that "the feature works well and is quick" while on the other mention inconsistencies and unavailabilty.
 More practically, cross file navigation was named an important missing feature.
 
-#### General Performance
+##### General Performance {#sec:general-performance@res}
 
 The responses to this item suggest that NLS' perfomance is largely dependent on its usage.
 On unmodified files queries were reported to evaluate "instantaniously".
