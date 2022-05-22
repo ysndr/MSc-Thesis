@@ -54,7 +54,7 @@ Responding to the first point (c.f. [#sec:expected-features]), the participants 
 Type-information on hover
   ~ was named almost uniformly.
     The participants showed a special interest in this feature describing specific behaviours.
-    The desired information exposed by this feature are value types including applied contracts and documentation as well as function signatures.
+    The desired information exposed by this feature are types (including applied contracts) and documentation as well as function signatures.
   ~ When asked about the hover LSP method in particular, participants name additional function documentation, default values and the visualization of scopes as an additional features.
 
 Diagnostics
@@ -63,10 +63,10 @@ Diagnostics
     In either case the diagnostic should be produced "On-the-fly" while typing or upon saving the document.
   ~ When asked about the diagnostics feature of language servers directly, the answers corroborated these initial opinions.
     In addition some participants named code linting, i.e. warnings about code style, unused variables, deprecated code and undocumented elements, as well as structural analysis hints as possible features.
-    Structural analysis was imagined to go that far as being able to "suggest how to fix" mistakes in the code.
+    Structural analysis was imagined to go as far as being able to "suggest how to fix" mistakes in the code.
 
 Code Completion
-  ~ was equally name in all but one response.
+  ~ was equally named in all but one response.
     It was described as a way to chose from possible completion candidates 
     of options.
     The answers included aspirational vague descriptions of such a feature including the a way to automatically prioritize specific items.
@@ -75,7 +75,7 @@ Code Completion
 
 Jump-to-Definition
    ~ was included in three fourth of responses.
-   ~ The specific feature survey revealed the exoected behaviour in more detail;
+   ~
      In general, the participants expect the feature to work with any kind of reference, i.e., variable usages, function calls, function arguments and type annotations.
      Record fields ale equally desired although the ability to define self referencing records was pointed out as a challenge.
      However, subjects expect statically defined nested fields to point to the correct respective definition.
@@ -114,10 +114,10 @@ For the second item of each feature, the survey asked the subjects to rate the q
 [Figure @fig:results-comp-expectations] summarizes the results.
 Apart from the same three occasions in which a feature did not work for one participant, the majority of responses show that NLS met its user's expectations at least partially.
 The results are however highly polarized as the Jump-to-Definition and Hover features demonstrate; Each received equally many votes for being inapt and fully able to hold up to the participants expectations at the same time.
-Other features were left with with a nuniformly distributed assessment (e.g. Completion and Find-References).
+Other features were left with with an uniformly distributed assessment (e.g. Completion and Find-References).
 The clearest result was achieved by the Diagnostics feature, which received a slight but uncontended positive sentiment.
 
-Asking about the general satisfaction with each feature, results in the same mixed answers as seen in [@fig:results-comp-satisfaction].
+Asking about the general satisfaction with each feature results in the same mixed answers as seen in [@fig:results-comp-satisfaction].
 While a slight majority of responses falls into the upper half of the possible spectrum, two features (of the three that have previously been reported without function) were given the lowest possible rating.
 
 ##### Hover {#sec:hover@res}
@@ -183,8 +183,10 @@ The final distrubution of methods traced is:
 
 
 [Figures @fig:distribution-by-lin-size, @fig:distribution-by-file-size] break up these numbers by method and linearization size or file size respectively.
+The linearization is the linear representation of an enriched AST.
+It is explained in great detail in [@sec:linearization]. 
 The first figure shows a peak number of traces for completion events between $0$ to $1$ linearization items as well as local maxima around a linearization size of $20$ to $30$ and sustained usage of completion requests in files of $90-400$ items.
-Similar to the completion requests (but well outnumbered in total counts), other other methods were used mainly in the range between $200$ and $400$ linearization items.
+Similar to the completion requests (but well outnumbered in total counts), other methods were used mainly in the range between $200$ and $400$ linearization items.
 A visualization of the Empirical Cumulative Distribution Function (ECFD) ([@fig:ecdf-distribution-by-lin-size] corroborates these findings.
 Moreover, it shows an additional hike of Jump-to-Definition and Find-References calls at on files with around 1500 linearization items.
 The findings for linearization based methods line up with those depicting linearization events (identified as `textDocument/didOpen`).
@@ -215,11 +217,11 @@ Runtime latencies of different linearization based methods
 ![Runtime latencies of file update handlings at different file sizes](log_analysis/figures/correlation-opens.svg){#fig:correlation-opens width=50%}
 
 
-Setting the runtime of completion requests in relation to the linearization size on which the command was performed, shows no clear correlation between the dimensions.
+Setting the runtime of completion requests in relation to the linearization size on which the command was performed shows no clear correlation between the dimensions.
 In fact the correlation coefficient between both variables measures $0.01617$ on a linear scale and $0.26$ on a $\log_{10}\log_{10}$ scale.
 Instead, vertical colums stand out in the correlation graph [@fig:correlation-completions].
 The height of these colums varies from one to five orders of magnitude.
-Considering the item density shows that especially high columns form whenever the server receives a higher load of requests.
+The item density shows that especially high columns form whenever the server receives a higher load of requests.
 Additionally color coding the individual requests by time reveils that the trace points of each column were recorded at a short time interval.
 Applying the same analysis to the other methods in [@fig:correlation-hovers;@fig:correlation-references; @fig:correlation-definitions] returns similar findings, although the columns remain more compact in comparison to the Completions method.
 In case of the `didOpen` method columns are clearly visible too [#fig:correlation-opens].
