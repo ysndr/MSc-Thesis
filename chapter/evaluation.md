@@ -340,6 +340,6 @@ The height of these colums varies from one to five orders of magnitude.
 Considering the item density shows that especially high columns form whenever the server receives a higher load of requests.
 Additionally color coding the individual requests by time reveils that the trace points of each column were recorded at a short time interval.
 Applying the same analysis to the other methods in [@fig:correlation-hovers;@fig:correlation-references; @fig:correlation-definitions] returns similar findings, although the columns remain more compact in comparison to the Completions method.
-In case of the `didOpen` method columns are clearly visible too.
+In case of the `didOpen` method columns are clearly visible too [#fig:correlation-opens].
 However, here they appear leaning as suggesting an increase in computation time as the file grows during a single series of changes to the file.
 
