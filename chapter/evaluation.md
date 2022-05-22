@@ -301,6 +301,8 @@ The final distrubution of methods traced is:
 
 
 [Figures @fig:distribution-by-lin-size, @fig:distribution-by-file-size] break up these numbers by method and linearization size or file size respectively.
+The linearization is the linear representation of an enriched AST.
+It is explained in great detail in [@sec:linearization]. 
 The first figure shows a peak number of traces for completion events between $0$ to $1$ linearization items as well as local maxima around a linearization size of $20$ to $30$ and sustained usage of completion requests in files of $90-400$ items.
 Similar to the completion requests (but well outnumbered in total counts), other methods were used mainly in the range between $200$ and $400$ linearization items.
 A visualization of the Empirical Cumulative Distribution Function (ECFD) ([@fig:ecdf-distribution-by-lin-size] corroborates these findings.
