@@ -13,10 +13,10 @@ Projects that extend and supplement or take inspiration from the LSP, are portra
 ### IDEs
 
 Before the invention of the Language Server Protocol, language intelligence used to be provided by an IDE.
-Yet, the range of officially supported languages remained relatively small [@AllDeveloperTools].
+Yet, the range of officially supported languages remained relatively small^[https://www.jetbrains.com/products/].
 While integration for popular languages was common, top-tier support for less popular ones was all but guaranteed and relied mainly on community efforts.
-In fact Eclipse[@desrivieresEclipsePlatformIntegrating2004,@guindonReleaseEclipseIDE], IntelliJ[@IntelliJIDEACapable], and Visual Studio[@VisualStudioIDE], to this day the most popular IDE choices, focus on a narrow subset of languages, historically Java and .NET.
-Additional languages can be integrated by custom (third-party) plugins or derivatives of the base platform ([@ListEclipsebasedSoftware2021,@AllDeveloperTools]).
+In fact Eclipse[@desrivieresEclipsePlatformIntegrating2004,@burnetteEclipseIDEPocket2005], IntelliJ[@IntelliJIDEACapable], and Visual Studio[@VisualStudioIDE], to this day the most popular IDE choices, focus on a narrow subset of languages, historically Java and .NET.
+Additional languages can be integrated by custom (third-party) plugins or derivatives of the base platform.
 Due to the technical implications, plugins are generally not compatible between different platforms.
 Many less popular languages therefore saw redundant implementations of what is essentially the same.
 For Haskell separate efforts produced an eclipse based IDE [@EclipseFP], as well as independent IntelliJ plugins [@IntelliJHaskellIntelliJIDEs,@HaskForceHaskellPlugin].
@@ -157,11 +157,11 @@ For these kinds of analysis, rust-analyzer falls back to calls to the rust build
 ##### Frege LSP
 
 While the previous projects integrated into the compiler pipeline and processed the results separately, other approaches explored the possiblity to shift the entire analysis to existing modules.
-A good example for this method is given by the Frege language [@WhatFrege2022].
+A good example for this method is given by the Frege language^[https://github.com/Frege/frege].
 
 Frege as introduced in [@wechsungFregeProgrammingLanguage] is a JVM based functional language with a Haskell-like syntax.
 It features lazy evaluation, user-definable operators, type classes and integration with Java.  
-While previously providing an eclipse plugin [@WhatFregIDE2020], the tooling efforts have since been put towards an LSP implementation.
+While previously providing an eclipse plugin^[https://github.com/Frege/eclipse-plugin], the tooling efforts have since been put towards an LSP implementation.
 The initial development of this language server has been reported on in [@gagnauxDevelopingMinimalLanguage].
 The author shows though multiple increments how they utilized the JVM to implement a language server in Java for the (JVM based) Frege language.
 In the final proof-of-concept, the authors build a minimal language server through the use of Frege's existing REPL and interpreter modules.
@@ -216,7 +216,7 @@ Non-technical users could easily be overwhelmed by a complex software like Eclip
 For those non-technical users, a light editor would be more adapted, or even one that is directly integrated into their business application.
 The authors of [@bunderMultieditorSupportDomainSpecific2020] present how Xtext can generate an LSP server for a custom DSL, providing multi-editor support.
 The authors especially mention the Monaco Editor [@MonacoEditor2022], a reusable HTML component for code editing using web technologies.
-It is used in products like VSCode [@VisualStudioCode], Theia [@vogeleclipse] and other web accessible code editors.
+It is used in products like VSCode^[https://github.com/Frege/eclipse-plugin], Theia [@vogeleclipse] and other web accessible code editors.
 The Monaco Editor supports the LSP as a client (that is, on the editor side).
 Such LSP-capable web editors make integrating DSLs directly into web applications easier than ever before.
 
@@ -249,7 +249,7 @@ In particular Mészáros et al. describe different shortcomings of the LSP :
 
 Missing features of the protocol such as the ones pointed out by Mészáros et al. appear frequently, especially in complex language servers or ones that implement more than basic code processing.
 
-The rust-analyzer defines almost thirty non-standard commands [@UserManual], to enable different language specific actions.
+The rust-analyzer defines almost thirty non-standard commands^[https://rust-analyzer.github.io/manual.html#features], to enable different language specific actions.
 
 Taking the idea of the CodeCompass project further, Rodriguez-Echeverria et al. propose a generic extension of the LSP for graphical modeling [@rodriguez-echeverriaLanguageServerProtocol2018].
 Their approach is based on a generic intermediate representation of graphs which can be generated by language servers and turned into a graphical representation by the client implementation.
