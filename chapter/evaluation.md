@@ -172,6 +172,8 @@ The final distrubution of methods traced is:
 | `textDocument/hover`      | 227   | yes                 |
 | `textDocument/definition` | 68    | yes                 |
 | `textDocument/references` | 49    | yes                 |
+| ------------------------- | ----- | ------------------- |
+| total                     | 16761 |                     |
 
 : Number of traces per LSP method
 
