@@ -8,9 +8,9 @@ The following section displays particular instances of different approaches towa
 Projects that extend and supplement or take inspiration from the LSP, are portrayed in the final section.
 
 
-## Previous Approaches
+## IDE Support
 
-### IDEs
+### Native and Plugin Systems
 
 Before the invention of the Language Server Protocol, language intelligence used to be provided by an IDE.
 Yet, the range of officially supported languages remained relatively small^[https://www.jetbrains.com/products/].
@@ -44,7 +44,7 @@ The Rust and Haskell integrations for instance contain at best only a fraction o
 Naturally, development efforts at this size tend to gravitate around the most promising solution, stifling the progress on competing platforms.
 Editor-specific approaches also tend to lock-in programmers into a specific platform for its language support regardless of their personal preference.
 
-### IDE Abstraction
+### Server Client Abstractions
 
 #### Monto
 
@@ -107,9 +107,6 @@ Microsoft's official website lists 172 implementations of the LSP[@LanguageServe
 An in-depth survey of these is outside the scope of this work.
 Yet, a few implementations stand out due to their sophisticate architecture, features, popularity or closeness to the presented work.
 
-
-### Representative LSP Projects
-
 Since the number of implementations of the LSP is continuously growing, this thesis will present a selected set of notable projects.
 The presented projects exemplify different approaches with respect to reusing and interacting with the existing language implementation of the targeted language.
 In particular, the following five approaches are discussed:
@@ -126,25 +123,25 @@ In particular, the following five approaches are discussed:
 5. An approach to generate language servers from domain specific language specifications[@bunderMultieditorSupportDomainSpecific2020].
 
 
-#### Integrating with the Compiler/Runtime
+### Integrating with the Compiler/Runtime
 
 Today LSP-based solutions serve as the go-to method to implement language analysis tools.
 Emerging languages in particular take advantage from the flexibility and reach of the LSP.
 Especially the freedom of choice for the implementing language, is facilitated by multiple languages by integrating modules of the original compiler or runtime into the language server.
 
-##### HLS
+#### HLS
 
 For instance the Haskell language server facilitates a plugin system that allows it to integrate with existing tooling projects^[https://hackage.haskell.org/packages/browse?terms=hls].
 Plugins provide capabilities for linting, formatting, documentation and other code actions across multiple compiler versions.
 This architecture allows writing an LSP in a modular fashion in the targeted language at the expense of requiring HSL to use the same compiler version in use by the IDE and its plugins.
 This is to ensure API compatibility between plugins and the compiler.
 
-##### Ocaml LSP
+#### Ocaml LSP
 
-Similarly, the Ocaml language service builds on top of existing infrastructure by relying on the Merlin project introduced in [@sec:Merlin].
+Similarly, the Ocaml language service builds on top of existing infrastructure by relying on the Merlin project introduced in[@sec:Merlin].
 Here, the advantages of employing existing language components have been explored even before the LSP.
 
-##### Rust-Analyzer
+#### Rust-Analyzer
 
 The rust-analyzer[@therustprogramminglanguageBringingGreatIDE] takes an intermediate approach.
 It does not reuse or modify the existing compiler, but instead implements analysis functionality based on low level components.
@@ -154,7 +151,7 @@ Due to the complexity of the language, LSP requests are processed lazily, with s
 While many parts of the language have been reimplemented with a language-server-context in mind, the analyzer did not however implement detailed linting or the rust-specific borrow checker.
 For these kinds of analysis, rust-analyzer falls back to calls to the rust build system.
 
-##### Frege LSP
+#### Frege LSP
 
 While the previous projects integrated into the compiler pipeline and processed the results separately, other approaches explored the possiblity to shift the entire analysis to existing modules.
 A good example for this method is given by the Frege language^[https://github.com/Frege/frege].
@@ -184,7 +181,7 @@ However, since rnix does not implement an interpreter for nix expressions the rn
 While language servers are commonly used to provide code based analytics and actions such as refactoring, it also proved suitable as a general interface for existing external tools.
 These programs may provide common LSP features or be used to extend past the LSP.
 
-##### CPAchecker
+#### CPAchecker
 
 The work presented by Leimeister in[@leimeisterLanguageServerIDE2020] exemplifies how LSP functionality can be provided by external tools.
 The server can be used to automatically perform software verification in the background using CPAchecker[@beyerCPAcheckerToolConfigurable2009].
@@ -194,7 +191,7 @@ Additionally, it is possible to execute resource intensive verification through 
 The LSP server supports both modes of operation.
 While it can interface directly with the Java modules provided by the CPAchecker library, it is also  able to utilize an HTTP-API provided by a server instance of the verifier.
 
-##### CodeCompass
+#### CodeCompass
 
 Similar to the work by Leimeister (c.f[@sec:cpachecker]), in[@meszarosDeliveringComprehensionFeatures2019] Mészáros et al. present a proof of concept leveraging the LSP to integrate (stand-alone) code comprehension tools with the LSP compliant VSCode editor.
 Code comprehension tools support the work with complex code bases by "providing various textual information, visualization views and source code metrics on multiple abstraction levels".
@@ -205,7 +202,7 @@ In their paper they specifically describe the generation of source code diagrams
 Commands issued by the client are processed by a CodeCompass plugin which acts as an LSP server and interacts with CodeCompass through internal APIs.
 
 
-#### Language Servers generation for Domain Specific Languages
+### Language Servers generation for Domain Specific Languages
 
 Bünder and Kuchen[@bunderMultieditorSupportDomainSpecific2020] highlight the importance of the LSP in the area of Domain Specific Languages (DSL).
 Compared to general purpose languages, DSLs often targets both technical and non-technical users.
