@@ -26,7 +26,7 @@ If supported by both server and client, the LSP now supports more than 24 langua
 ### JSON-RPC
 
 the LSP uses JSON-RPC to communicate between a language server and a client.
-JSON-RPC (v2) [@json-rpc] is a JSON based lightweight transport independent remote procedure call [@rpc] protocol. 
+JSON-RPC (v2) [@JSONRPCSpecification2013] is a JSON based lightweight transport independent remote procedure call [@birrellImplementingRemoteProcedure1984] protocol. 
 
 RPC is a paradigm that allows clients to virtually invoke a method at a connected process.
 The caller sends a well-defined message to a connected process which executes a procedure associated with the request, taking into account any transmitted arguments.
@@ -54,7 +54,7 @@ The LSP builds on top of the JSON-RPC protocol described in the previous subsect
 It defines four sets of commands: 
 
 The largest group are commands that are relevant in the scope of the currently opened document, e.g. autocompletion, refactoring, inline values and more.
-In total the LSP defines 33 [@lsp] of such "Language Features".
+In total the LSP defines 33 [@microsoftLanguageServerProtocol2020] of such "Language Features".
 Editors will notify the server about file changes and client side interaction, i.e., opening, closing and renaming files using "Document Synchronization" methods.
 While most commands are defined in the document scope, i.e., a single actively edited file, the LSP allows clients to communicate changes to files in the opened project.
 This so called workspace comprises on or more root folders managed by the editor and all files contained in them.
@@ -66,7 +66,7 @@ For instance, servers may instruct clients to show notifications and progress ba
 
 ### Description of Key Methods
 
-the authors of langserver.org [@langserver] identified six "key methods" of the LSP.
+the authors of langserver.org [@sourcegraphLangserverOrg] identified six "key methods" of the LSP.
 The methods represent a fundamental set of capabilities, specifically:
 
 
@@ -176,21 +176,21 @@ This is essential in complex languages that would otherwise perform a great amou
 ## Text based Configuration
 
 
-Configuration languages such as XML[@xml], JSON[@json], or YAML[@yaml] are textual representations of structural data used to configure parameters of a system or application.
+Configuration languages such as XML[@w3cExtensibleMarkupLanguage2008], JSON[@charollaisECMA4042ndEdition2017], or YAML[@YAMLAinMarkup] are textual representations of structural data used to configure parameters of a system or application.
 The objective of such languages is to be machine readable, yet also intuitive enough for humans to write.
 
 ### Common Configuration Languages
 
 #### JSON
 
-According to the JSON specification [@json] the language was designed as a data-interchange format that is easy to read and write both for humans and machines.
+According to the JSON specification [@charollaisECMA4042ndEdition2017] the language was designed as a data-interchange format that is easy to read and write both for humans and machines.
 Since it is a subset of the JavaScript language, its use is particularly straight forward and wide spread in JavaScript based environments such as web applications.
 But due to its simplicity implementations are available and for all major languages,  motivating its use for configuration files.
 
 #### YAML
 
 YAML is another popular language, mainly used for configuration files.
-According to its goals [@yaml-goals] it should be human readable and independent of the programming language making use of it.
+According to its goals it should be human readable and independent of the programming language making use of it.
 It should be efficient to parse and easy to implement while being expressive and extensible.
 
 YAML also features a very flexible syntax which allows for many alternative ways to declare semantically equivalent data.
@@ -205,7 +205,7 @@ Yet, YAML is compatible with JSON since as subset of its specification defines a
 ### Applications of Configuration Languages 
 
 Applications of configuration languages are ubiquitous especially in the vicinity of software development.
-While XML and JSON are often used by package managers [@npm, @maven, @composer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@travis, @ghaction, @gitlab-runner] or machine configurations in software defined networks such as Kubernetes[@kubernetes] and docker compose [@docker-compose].
+While XML and JSON are often used by package managers [@Pereira2016 , @Varanasi2014, @adermannComposer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@Vemula2017;@hellerAutomatingWorkflowsGitHub2021;@arefeen2019continuous] or machine configurations in software defined networks such as Kubernetes[@burnsKubernetesRunning] and docker compose [@Jangla2018].
 
 Such formats are used due to some significant advantages compared to other binary formats such as databases.
 Most strikingly, the textual representation allows inspection of a configuration without the need of a separate tool but a text editor.
@@ -214,18 +214,18 @@ Linux service configurations (files in `/etc`) and MacOS `*.plist` files which c
 
 ### Configuration *Programming* Languages
 
-Despite the above-mentioned formats being simple to parse and widely supported [@json], their static nature rules out any dynamic content such as generated fields, functions and the possibility to factorize and reuse.
-Moreover, content validation has to be developed separately, which led to the design of complementary schema specification languages like json-schema [@json-schema] or XSD [@xsd].
+Despite the above-mentioned formats being simple to parse and widely supported [@charollaisECMA4042ndEdition2017], their static nature rules out any dynamic content such as generated fields, functions and the possibility to factorize and reuse.
+Moreover, content validation has to be developed separately, which led to the design of complementary schema specification languages like json-schema [@pezoaFoundationsJSONSchema2016] or XSD [@w3cW3CXMLSchema].
 
 These qualities require an evaluated language.
 In fact, some applications make heavy use of config files written in the native programming language which gives them access to language features and existing analysis tools.
-Examples include JavaScript frameworks such as webpack [@webpack] or Vue [@vue] and python package management using `setuptools`[@setuptools].
+Examples include JavaScript frameworks such as webpack [@Webpacka] or Vue [@macraeVueJsRunning2018] and python package management using `setuptools`[@martelliDistributingExtensionsPrograms].
 Yet, the versatility of general purpose languages poses new security risks if used in this context as configurations could now contain malicious code requiring additional verification.
 Beyond this, not all languages serve as a configuration language, e.g. compiled languages. 
 
 However, for particularly complex applications, both advanced features and language independence are desirable.
 Alternatively to using high level general purpose languages, this demand is addressed by domain specific languages (DSL).
-Dhall [@dhall], Cue [@cue] or jsonnet [@jsonnet] are such domain specific languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
+Dhall [@DhallConfigurationLanguage], Cue [@CUE] or jsonnet [@JsonnetDataTemplating] are such domain specific languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
 Most of these languages are used as a templating system which means a configuration file in a more portable format is generated using an evaluation of the more expressive configuration source.
 The added expressiveness manifests in the ability to evaluate expression and the availability of imports, variables and functions.
 These features allow to refactor and simplify repetitive configuration files.
@@ -234,7 +234,7 @@ These features allow to refactor and simplify repetitive configuration files.
 
 The shift to an increasing application of IaaS^[Infrastructure as a Service] products started the desire for declarative machine configuration in a bid to simplify the setup and reproducibility of such systems.
 This configuration based setup of infrastructure is commonly summarized as infrastructure as code or IaC.
-As the name suggests, IaC puts cloud configuration closer to the domain of software development [@IaC-book].
+As the name suggests, IaC puts cloud configuration closer to the domain of software development [@beyerSiteReliabilityWorkbook2018].
 
 In principle, IaaS solutions offer great flexibility with regard to resource provision (computing, storage, load balancing, etc.), network setup and scaling of (virtual) servers.
 However, since the primary interaction with those systems is imperative and based on command line or web interfaces, maintaining entire applications' or company's environments manually comes with obvious drawbacks.
@@ -250,9 +250,9 @@ As an additional benefit, configuration code is subject to common software engin
 It can be statically analyzed, refactored and version controlled to ensure reproducibility.
 A subset of IaC is focused on largely declarative configuration based on configuration files that are interpreted and "converted" into imperative platform dependent instructions. 
 
-As a notable instance, the Nix[@nix] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@nixops].
+As a notable instance, the Nix[@Nix2022;dolstraNixSafePolicyFree2004] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@NixOps2022].
 
-To get an idea of how this would look like, [@lst:nixops-rproxy] shows the configuration for a deployment of the Git based wiki server Gollum[@gollum] behind a nginx reverse proxy on the AWS network.
+To get an idea of how this would look like, [@lst:nixops-rproxy] shows the configuration for a deployment of the Git based wiki server Gollum[@GollumGitbasedWiki2022] behind a nginx reverse proxy on the AWS network.
 Although this example targets AWS, Nix itself is platform-agnostic and NixOps supports different backends through various plugins.
 Configurations like this are abstractions over many manual steps and the Nix language employed in this example allows for even higher level turing-complete interaction with configurations.
 
@@ -307,20 +307,20 @@ Configurations like this are abstractions over many manual steps and the Nix lan
 }
 ```
 
-Similarly, tools like Terraform[@terraform], or Chef[@chef] use their own DSLs and integrate with most major cloud providers.
+Similarly, tools like Terraform[@jamesturnbullTerraformBook2016], or Chef[@taylorLearningChef2014] use their own DSLs and integrate with most major cloud providers.
 The popularity of these products^[https://trends.google.com/trends/explore?date=2012-01-01%202022-01-01&q=%2Fg%2F11g6bg27fp,CloudFormation], beyond all, highlights the importance of expressive configuration formats and their industry value.
 
 Finally, descriptive data formats for cloud configurations allow mitigating security risks through static analysis.
-Yet, as recently as spring 2020 and still more than a year later dossiers of Palo Alto Networks' security department Unit 42 [@pa2020H1, ps2021H2] show that a majority of public projects uses insecure configurations.
-This suggests that techniques[@aws-cloud-formation-security-tests] to automatically check templates are not actively employed, and points out the importance of evaluated configuration languages which can implement passive approaches to security analysis.
+Yet, as recently as Fall 2021 dossiers of Palo Alto Networks' security department Unit 42 [@unit42HighlightsUnit422021] show that a majority of public projects use insecure configurations.
+This suggests that techniques[@tzvetkovIntegratingAWSCloudFormation2020] to automatically check templates are not actively employed, and points out the importance of evaluated configuration languages which can implement passive approaches to security analysis.
 
 ### Nickel
 
-The Nickel[@nickel] language is a configuration programming language as defined in  [@sec:configuration-programming-languages] with the aims of providing composable, verifiable and validatable configuration files.
+The Nickel[@Nickel2022] language is a configuration programming language as defined in  [@sec:configuration-programming-languages] with the aims of providing composable, verifiable and validatable configuration files.
 Nickel implements a pure functional language with JSON-like data types and turing-complete lambda calculus.
-The language draws inspiration from existing projects such as Cue [@cue], Dhall [@Dhall] and most importantly Nix [@nix].
+The language draws inspiration from existing projects such as Cue [@CUE], Dhall [@DhallConfigurationLanguage] and most importantly Nix [@Nix2022].
 However, Nickel sets itself apart from the existing projects by combining and advancing their strengths.
-The language addresses concerns drawn from the experiences with Nix which employs a sophisticated modules system [@nixos-modules] to provide type-safe, composed (system) configuration files.
+The language addresses concerns drawn from the experiences with Nix which employs a sophisticated modules system to provide type-safe, composed (system) configuration files.
 Nickel implements gradual type annotations, with runtime checked contracts to ensure even complex configurations remain correct.
 Additionally, considering record merging on a language level facilitates modularization and composition of configurations.
 
@@ -562,7 +562,7 @@ enableGollum & setGollumPort
 
 However, if both operands contain a field with the same name that is not a mergeable record, the operation fails since both fields have the same priority making it impossible for Nickel to chose one over the other (cf. [@lst:nickel-merging-failing-names])
 Specifying one of the fields as a `default` value allows a single override (cf. [@lst:nickel-merging-default] ).
-In future versions of Nickel ([@nickel-rfc-0001]) it will be possible to specify priorities in even greater detail and provide custom merge functions. 
+In future versions of Nickel ([@hamdaouiRFC001Overriding2022]) it will be possible to specify priorities in even greater detail and provide custom merge functions. 
 
 ```{.nickel #lst:nickel-merging-failing-names caption="Failing merge of two records with common field"}
 { port = 40273 } & { port = 8080 }
@@ -586,7 +586,7 @@ error: non mergeable terms
 
 #### Gradual typing
 
-The typing approach followed by Nickel was introduce by Siek and Taha [@gradual-typing] as a combination of static and dynamic typing.
+The typing approach followed by Nickel was introduce by Siek and Taha [@siekGradualTypingFunctional2006] as a combination of static and dynamic typing.
 The choice between both type systems is traditionally debated since either approach imposes specific drawbacks.
 Static typing lacks the flexibility given by fully dynamic systems yet allow to ensure greater correctness by enforcing value domains.
 While dynamic typing is often used for prototyping, once an application or schema stabilizes, the ability to validate data schemas is usually preferred, often requiring the switch to a different statically typed language.
@@ -595,7 +595,7 @@ Gradual typing allows introducing statically checked types to a program while al
 
 #### Contracts
 
-In addition to a static type-system Nickel integrates a contract system akin what is described in [@cant-be-blamed].
+In addition to a static type-system Nickel integrates a contract system akin what is described in [@wadlerWellTypedProgramsCan2009].
 First introduced by Findler and Felleisen, contracts allow the creation of runtime-checked subtypes.
 Unlike types, contracts check an annotated value using arbitrary functions that either pass or *blame* the input.
 Contracts act like assertions that are automatically checked when a value is used or passed to annotated functions.
@@ -668,6 +668,3 @@ note:
 23 |      | #Even
    |        ^^^^^ bound here
 ```
-
-
-
