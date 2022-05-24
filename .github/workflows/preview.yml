@@ -121,6 +121,7 @@ jobs:
             echo "Non chapter branch, not committing proposed changes"
           fi
           [[ ${{ steps.config.outputs.mode }} == "chapter" ]] && git checkout stash -- ${{ env.PREVIEW_PATH }}
+          exit 0
 
       - name: Compile document preview
         if: steps.config.outputs.mode == 'chapter'
