@@ -104,6 +104,21 @@ jobs:
         with:
           name: chapter-plain
           path: ${{ steps.config.outputs.pdf_output }}
+          
+      # other changes to the document not on chapter branches will be deployed as preview
+      # of the full document
+      - name: Compile PR preview
+        if: steps.config.outputs.mode == 'all'
+        run: |
+          nix develop --impure -c compile-thesis ${{ steps.config.outputs.pdf_output }}
+          nix develop --impure -c compile-toc ${{steps.config.outputs.input}}.toc.pdf
+
+      - name: Archive PR preview
+        if: steps.config.outputs.mode == 'all'
+        uses: actions/upload-artifact@v2
+        with:
+          name: preview-complete
+          path: ${{ steps.config.outputs.pdf_output }}
 
       - name: Prepare preview branch
         run: |
@@ -135,21 +150,6 @@ jobs:
         with:
           name: preview-complete
           path: ${{env.PREVIEW_PATH}}/latest.pdf
-
-      # other changes to the document not on chapter branches will be deployed as preview
-      # of the full document
-      - name: Compile PR preview
-        if: steps.config.outputs.mode == 'all'
-        run: |
-          nix develop --impure -c compile-thesis ${{ steps.config.outputs.pdf_output }}
-          nix develop --impure -c compile-toc ${{steps.config.outputs.input}}.toc.pdf
-
-      - name: Archive PR preview
-        if: steps.config.outputs.mode == 'all'
-        uses: actions/upload-artifact@v2
-        with:
-          name: preview-complete
-          path: ${{ steps.config.outputs.pdf_output }}
 
       - name: Commit and push to branch
         run: |
