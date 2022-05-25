@@ -1,4 +1,6 @@
 ---
+documentclass: scrreport
+
 autoSectionLabels: true
 header-includes:
   - \AtBeginDocument{\floatplacement{codelisting}{H}}
@@ -6,4 +8,13 @@ header-includes:
     \usepackage{lscape}
     \newcommand{\bls}{\begin{landscape}}
     \newcommand{\els}{\end{landscape}}
+
+title: Design and Implementation of the Language Server Protocol for the Nickel Language
+subtitle: Prestudy
+author:
+  - "**Student:** Yannik Sander"
+  - "**Supervisor (Tweag):** Yann Hamdaoui"
+  - "**Supervisor (KTH):** Martin Monperrus"
+  - "**Examiner:** Roberto Guanciale"
+date: \today
 ...
