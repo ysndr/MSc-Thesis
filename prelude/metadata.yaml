@@ -1,5 +1,19 @@
 ---
+documentclass: scrreport
+
 autoSectionLabels: true
 header-includes:
   - \AtBeginDocument{\floatplacement{codelisting}{H}}
+
+title: Implementing a language Server for the Nickel Language
+subtitle: Prestudy
+
+author:
+  - "**Student:** Yannik Sander"
+  - "**Supervisor (Tweag):** Yann Hamdaoui"
+  - "**Supervisor (KTH):** Martin Monperrus"
+  - "**Examiner:** Roberto Guanciale"
+
+date: \today
+
 ...
