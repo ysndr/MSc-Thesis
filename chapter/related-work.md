@@ -74,7 +74,7 @@ The communication is based on the ZeroMQ[@hintjensZeroMQMessagingMany2013] techn
 
 #### Merlin
 
-The Merlin tool[@bourOCamlMerlin,@bourMerlinLanguageServer2018a] is in many ways a more specific version of the idea presented in Monto.
+The Merlin tool[@ocamlcommunityOCamlMerlin,@bourMerlinLanguageServer2018a] is in many ways a more specific version of the idea presented in Monto.
 Merlin is a language server for the Ocaml language, yet predates the Language Server Protocol.
 
 The authors of Merlin postulate that implementing "tooling support traditionally provided by IDEs" for "niche languages" demands to "share the language-awareness logic" between implementations.
@@ -101,8 +101,8 @@ In fact, Merlin explicitly specializes in a single language and provides a compl
 The LSP project was announced[@vaughan-nicholsOpensourceMicrosoftProtocol,@CodenvyMicrosoftRed2016] in 2016 to establish a common protocol over which language tooling could communicate with editors.
 The LSP helps the language intelligence tooling to fully concentrate on source analysis instead of integration with specific editors by building custom GUI elements and being restricted to editors extension interface.
 
-At the time of writing the LSP is available in version `3.16[@LanguageServerProtocol2020].
-Microsoft's official website lists 172 implementations of the LSP[@LanguageServers] for an equally impressive number of languages.
+At the time of writing the LSP is available in version `3.16[@microsoftLanguageServerProtocol2020].
+Microsoft's official website lists 172 implementations of the LSP[@microsoftLanguageServers] for an equally impressive number of languages.
 
 An in-depth survey of these is outside the scope of this work.
 Yet, a few implementations stand out due to their sophisticate architecture, features, popularity or closeness to the presented work.
@@ -187,7 +187,7 @@ The work presented by Leimeister in[@leimeisterLanguageServerIDE2020] exemplifie
 The server can be used to automatically perform software verification in the background using CPAchecker[@beyerCPAcheckerToolConfigurable2009].
 CPAchecker is a platform for automatic and extensible software verification.
 The program is written in Java and provides a command line interface to be run locally.
-Additionally, it is possible to execute resource intensive verification through an HTTP-API on more powerful machines or clusters[@beyerSoftwareVerificationGoogle2014,@CPAcheckerVerifierCloud].
+Additionally, it is possible to execute resource intensive verification through an HTTP-API on more powerful machines or clusters[@beyerSoftwareVerificationGoogle2014,@beyerCPAcheckerVerifierCloud].
 The LSP server supports both modes of operation.
 While it can interface directly with the Java modules provided by the CPAchecker library, it is also  able to utilize an HTTP-API provided by a server instance of the verifier.
 
@@ -334,7 +334,7 @@ Since its introduction the Language Server Protocol has become a standard format
 Meanwhile, as hinted in[@sec:lsp-extensions], the LSP is not able to fully satisfy every use-case sparking the development of various LSP extensions.
 Following the success of language servers, similar advances have been made in other parts of the software development process.
 
-For instance, many Java build tools expose software build abstractions through the Build Server Protocol[@BuildServerProtocol], allowing IDEs to integrate more languages more easily by leveraging the same principle as the LSP.
+For instance, many Java build tools expose software build abstractions through the Build Server Protocol[@scalacenterBuildServerProtocol], allowing IDEs to integrate more languages more easily by leveraging the same principle as the LSP.
 The BSP provides abstractions over dependencies, build targets, compilation and running of projects.
 While the LSP provides `run` or `test` integration for selected languages through Code Lenses, this is not part of the intended responsibilities of the protocol.
 In contrast, those tasks are explicitly targeted by the BSP.
