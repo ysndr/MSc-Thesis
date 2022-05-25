@@ -129,7 +129,7 @@ For a given symbol definition, for example variable, function, function argument
 
 #### Workspace/Document symbols
 
-*RPC Method: [`workspace_symbol`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_symbol) or [`textDocument_documentSymbol`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol)*
+*RPC Method: [`textDocument/workspaceSymbol`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_symbol) or [`textDocument/documentSymbol`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol)*
 
 The symbols capability is defined as both a "Language Feature" and "Workspace Feature" which mainly differ in the scope they represent.
 The `textDocument/documentSymbol` command lists symbols solely found in the currently opened file, while the `workspace/symbol` takes into account all files in the opened set of folders.
@@ -201,7 +201,8 @@ For example boolean expressions can be written as any of the following values:
 > `on|On|ON|off|Off|OFF`
 
 Since YAML facilitates indentation as a way to express objects or lists and does not require object keys (and even strings) to be quoted, it is considered easier to write than JSON at the expense of parser complexity.
-Yet, YAML is compatible with JSON since as subset of its specification defines a JSON equivalent syntax that permits the use of `{..}` and `[..]` to describe objects and lists respectively. 
+Yet, YAML is compatible with JSON since as subset of its specification defines a JSON equivalent syntax that permits the use of `{..}` and `[..]` to describe objects and lists respectively.
+
 ### Applications of Configuration Languages 
 
 Applications of configuration languages are ubiquitous especially in the vicinity of software development.
@@ -212,7 +213,7 @@ Most strikingly, the textual representation allows inspection of a configuration
 Moreover textual configuration can be version controlled using VCS software like Git which allows changes to be tracked over time.
 Linux service configurations (files in `/etc`) and MacOS `*.plist` files which can be serialized as XML or a JSON-like format, especially exemplify that claim.
 
-### Configuration *Programming* Languages
+### Configuration Programming Languages
 
 Despite the above-mentioned formats being simple to parse and widely supported [@charollaisECMA4042ndEdition2017], their static nature rules out any dynamic content such as generated fields, functions and the possibility to factorize and reuse.
 Moreover, content validation has to be developed separately, which led to the design of complementary schema specification languages like json-schema [@pezoaFoundationsJSONSchema2016] or XSD [@w3cW3CXMLSchema].
