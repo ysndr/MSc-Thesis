@@ -51,12 +51,10 @@ This section discusses the issues raised during the survey and uncovered through
 In the first part the individual findings are summarized and if possible grouped by their common cause.
 The second part addresses each cause and connects it to the relevant architecture decisions, while explaining the reason for it and discussing possible alternatives.
 
-### Discovered issues
-
 During the qualitative evaluation several features did not meet the expectations of the users.
 The survey also hinted performance issues that were solidified by the results of the quantitative analysis.
 
-#### Diagnostics
+### Diagnostics
 
 First, participants criticized [@sec:diagnostics@res] the diagnostics feature for some unhelpful error messages and specifically for not taking into account Nickel's hallmark feature, Contracts [@sec:Contracts].
 While Contracts are a central element of Nickel and relied upon to validate data, the language server does not actually warn about contract breaches.
@@ -75,7 +73,7 @@ Code Lenses are displayed by editors as annotations allowing the user to manuall
 
 <!-- TODO: Add nickels implementation detail of inlining contracts into the executed ast in background? -->
 
-#### Cross File Navigation
+### Cross File Navigation
 
 In both cases `Jump-To-Definition` and `Find-References` surveyed users requested support for cross file navigation.
 In particular, finding the definition of a record field of an imported record should navigate the editor to the respective file as symbolized in [@lst:imported-record-access].
@@ -102,7 +100,7 @@ NLS does ingest the the AST without resolving these imports manually.
 The type checking module underlying NLS still recurses into imported files to check their formal correctness.
 As a result it would be possible for a NLS to resolve these links as an additional step in the post processing by either inserting atificial linearization items [@sec:linearization] or merging both files linearization entirely.
 
-#### Autocompletion
+### Autocompletion
 
 Another criticized element of NLS was the autocompletion feature.
 In the survey, participants mentioned the lack of additional information and distinction of elements as well as NLS inability to provide completion for record fields.
@@ -114,7 +112,7 @@ NLS just lists all identifiers of declarations that are in scope at the given po
 Notably, it does not take the preceding element into account as additional context.
 To support completing records, the server must first be aware of separating tokens such as the period symbol, check whether the current position is part of a token that is preceded by a separator and finally resolve the parent element to a record.
 
-#### Performance
+### Performance
 
 In the experience survey performance was pointed out as a potential issue.
 Especially in connection with the diagnostics and hover feature.
@@ -159,4 +157,3 @@ Update requests incrementally change an internal model which other requests use 
 The entire model is based on in incremental computation model which automates memoization of requests.
 This method however requires rust-analyzer to reimplement core components of rust to support incrementality.
 Therefore if one accepts to implement an incremental model of Nickel (including parsing and type checking) to enable incremental analysis in NLS, switching to a lazy model is a viable method to reduce the processing time of change notifications and shorten the queue.
-
