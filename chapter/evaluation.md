@@ -29,7 +29,7 @@ Performance
 Answering the questions above, this chapter consists of two main sections.
 The first section [@sec:methods] introduces methods employed for the evaluation.
 In particular, it details the survey ([@sec:qualitative]) which was conducted with the intent to gain qualitative opinions by users, as well as the tracing mechanism ([@sec:quantitative]) for factual quantitative insights.
-[Section @sec:results] summarises the results of these methods.
+[Section @sec:results] summarizes the results of these methods.
 
 ## Evaluation Considerations
 
@@ -162,7 +162,7 @@ For instance, the LSP does not specify the frequency at which file changes are d
 
 
 As outlined in [#sec:qualitative-study-outline], the qualitative study consists of two parts conducted before and after an introductory workshop.
-The pre-evaluation aimed to catch the users's expected features and behaviours, while the main survey asked users about their concrete experiences with the NLS.
+The pre-evaluation aimed to catch the users' expected features and behaviors, while the main survey asked users about their concrete experiences with the NLS.
 
 #### Pre-Evaluation
 
@@ -209,7 +209,7 @@ For invalid files a language server should still be able to provide its function
 
 #### Experience Survey
 
-This sub-section describes the results from the filled after the Nickel workshop inwhich participants were asked to install the LSP to support their experience.
+This subsection describes the results from the filled after the Nickel workshop in which participants were asked to install the LSP to support their experience.
 It first looks at a summary of the data, before diving into the comments for each directly addressed feature.
 
 :::{#fig:expe-survey-results}
@@ -217,7 +217,7 @@ It first looks at a summary of the data, before diving into the comments for eac
 ![Number of votes for each experience category and feature](log_analysis/figures/results-comp-experience.svg){#fig:results-comp-experience width=50%}
 ![Number of votes for each satisfaction category and feature](log_analysis/figures/results-comp-satisfaction.svg){#fig:results-comp-satisfaction width=50%}
 
-![Number of votes for each expectations category and feature](log_analysis/figures/results-comp-expectations.svg){#fig:results-comp-expectations width=75%}
+![Number of votes for each expectation category and feature](log_analysis/figures/results-comp-expectations.svg){#fig:results-comp-expectations width=75%}
 
 User responses regarding general experience, fulfillment of expectations and general satisfaction.
 :::
@@ -237,8 +237,8 @@ In the second item of each feature, the survey asked the subjects to rate the qu
 In agreement with the first graph, one user was unable to use at least three features entirely.
 The majority of responses show that NLS met its user's expectations at least partially.
 The results are however highly polarized as the Jump-to-Definition and Hover features demonstrate; Each received equally many votes for being inapt and fully able to hold up to the participants expectations at the same time.
-Other features were left with with an uniformly distributed assessment (e.g. Completion and Find-References).
-The clearest result was achieved by the Diagnostics feature, which received a slight but uncontended positive sentiment.
+Other features were left with a uniformly distributed assessment (e.g. Completion and Find-References).
+The clearest result was achieved by the Diagnostics feature, which received a slight but uncontested positive sentiment.
 
 The general satisfaction with each feature was answered in the same polarized manner as seen in [@fig:results-comp-satisfaction].
 A slight majority of responses falls into the upper half of the possible spectrum.
@@ -248,11 +248,11 @@ Two of the features reported without function in the preceding questions were gi
 
 As apparent in ([@fig:results-comp-experience]), most participants experienced unexpected behavior by the LSP when using the hover functionality.
 In the comments, extraneous debug output and incorrect displaying of the output by the IDE are pointed out as concrete examples.
-However one answer suggests that the feature was working with "usually useful" output.
+However, one answer suggests that the feature was working with "usually useful" output.
 
 ##### Diagnostics {#sec:diagnostics@res}
 
-While the diagnostics shown by NLS appear to behave unexpectedly for some users in [@fig:results-comp-experience], no user felt detered from keep using NLS for it as displayed in [@fig:results-comp-expectations].
+While the diagnostics shown by NLS appear to behave unexpectedly for some users in [@fig:results-comp-experience], no user felt deterred from keep using NLS for it as displayed in [@fig:results-comp-expectations].
 Some respondents praised the "quick" and "direct feedback" as well as the visual error markers pointing to the exact locations of possible issues.
 On the contrary, others mentioned "unclear messages" and pointed out that contracts were not checked by the Language Server.
 Moreover, a performance issue was brought up noting that in some situations NLS "queues a lot of work and does not respond".
@@ -267,13 +267,13 @@ Additionally, record field completion was found to be missing, albeit highly val
 
 Results and comments about the Go-To-Definition and Find-References were polarized.
 Some users experienced unexpected behavior or were unable to use the feature at all (cf. [@fig:results-comp-experience]).
-Similarly, the comments on one hand suggest that "the feature works well and is quick" while on the other mention inconsistencies and unavailabilty.
-More soecifically, cross file navigation was named an important missing feature.
+Similarly, the comments on one hand suggest that "the feature works well and is quick" while on the other mention inconsistencies and unavailability.
+More specifically, cross file navigation was named an important missing feature.
 
 ##### General Performance {#sec:general-performance@res}
 
-The responses to the general performance suggest that NLS' perfomance is largely dependent on its usage.
-On unmodified files queries were reported to evaluate "instantaniously".
+The responses to the general performance suggest that NLS' performance is largely dependent on its usage.
+On unmodified files queries were reported to evaluate "instantaneously".
 However, modifying files caused that "modifications stack up" causing high CPU usage and generally "very slow" responses.
 Besides, documentation was reported as slow to resolve while the server itself was "generally fast".
 
@@ -282,12 +282,13 @@ Besides, documentation was reported as slow to resolve while the server itself w
 
 The quantitative evaluation focuses on the performance characteristics of NLS.
 As described in [@sec:eval-methods-quantitative] a tracing module was embedded into the NLS binary which recorded the runtime together with the size of the analyzed data, i.e., the number of linearization items [@sec:linearization] or size of the analyzed file.
+This section will first introduce the dataset before looking at the general performance and finally looking into particular cases.
 
 #### Dataset
 
 The underlying data set consists of 16760 unique trace records.
 Since the `textDocument/didOpen` method is executed on every update of the source, it greatly outnumbers the other events.
-The final distrubution of methods traced is:
+The final distribution of methods traced is:
 
 | Method                    | count | linearization based |
 | ------------------------- | ----- | ------------------- |
@@ -311,19 +312,19 @@ The linearization is the linear representation of an enriched AST.
 It is explained in great detail in [@sec:linearization]. 
 The first figure shows a peak number of traces for completion events between $0$ to $1$ linearization items as well as local maxima around a linearization size of $20$ to $30$ and sustained usage of completion requests in files of $90-400$ items.
 Similar to the completion requests (but well outnumbered in total counts), other methods were used mainly in the range between $200$ and $400$ linearization items.
-A visualization of the Empirical Cumulative Distribution Function (ECFD) ([@fig:ecdf-distribution-by-lin-size] corroborates these findings.
+A visualization of the Empirical Cumulative Distribution Function (ECFD) [@fig:ecdf-distribution-by-lin-size] corroborates these findings.
 Moreover, it shows an additional hike of Jump-to-Definition and Find-References calls at on files with around 1500 linearization items.
 The findings for linearization based methods line up with those depicting linearization events (identified as `textDocument/didOpen`).
-An initial peak referring to rather small input files between $300$ and $400$ bytes in size is followed by a sustained usage of the NLS on files with $2$ to $6$ kiloBytes of content topped with a final application on $35$ kiloByte large data.
+An initial peak referring to rather small input files between $300$ and $400$ bytes in size is followed by a sustained usage of the NLS on files with $2$ to $6$ kilobytes of content topped with a final application on $35$ kilobyte large data.
 
 #### Big Picture Latencies
 
 ![Statistical runtime of different LSP methods](log_analysis/figures/boxplot-latencies.svg){#fig:boxplot-latencies width=\textwidth}
 
 Comparing the runtime of the individual methods alone in [@fig:boxplot-latencies], reveals three key findings.
-First, all linearization based methods exhibit a sub-millisecond latency in at least $95%$ of all invocations and median response times fo less than $100µs$
+First, all linearization based methods exhibit a sub-millisecond latency in at least $95%$ of all invocations and median response times of less than $100µs$
 However, maximum latencies of completion invocations reached tens of milliseconds and in one recorded case about $300ms$.
-Finally, document linearization as associated with the `textDocument/didOpen` method shows a great range with maxima of $1.5 * 10^5µs$ (about $2.5$ minutes) and a generally greater inter quartile range spanning more than tow orders of magnitude.
+Finally, document linearization as associated with the `textDocument/didOpen` method shows a great range with maxima of $1.5 * 10^5µs$ (about $2.5$ minutes) and a generally greater interquartile range spanning more than two orders of magnitude.
 
 #### Special cases
 
@@ -343,10 +344,10 @@ Runtime latencies of different linearization based methods
 
 Setting the runtime of completion requests in relation to the linearization size on which the command was performed shows no clear correlation between the dimensions.
 In fact the correlation coefficient between both variables measures $0.01617$ on a linear scale and $0.26$ on a $\log_{10}\log_{10}$ scale.
-Instead, vertical colums stand out in the correlation graph [@fig:correlation-completions].
-The height of these colums varies from one to five orders of magnitude.
+Instead, vertical columns stand out in the correlation graph [@fig:correlation-completions].
+The height of these columns varies from one to five orders of magnitude.
 The item density shows that especially high columns form whenever the server receives a higher load of requests.
-Additionally color coding the individual requests by time reveils that the trace points of each column were recorded at a short time interval.
+Additionally, color coding the individual requests by time reveals that the trace points of each column were recorded at a short time interval.
 Applying the same analysis to the other methods in [@fig:correlation-hovers;@fig:correlation-references; @fig:correlation-definitions] returns similar findings, although the columns remain more compact in comparison to the Completions method.
 In case of the `didOpen` method columns are clearly visible too [#fig:correlation-opens].
 However, here they appear leaning as suggesting an increase in computation time as the file grows during a single series of changes to the file.
