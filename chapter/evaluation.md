@@ -223,24 +223,26 @@ User responses regarding general experience, fulfillment of expectations and gen
 :::
 
 The above figures show the turnout of three items from the survey for each of the relevant features.
-Neither of them shows clear trends with positive and negative reults distributed almost evenly between positive and negative sentiments.
+Neither of them shows clear trends with positive and negative results distributed almost evenly between positive and negative sentiment.
 
 
 The first graph ([@fig:results-comp-experience]) represents the participants' general experience with the relevant features.
 It shows that each feature worked without issue in at least one instance.
-Yet, three features were reported to not work at all and no feature  left the users unsurprised.
-Participant found the hover and diagnostic features to behave particularly unexpectedly. 
+Yet, three features were reported to not work at all and no feature left the users unsurprised.
+Users found the hover and diagnostic features to behave particularly unexpectedly. 
 
 
-For the second item of each feature, the survey asked the subjects to rate the quality of the language server based on their expectations.
+In the second item of each feature, the survey asked the subjects to rate the quality of the language server based on their expectations.
 [Figure @fig:results-comp-expectations] summarizes the results.
-Apart from the same three occasions in which a feature did not work for one participant, the majority of responses show that NLS met its user's expectations at least partially.
+In agreement with the first graph, one user was unable to use at least three features entirely.
+The majority of responses show that NLS met its user's expectations at least partially.
 The results are however highly polarized as the Jump-to-Definition and Hover features demonstrate; Each received equally many votes for being inapt and fully able to hold up to the participants expectations at the same time.
 Other features were left with with an uniformly distributed assessment (e.g. Completion and Find-References).
 The clearest result was achieved by the Diagnostics feature, which received a slight but uncontended positive sentiment.
 
-Asking about the general satisfaction with each feature results in the same mixed answers as seen in [@fig:results-comp-satisfaction].
-While a slight majority of responses falls into the upper half of the possible spectrum, two features (of the three that have previously been reported without function) were given the lowest possible rating.
+The general satisfaction with each feature was answered in the same polarized manner as seen in [@fig:results-comp-satisfaction].
+A slight majority of responses falls into the upper half of the possible spectrum.
+Two of the features reported without function in the preceding questions were given the lowest possible rating.
 
 ##### Hover {#sec:hover@res}
 
@@ -250,30 +252,30 @@ However one answer suggests that the feature was working with "usually useful" o
 
 ##### Diagnostics {#sec:diagnostics@res}
 
-While the diagnostics shown by NLS appear to behave unexpectedly for some users in [@fig:results-comp-experience], all participants marked that those did not deter from keep using NLS for it as displayed in [@fig:results-comp-expectations].
-In the comments some respondents praised the "quick" and "direct feedback" as well as the visual error markers pointing to the exact locations of possible issues while others mentioned "unclear messages".
-However, it was pointed out that it contracts were not checked by the Language Server.
+While the diagnostics shown by NLS appear to behave unexpectedly for some users in [@fig:results-comp-experience], no user felt detered from keep using NLS for it as displayed in [@fig:results-comp-expectations].
+Some respondents praised the "quick" and "direct feedback" as well as the visual error markers pointing to the exact locations of possible issues.
+On the contrary, others mentioned "unclear messages" and pointed out that contracts were not checked by the Language Server.
 Moreover, a performance issue was brought up noting that in some situations NLS "queues a lot of work and does not respond".
 
 ##### Code Completion {#sec:code-completion@res}
 
 Comments about the Code Completion feature were unanimously critical.
 Some participants noted the little gained "value over the token based completion built into the editor" while others specifically pointed at "missing type information and docs".
-Additionally record field completion was found to be missing, yet highly valued.
+Additionally, record field completion was found to be missing, albeit highly valued.
 
 ##### Document Navigation {#sec:document-navigation@res}
 
-Results and comments about the Go-To-Definition and Find-Referneces were polarized.
-On the one hand users reported no issues while others experienced unexpected behavior or were unable to use the feature at all (cf. [@fig:results-comp-experience]).
+Results and comments about the Go-To-Definition and Find-References were polarized.
+Some users experienced unexpected behavior or were unable to use the feature at all (cf. [@fig:results-comp-experience]).
 Similarly, the comments on one hand suggest that "the feature works well and is quick" while on the other mention inconsistencies and unavailabilty.
-More practically, cross file navigation was named an important missing feature.
+More soecifically, cross file navigation was named an important missing feature.
 
 ##### General Performance {#sec:general-performance@res}
 
-The responses to this item suggest that NLS' perfomance is largely dependent on its usage.
+The responses to the general performance suggest that NLS' perfomance is largely dependent on its usage.
 On unmodified files queries were reported to evaluate "instantaniously".
-However modifying files caused that "modifications stack up" causing high CPU usage and generally "very slow" responses.
-Others pointed out that documentation was slow to resolve while the server itself was "generally fast".
+However, modifying files caused that "modifications stack up" causing high CPU usage and generally "very slow" responses.
+Besides, documentation was reported as slow to resolve while the server itself was "generally fast".
 
 
 ### Quantitative
