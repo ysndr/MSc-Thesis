@@ -154,8 +154,6 @@ Consequently, the performance evaluation is independent of the LSP client (edito
 Unlike differences in hardware which affects all operations similarly, LSP clients may implement different behaviors that may cause editor-specific biases.
 For instance, the LSP does not specify the frequency at which file changes are detected, which in turn can lead to request queuing depending on the editor used.
 
-## Process
-
 ## Results
 
 ### Qualitative
