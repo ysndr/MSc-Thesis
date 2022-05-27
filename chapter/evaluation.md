@@ -158,7 +158,6 @@ For instance, the LSP does not specify the frequency at which file changes are d
 
 ## Results
 
-### Process
 ### Qualitative
 
 
@@ -167,44 +166,46 @@ The pre-evaluation aimed to catch the users's expected features and behaviours, 
 
 #### Pre-Evaluation
 
-Responding to the first point (c.f. [#sec:expected-features]), the participants unanimously identified four of the six foundational language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications, @langserverorg] );
+In the initial free assessment of expected features (c.f. [#sec:expected-features]) the participants unanimously identified four of the six language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications, @langserverorg]): Type-information on hover, automactic diagnostics, Code Completion and Jump-to-Definition.
 
-Type-information on hover
-  ~ was named almost uniformly.
-    The participants showed a special interest in this feature describing specific behaviours.
-    The desired information exposed by this feature are types (including applied contracts) and documentation as well as function signatures.
-  ~ When asked about the hover LSP method in particular, participants name additional function documentation, default values and the visualization of scopes as an additional features.
+The other two features, Find-References and Workspace/Document Symbols on the contrary were sparingly commented.
+Some participands noted that they did not use these capabilities.
 
-Diagnostics
-  ~ are widely understood as an important feature.
-    Participant had very particular opinions about the behavior and detail of diagnostics including error message at the correct location in the code signaling syntax errors or possibly evaluation errors and contract breaches.
-    In either case the diagnostic should be produced "On-the-fly" while typing or upon saving the document.
-  ~ When asked about the diagnostics feature of language servers directly, the answers corroborated these initial opinions.
-    In addition some participants named code linting, i.e. warnings about code style, unused variables, deprecated code and undocumented elements, as well as structural analysis hints as possible features.
-    Structural analysis was imagined to go as far as being able to "suggest how to fix" mistakes in the code.
+##### Type-information on hover
 
-Code Completion
-  ~ was equally named in all but one response.
-    It was described as a way to chose from possible completion candidates 
-    of options.
-    The answers included aspirational vague descriptions of such a feature including the a way to automatically prioritize specific items.
-  ~ Responding about the concrete LSP feature, participants listed variables, record fields, types, functions and function argument candiates as possible completion candidates.
-    Moreover, some suggested the inclusion of the completion context to guide priorization as well as auto-generated contract and function skeletons.
+Hovering is expected to work on values as well as functions.
+For values it is desired to show types including applied contracts, documentation and defautl values.
+On functions it should display the function's signature and documentation. 
+Additionally hovering an item desireably visualizes the scope of the item, i.e. where it is available.
 
-Jump-to-Definition
-   ~ was included in three fourth of responses.
-   ~
-     In general, the participants expect the feature to work with any kind of reference, i.e., variable usages, function calls, function arguments and type annotations.
-     Record fields ale equally desired although the ability to define self referencing records was pointed out as a challenge.
-     However, subjects expect statically defined nested fields to point to the correct respective definition.
 
-The other two features Find-References and Workspace/Document Symbols on the contrary were sparingly commented.
-Participands noted that they did not use these capabilities.
-The features were however well understood, as shown by some responsess naming very particular distinctions of symbol types.
+##### Diagnostics
 
-Beyond features that were explicitly targeted by this work, syntax highlighting and code formatting as well as error tolerance were named as further desireable features of a language server.
-Error tolerance was detailed as the capability of the language server to continue processing and delivering analysis of invalid sources restricting the computation to the correct parts of the program.
+Diagnostics are expected to include error messages signalling syntax and type errors as well as possibly evaluation errors and contract breaches.
+The diagnostics should show up at the correct positions in the code and "suggest how to fix" mistakes.
+Code linting was named as a possible extension to error reporting.
+This would include warnings about bad code style -- formatting, casing conventions -- unused variables, deprecated code and undocumented elements.
+Moreover structural analysis was conceived to allow finding structural issues and help fixing them
+In either case the diagnostic should be produced "On-the-fly" while typing or upon saving the document.
 
+##### Code Completion
+
+Code Completion was described as a way to chose from possible completion candidates of options.
+Completable items can be variable names, record fields, types or functions.
+Besides, Participants conceived filtereing or prioritizing of candidates by type if applied as function arguments.
+Finally, the completion context could guide priorization as well as auto-generation of contract and function skeletons.
+
+##### Jump-to-Definition
+
+Users expect Jump-to-Definition to work with any kind of reference i.e., variable usages, function calls, function arguments and type annotations.
+On records and references to records, users expect statically defined nested fields to point to the correct respective definition.
+The ability to define self referencing records was however conceded to be a challenge.
+
+##### Other features
+
+Syntax highlighting and code formatting as well as error tolerance were named as further desireable features of a language server beyond the explicitly targeted features.
+Error tolerance was detailed as the capability of the language server to continue processing and delivering analysis of invalid sources.
+For invalid files a language server should still be able to provide its functionality for the correct parts of the program.
 
 #### Experience Survey
 
@@ -344,4 +345,3 @@ Additionally color coding the individual requests by time reveils that the trace
 Applying the same analysis to the other methods in [@fig:correlation-hovers;@fig:correlation-references; @fig:correlation-definitions] returns similar findings, although the columns remain more compact in comparison to the Completions method.
 In case of the `didOpen` method columns are clearly visible too [#fig:correlation-opens].
 However, here they appear leaning as suggesting an increase in computation time as the file grows during a single series of changes to the file.
-
