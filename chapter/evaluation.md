@@ -44,11 +44,11 @@ In fact, runtime behavior was a central assumption underlying the server archite
 As discussed in [@sec:considerations] NLS follows an eager, non-incremental processing model.
 While incremental implementations are more efficient, as they do not require entire files to be updated, they require explicit language support, i.e., an incremental parser and analysis.
 Implementing these functions exceeds the scope of this work.
-Choosing a non-incremental model on the other hand allowed to reuse entire modules of the Nickel language.
+Choosing a non-incremental model on the other hand allowed reusing entire modules of the Nickel language.
 The analysis itself can be implemented both in a lazy or eager fashion.
 Lazy analysis implies that the majority of information is resolved only upon request instead of ahead of time.
 That is, an LSP request is delayed by the analysis before a response is made.
-Some lazy models also support memoizing requests, avoiding to recompute previously requested values.
+Some lazy models also support memorizing requests, avoiding recomputing previously requested values.
 However, eager approaches preprocess the file ahead of time and store the analysis results such that requests can be handled mostly through value lookups.
 To fit Nickels' type-checking model and considering that in a typical Nickel workflow, the analysis should still be reasonably efficient, the eager processing model was chosen over a lazy one.
 
@@ -61,7 +61,7 @@ Usability proves hard to quantify, as it is tightly connected to subjective perc
 The structure of the survey is guided by two additional objectives, endorsing the separation of individual features.
 On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
 This data is important for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) and a generic basis for other projects. 
-On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:implementation), the implementation of this central structure is an essential consideration.
+On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:implementation]), the implementation of this central structure is an essential consideration.
 The survey should therefore also uncover apparent problems with this architecture.
 This entails the use of language abstractions (cf. [@sec:linearization]) and the integration of Nickel core functions such as the type checking procedure.
 
@@ -69,7 +69,7 @@ The quantitative study in contrast focuses on measurable performance.
 Similarly to the survey-based evaluation, the quantitative study should reveal insight for different features and tasks separately.
 The focus lies on uncovering potential spikes in latencies, and making empirical observations about the influence of Nickel file sizes.
 
-### Qualitative Evaluation Setup
+### Qualitative Evaluation Setup {#sec:qualitative@methods}
 
 Inspired by the work of Leimeister in [@leimeister], a survey aims to provide practical insights into the experience of future users.
 In order to get a clear picture of the users' needs and expectations independently of the experience, the survey consists of two parts -- a pre-evaluation and final survey.
@@ -82,7 +82,7 @@ In order to get a clear picture of the users' needs and expectations independent
 The pre-evaluation introduced participants in brief to the concept of language servers and asked them to write down their understanding of several LSP features.
 In total, six features were surveyed corresponding to the implementation as outlined in [@sec:capability], namely:
 
-##### Expected behaviour
+##### Expected behavior
 
 1. Code completion
    Suggest identifiers, methods or values at the cursor position.
@@ -128,7 +128,7 @@ The second category asked participants to explicitly reflect on their expectatio
 
 > ◯ The feature did not work at all\
 > ◯ Little of my expectation was met\
-> ◯ Some expectations were mete, enough to keep using NLS for this feature\
+> ◯ Some expectations were met, enough to keep using NLS for this feature\
 > ◯ Most to all expectations were met
 > ◯ NLS surpassed the expectations
 > ◯ Other
@@ -139,14 +139,14 @@ In the final part participants could elaborate on their answers.
 > What is missing, what did they not expect?
 
 
-### Quantitative
+### Quantitative {#sec:quantitative@methods}
 
 To address the performance metrics introduced in [@sec:metrics], a quantitative study was conducted, that analyzes latencies in the LSP-Server-Client communication.
 The study complements the subjective reports collected through the survey (cf. [@sec:experience-survey]).
 The evaluation is possible due to the inclusion of a custom tracing module in NLS.
 The tracing module is used to create a report for every request, containing the processing time and a measure of the size of the analyzed document.
 If enabled, NLS records an incoming request with an identifier and time stamp.
-While processing the request, it adds additional data to the record, i.e., the type of request, the size of the linearization (cf. [@sec:linearization]) or processed file and possible errors that occured during the process.
+While processing the request, it adds additional data to the record, i.e., the type of request, the size of the linearization (cf. [@sec:linearization]) or processed file and possible errors that occurred during the process.
 Once the server replies to a request, it records the total response time and writes the entire record to an external file.
 
 The tracing approach narrows the focus of the performance evaluation to the time spent by NLS.
@@ -166,17 +166,17 @@ The pre-evaluation aimed to catch the users' expected features and behaviors, wh
 
 #### Pre-Evaluation
 
-In the initial free assessment of expected features (c.f. [#sec:expected-features]) the participants unanimously identified four of the six language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications, @langserverorg]): Type-information on hover, automactic diagnostics, Code Completion and Jump-to-Definition.
+In the initial free assessment of expected features (c.f. [#sec:expected-features]) the participants unanimously identified four of the six language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications, @langserverorg]): Type-information on hover, automatic diagnostics, Code Completion and Jump-to-Definition.
 
 The other two features, Find-References and Workspace/Document Symbols on the contrary were sparingly commented.
-Some participands noted that they did not use these capabilities.
+Some participants noted that they did not use these capabilities.
 
 ##### Type-information on hover
 
 Hovering is expected to work on values as well as functions.
-For values it is desired to show types including applied contracts, documentation and defautl values.
-On functions it should display the function's signature and documentation. 
-Additionally hovering an item desireably visualizes the scope of the item, i.e. where it is available.
+For values, it is desired to show types including applied contracts, documentation and default values.
+On functions, it should display the function's signature and documentation. 
+Additionally, hovering an item desirably visualizes the scope of the item, i.e. where it is available.
 
 
 ##### Diagnostics
@@ -185,15 +185,15 @@ Diagnostics are expected to include error messages signalling syntax and type er
 The diagnostics should show up at the correct positions in the code and "suggest how to fix" mistakes.
 Code linting was named as a possible extension to error reporting.
 This would include warnings about bad code style -- formatting, casing conventions -- unused variables, deprecated code and undocumented elements.
-Moreover structural analysis was conceived to allow finding structural issues and help fixing them
+Moreover, structural analysis was conceived to allow finding structural issues and help to fix them
 In either case the diagnostic should be produced "On-the-fly" while typing or upon saving the document.
 
 ##### Code Completion
 
 Code Completion was described as a way to chose from possible completion candidates of options.
 Completable items can be variable names, record fields, types or functions.
-Besides, Participants conceived filtereing or prioritizing of candidates by type if applied as function arguments.
-Finally, the completion context could guide priorization as well as auto-generation of contract and function skeletons.
+Besides, Participants conceived filtering or prioritizing of candidates by type if applied as function arguments.
+Finally, the completion context could guide prioritization as well as auto-generation of contract and function skeletons.
 
 ##### Jump-to-Definition
 
@@ -203,7 +203,7 @@ The ability to define self referencing records was however conceded to be a chal
 
 ##### Other features
 
-Syntax highlighting and code formatting as well as error tolerance were named as further desireable features of a language server beyond the explicitly targeted features.
+Syntax highlighting and code formatting as well as error tolerance were named as further desirable features of a language server beyond the explicitly targeted features.
 Error tolerance was detailed as the capability of the language server to continue processing and delivering analysis of invalid sources.
 For invalid files a language server should still be able to provide its functionality for the correct parts of the program.
 
@@ -329,17 +329,18 @@ Finally, document linearization as associated with the `textDocument/didOpen` me
 #### Special cases
 
 <div id="fig:correlation-linearization-methods">
-![Runtime latencies of completion requests at differnet linearization sizes](log_analysis/figures/correlation-completions.svg){#fig:correlation-completions width=50%}
-![Runtime latencies of hover requests at differnet linearization sizes](log_analysis/figures/correlation-hovers.svg){#fig:correlation-hovers width=50%}
 
-![Runtime latencies of find-references requests at differnet linearization sizes](log_analysis/figures/correlation-references.svg){#fig:correlation-references width=50%}
-![Runtime latencies of jump-to-definition requests at differnet linearization sizes](log_analysis/figures/correlation-definitions.svg){#fig:correlation-definition width=50%}
+![Runtime latencies of completion requests at different linearization sizes](log_analysis/figures/correlation-completions.svg){#fig:correlation-completions width=50%}
+![Runtime latencies of hover requests at different linearization sizes](log_analysis/figures/correlation-hovers.svg){#fig:correlation-hovers width=50%}
+
+![Runtime latencies of find-references requests at different linearization sizes](log_analysis/figures/correlation-references.svg){#fig:correlation-references width=50%}
+![Runtime latencies of jump-to-definition requests at different linearization sizes](log_analysis/figures/correlation-definitions.svg){#fig:correlation-definition width=50%}
 
 
 Runtime latencies of different linearization based methods 
 </div>
 
-![Runtime latencies of file update handlings at different file sizes](log_analysis/figures/correlation-opens.svg){#fig:correlation-opens width=50%}
+![Runtime latencies of file update handling at different file sizes](log_analysis/figures/correlation-opens.svg){#fig:correlation-opens width=50%}
 
 
 Setting the runtime of completion requests in relation to the linearization size on which the command was performed shows no clear correlation between the dimensions.
