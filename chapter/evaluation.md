@@ -366,14 +366,14 @@ The survey also hinted performance issues that were solidified by the results of
 First, participants criticized [@sec:diagnostics@res] the diagnostics feature for some unhelpful error messages and specifically for not taking into account Nickel's hallmark feature, Contracts [@sec:Contracts].
 While Contracts are a central element of Nickel and relied upon to validate data, the language server does not actually warn about contract breaches.
 Yet, while contracts and their application looks similar to types, contracts are a dynamic language element which are dynamically applied during evaluation.
-Therefore it is not possible to determine whether a value conforms to a contract without evaluation of the contract.
+Therefore, it is not possible to determine whether a value conforms to a contract without evaluation of the contract.
 NLS's is integrated with Nickel's type-checking mechanism which precedes evaluation and provides only a static representation of the source code.
 In order to support diagnostics for contracts NLS would need to locally evaluate arbitrary code that makes up contracts.
 However, contracts can not be evaluated entirely locally as they may transitively depend on other contracts.
 This is particularly true for a file's output value.
 Additionally, Contracts can implement any sort of complex computation including unbound recursion.
 Due to these caveats, evaluating contracts as part of NLS's analysis implies the evaluation of the entire code which was considered a possibly significant impact to the performance.
-As layed out above evaluating contracts locally is no option either.
+As laid out above evaluating contracts locally is no option either.
 It is not only challenging to collect the minimal context of the Contract, the context may in fact be the entire program.
 An alternative option is to provide the ability to apply contracts manually using an LSP feature called "Code Lenses".
 Code Lenses are displayed by editors as annotations allowing the user to manually execute an associated action.
@@ -403,9 +403,9 @@ let b = import "./b.ncl" in b.field
 ```
 
 The resolution of imported values is done at evaluation time, the AST therefore only contains nodes representing the concept of an import but no not reference elements of that file. 
-NLS does ingest the the AST without resolving these imports manually.
+NLS does ingest the AST without resolving these imports manually.
 The type checking module underlying NLS still recurses into imported files to check their formal correctness.
-As a result it would be possible for a NLS to resolve these links as an additional step in the post processing by either inserting atificial linearization items [@sec:linearization] or merging both files linearization entirely.
+As a result it would be possible for a NLS to resolve these links as an additional step in the post-processing by either inserting artificial linearization items [@sec:linearization] or merging both files' linearization entirely.
 
 ### Autocompletion
 
@@ -424,12 +424,12 @@ To support completing records, the server must first be aware of separating toke
 In the experience survey performance was pointed out as a potential issue.
 Especially in connection with the diagnostics and hover feature.
 NLS was described to "queue a lot of work and not respond" and show different performance signatures depending on its usage.
-While comands resolved "instantaniously" on unmodified files, editing a file causes high CPU usage and generally "very slow" responses.
+While commands resolved "instantaneously" on unmodified files, editing a file causes high CPU usage and generally "very slow" responses.
 An analysis of the measured runtime of $16761$ requests confirmed that observation.
 Both Hover and Update requests showed a wide range of latencies with some reaching more than two minutes.
 However, the data distribution also confirmed that latencies for most requests except `didOpen` are distributed well below one millisecond.
 The `didOpen` requests which are associated with the linearization process [@sec:linearization] peak around $1ms$ but longer latencies remain frequent [@fig:latency-distribution].
-Lookig deeper into the individual features, reveals signs of the aforementioned "stacking".
+Looking deeper into the individual features, reveals signs of the aforementioned "stacking".
 As discussed in [@sec:special-cases] subsequent requests exhibit increasing processing times especially during peak usage.
 
 This behavior is caused by the architecture of the LSP and NLS' processing method.
@@ -437,21 +437,21 @@ The Language Server Protocol is a synchronous protocol which requires the proces
 In effect, every request is delayed until previous requests are handled.
 This effect is particularly strong as the server is faced with a high volume.
 In the case of the trace for `didOpen` events the delay effect is greater than for other methods as `didOpen` is associated with a full analysis of the entire file.
-NLS architecture is heaviliy influenced by the desire to reuse as many elements of the Nickel runtime as possible to maintain feature parity with the evolving language core.
-Consequently file updates invoke a complete eager analysis of the contents;
-The entire document is parsed, typechecked and recorded to a linearization everytime.
+NLS architecture is heavily influenced by the desire to reuse as many elements of the Nickel runtime as possible to maintain feature parity with the evolving language core.
+Consequently, file updates invoke a complete eager analysis of the contents;
+The entire document is parsed, type checked and recorded to a linearization every time.
 In contrast, all other methods rely on the linearization of a document which allows them to use a binary search to efficiently lookup elements in logarithmic time.
 Additionally, all requests regardless of their type are subject to the same queue.
-Given that `didOpen` requests make up $>80%$ of the recorded events, suggests that other events are heavily slowed down colaterally.
+Given that `didOpen` requests make up $>80%$ of the recorded events, suggests that other events are heavily slowed down collaterally.
 
-Multiple ways exists to address this issue by reducing the average queue size.
+Multiple ways exist to address this issue by reducing the average queue size.
 The most approachable way to reduce queue sizes is to reduce the number of requests the server needs to handle.
 The `didOpen` trace elements actually represents the joint processing path of initial file openings, and changes.
-NLS configures clients to signal changes both on save as well as following editor defined "change".
-The fact that it is the editor's responsibility to define what constitutes a changes means that some editors send invoke the server on every key press.
+NLS configures clients to signal changes both on save and following editor defined "change".
+The fact that it is the editor's responsibility to define what constitutes a change means that some editors send invoke the server on every key press.
 In [@fig:correlation-opens] signs for such a behavior can be seen as local increases of processing time as the document grows.
-Hence, restricting analysis to happen only as the user saves the document could potentially reduce the load of requests substatially.
-Yet, many users prefered automatic processing to happen while they type.
+Hence, restricting analysis to happen only as the user saves the document could potentially reduce the load of requests substantially.
+Yet, many users preferred automatic processing to happen while they type.
 To server this pattern, NLS could implement a debouncing mechanism for the processing of document changes.
 The messages associated to document changes and openings are technically no requests but notifications.
 The specification of JSON-RPC which the LSP is based on defines that notifications are not allowing a server response.
@@ -461,6 +461,6 @@ In practice, NLS could skip such queue items if a more recent version of the fil
 The queue size can also be influenced by reducing the processing time.
 Other language servers such as the rust-analyzer [@rust-analyzer] chose to process documents lazily.
 Update requests incrementally change an internal model which other requests use as a basis to invoke targeted analysis, resolve elements and more.
-The entire model is based on in incremental computation model which automates memoization of requests.
-This method however requires rust-analyzer to reimplement core components of rust to support incrementality.
-Therefore if one accepts to implement an incremental model of Nickel (including parsing and type checking) to enable incremental analysis in NLS, switching to a lazy model is a viable method to reduce the processing time of change notifications and shorten the queue.
+The entire model is based on in incremental computation model which automates memorization of requests.
+This method however requires rust-analyzer to reimplement core components of rust to support incrementally.
+Therefore, if one accepts to implement an incremental model of Nickel (including parsing and type checking) to enable incremental analysis in NLS, switching to a lazy model is a viable method to reduce the processing time of change notifications and shorten the queue.
