@@ -209,6 +209,9 @@ For invalid files a language server should still be able to provide its function
 
 #### Experience Survey
 
+This sub-section describes the results from the filled after the Nickel workshop inwhich participants were asked to install the LSP to support their experience.
+It first looks at a summary of the data, before diving into the comments for each directly addressed feature.
+
 :::{#fig:expe-survey-results}
 
 ![Number of votes for each experience category and feature](log_analysis/figures/results-comp-experience.svg){#fig:results-comp-experience width=50%}
