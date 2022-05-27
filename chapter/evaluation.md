@@ -351,6 +351,7 @@ Additionally, color coding the individual requests by time reveals that the trac
 Applying the same analysis to the other methods in [@fig:correlation-hovers;@fig:correlation-references; @fig:correlation-definitions] returns similar findings, although the columns remain more compact in comparison to the Completions method.
 In case of the `didOpen` method columns are clearly visible too [#fig:correlation-opens].
 However, here they appear leaning as suggesting an increase in computation time as the file grows during a single series of changes to the file.
+
 ## Discussion
 
 This section discusses the issues raised during the survey and uncovered through the performance tracing.
