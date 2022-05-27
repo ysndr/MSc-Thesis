@@ -9,14 +9,14 @@ Usability
   ~ What is the real-world value of the language server?
   ~ Does it improve the experience of developers using Nickel?
     NLS offers several features, that are intended to help developers using the language.
-    The evaluation should assess whether developers experience any help due to the use of the server.
-  ~ Does NLS meet its users' expectations in terms of completeness and correctness and behavior?
-    Being marketed as a Language Server, invokes certain expectations due to previous experience with other languages and language servers.
+    The evaluation should assess whether the server does improve the experience of developers.
+  ~ Does NLS meet its users' expectations in terms of completeness, correctness and behavior?
+    Labeling NLS as a Language Server, invokes certain expectations built up by previous experience with other languages and language servers.
     Here, the evaluation should show whether NLS lives up to the expectations of its users.
 
 Performance
   ~ What are the typical latencies of standard tasks?
-    In this context *latency* refers to the time it takes from issuing an LSP command to return of the reply by the server.
+    In this context latency refers to the time it takes from issuing an LSP command to the reply of the server.
     The JSON-RPC protocol used by the LSP is synchronous, i.e. requires the server to return results of commands in the order it received them.
     Since most commands are sent implicitly, a quick processing is imperative to avoid commands queuing up.
   ~ Can single performance bottlenecks be identified?
@@ -31,11 +31,128 @@ The first section [@sec:methods] introduces methods employed for the evaluation.
 In particular, it details the survey ([@sec:qualitative]) which was conducted with the intent to gain qualitative opinions by users, as well as the tracing mechanism ([@sec:quantitative]) for factual quantitative insights.
 [Section @sec:results] summarises the results of these methods.
 
+## Evaluation Considerations
+
+Different methods to evaluate the abovementioned metrics were considered.
+While quantifying user experience yields statistically sound insights about the studied subject, it fails to point out specific user needs.
+Therefore, this work employs a more subjective evaluation based on a standardized experience report focusing on individual features.
+Contrasting the expectations highlights well executed, immature or missing features.
+This allows more actionable planning of the future development to meet user expectations.
+
+On the other hand it is more approachable to track runtime performance objectively through time measurements.
+In fact, runtime behavior was a central assumption underlying the server architecture. 
+As discussed in [@sec:considerations] NLS follows an eager, non-incremental processing model.
+While incremental implementations are more efficient, as they do not require entire files to be updated, they require explicit language support, i.e., an incremental parser and analysis.
+Implementing these functions exceeds the scope of this work.
+Choosing a non-incremental model on the other hand allowed to reuse entire modules of the Nickel language.
+The analysis itself can be implemented both in a lazy or eager fashion.
+Lazy analysis implies that the majority of information is resolved only upon request instead of ahead of time.
+That is, an LSP request is delayed by the analysis before a response is made.
+Some lazy models also support memoizing requests, avoiding to recompute previously requested values.
+However, eager approaches preprocess the file ahead of time and store the analysis results such that requests can be handled mostly through value lookups.
+To fit Nickels' type-checking model and considering that in a typical Nickel workflow, the analysis should still be reasonably efficient, the eager processing model was chosen over a lazy one.
+
 ## Methods
 
-### Qualitative
+### Objectives
+
+The qualitative evaluation was conducted with a strong focus on the first metric in [sec:metrics].
+Usability proves hard to quantify, as it is tightly connected to subjective perception, expectations and tolerances.
+The structure of the survey is guided by two additional objectives, endorsing the separation of individual features.
+On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
+This data is important for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) and a generic basis for other projects. 
+On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:implementation), the implementation of this central structure is an essential consideration.
+The survey should therefore also uncover apparent problems with this architecture.
+This entails the use of language abstractions (cf. [@sec:linearization]) and the integration of Nickel core functions such as the type checking procedure.
+
+The quantitative study in contrast focuses on measurable performance.
+Similarly to the survey-based evaluation, the quantitative study should reveal insight for different features and tasks separately.
+The focus lies on uncovering potential spikes in latencies, and making empirical observations about the influence of Nickel file sizes.
+
+### Qualitative Evaluation Setup
+
+Inspired by the work of Leimeister in [@leimeister], a survey aims to provide practical insights into the experience of future users.
+In order to get a clear picture of the users' needs and expectations independently of the experience, the survey consists of two parts -- a pre-evaluation and final survey.
+
+#### Pre-Evaluation
+
+
+##### Expected features
+
+The pre-evaluation introduced participants in brief to the concept of language servers and asked them to write down their understanding of several LSP features.
+In total, six features were surveyed corresponding to the implementation as outlined in [@sec:capability], namely:
+
+##### Expected behaviour
+
+1. Code completion
+   Suggest identifiers, methods or values at the cursor position.
+2. Hover information
+   Present additional information about an item under the cursor, i.e., types, contracts and documentation.
+3. Jump to definition
+   Find and jump to the definition of a local variable or identifier.
+4. Find references
+   List all usages of a defined variable.
+5. Workspace symbols
+   List all variables in a workspace or document.
+6. Diagnostics
+   Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
+The item for the "Hover" feature for instance reads as follows:
+
+> Editors can show some additional information about code under the cursor.
+> The selection, kind, and formatting of that information is left to the Language Server.
+>
+> What kind of information do you expect to see when hovering code? Does the position or kind of element matter? If so, how?
+
+Items first introduce a feature on a high level followed by asking the participant to describe their ideal implementation of the feature.
+
+#### Experience Survey
+
+For the final survey, interested participants at Tweag were invited to a workshop introducing Nickel.
+<!-- As a preparation, they were asked to install the LSP. -->
+The workshop allowed participants unfamiliar with the Nickel language to use the language and experience NLS in a more natural setting.
+Following the workshop, participants filled in a second survey which focused on three main aspects:
+
+First, the general experience of every individual feature.
+Without weighing their in expectations, the participants were asked to give a short statement of their experience.
+The item consists of a loose list of statements with the aim to achieve a rough quality classification:
+
+> - [ ] The feature did not work at all 
+> - [ ] The feature behaved unexpectedly
+> - [ ] The feature did not work in all cases
+> - [ ] The feature worked without an issue
+> - [ ] Other
+
+The following items survey the perceived performance and stability.
+The items were implemented as linear scales that span from "Very slow response" to "Very quick response" and "Never Crashed" to "Always Crashed" respectively.
+The second category asked participants to explicitly reflect on their expectations:
+
+> ◯ The feature did not work at all\
+> ◯ Little of my expectation was met\
+> ◯ Some expectations were mete, enough to keep using NLS for this feature\
+> ◯ Most to all expectations were met
+> ◯ NLS surpassed the expectations
+> ◯ Other
+
+In the final part participants could elaborate on their answers.
+
+> Why were they (not) satisfied?\
+> What is missing, what did they not expect?
+
 
 ### Quantitative
+
+To address the performance metrics introduced in [@sec:metrics], a quantitative study was conducted, that analyzes latencies in the LSP-Server-Client communication.
+The study complements the subjective reports collected through the survey (cf. [@sec:experience-survey]).
+The evaluation is possible due to the inclusion of a custom tracing module in NLS.
+The tracing module is used to create a report for every request, containing the processing time and a measure of the size of the analyzed document.
+If enabled, NLS records an incoming request with an identifier and time stamp.
+While processing the request, it adds additional data to the record, i.e., the type of request, the size of the linearization (cf. [@sec:linearization]) or processed file and possible errors that occured during the process.
+Once the server replies to a request, it records the total response time and writes the entire record to an external file.
+
+The tracing approach narrows the focus of the performance evaluation to the time spent by NLS.
+Consequently, the performance evaluation is independent of the LSP client (editor) that is used.
+Unlike differences in hardware which affects all operations similarly, LSP clients may implement different behaviors that may cause editor-specific biases.
+For instance, the LSP does not specify the frequency at which file changes are detected, which in turn can lead to request queuing depending on the editor used.
 
 ## Process
 
@@ -44,116 +161,3 @@ In particular, it details the survey ([@sec:qualitative]) which was conducted wi
 ### Qualitative
 
 ### Quantitative
-
-## Discussion
-
-This section discusses the issues raised during the survey and uncovered through the performance tracing.
-In the first part the individual findings are summarized and if possible grouped by their common cause.
-The second part addresses each cause and connects it to the relevant architecture decisions, while explaining the reason for it and discussing possible alternatives.
-
-During the qualitative evaluation several features did not meet the expectations of the users.
-The survey also hinted performance issues that were solidified by the results of the quantitative analysis.
-
-### Diagnostics
-
-First, participants criticized [@sec:diagnostics@res] the diagnostics feature for some unhelpful error messages and specifically for not taking into account Nickel's hallmark feature, Contracts [@sec:Contracts].
-While Contracts are a central element of Nickel and relied upon to validate data, the language server does not actually warn about contract breaches.
-Yet, while contracts and their application looks similar to types, contracts are a dynamic language element which are dynamically applied during evaluation.
-Therefore it is not possible to determine whether a value conforms to a contract without evaluation of the contract.
-NLS's is integrated with Nickel's type-checking mechanism which precedes evaluation and provides only a static representation of the source code.
-In order to support diagnostics for contracts NLS would need to locally evaluate arbitrary code that makes up contracts.
-However, contracts can not be evaluated entirely locally as they may transitively depend on other contracts.
-This is particularly true for a file's output value.
-Additionally, Contracts can implement any sort of complex computation including unbound recursion.
-Due to these caveats, evaluating contracts as part of NLS's analysis implies the evaluation of the entire code which was considered a possibly significant impact to the performance.
-As layed out above evaluating contracts locally is no option either.
-It is not only challenging to collect the minimal context of the Contract, the context may in fact be the entire program.
-An alternative option is to provide the ability to apply contracts manually using an LSP feature called "Code Lenses".
-Code Lenses are displayed by editors as annotations allowing the user to manually execute an associated action.
-
-<!-- TODO: Add nickels implementation detail of inlining contracts into the executed ast in background? -->
-
-### Cross File Navigation
-
-In both cases `Jump-To-Definition` and `Find-References` surveyed users requested support for cross file navigation.
-In particular, finding the definition of a record field of an imported record should navigate the editor to the respective file as symbolized in [@lst:imported-record-access].
-
-```{.nickel #lst:imported-record-access caption="Minimal example of cross file referencing"}
-// file_a.ncl
-
-let b = import "./b.ncl" in b.field
-                              |
-                              +------+
-                                     |
------------------------------------  |
-                                     |
-// file_b.ncl                        |
-                                     |
-{                                    |
-  field = "field value";             |
-}  ^                                 |
-   +---------------------------------+
-```
-
-The resolution of imported values is done at evaluation time, the AST therefore only contains nodes representing the concept of an import but no not reference elements of that file. 
-NLS does ingest the the AST without resolving these imports manually.
-The type checking module underlying NLS still recurses into imported files to check their formal correctness.
-As a result it would be possible for a NLS to resolve these links as an additional step in the post processing by either inserting atificial linearization items [@sec:linearization] or merging both files linearization entirely.
-
-### Autocompletion
-
-Another criticized element of NLS was the autocompletion feature.
-In the survey, participants mentioned the lack of additional information and distinction of elements as well as NLS inability to provide completion for record fields.
-In Nickel, record access is declared by a period.
-An LSP client can to configured to ask for completions when such an access character is entered additionally to manual requests by the user.
-The language server is then responsible to provide a list of completion candidates depending on the context, i.e. the position.
-[Section #sec:completion] describes how NLS resolves this kind of request.
-NLS just lists all identifiers of declarations that are in scope at the given position.
-Notably, it does not take the preceding element into account as additional context.
-To support completing records, the server must first be aware of separating tokens such as the period symbol, check whether the current position is part of a token that is preceded by a separator and finally resolve the parent element to a record.
-
-### Performance
-
-In the experience survey performance was pointed out as a potential issue.
-Especially in connection with the diagnostics and hover feature.
-NLS was described to "queue a lot of work and not respond" and show different performance signatures depending on its usage.
-While comands resolved "instantaniously" on unmodified files, editing a file causes high CPU usage and generally "very slow" responses.
-An analysis of the measured runtime of $16761$ requests confirmed that observation.
-Both Hover and Update requests showed a wide range of latencies with some reaching more than two minutes.
-However, the data distribution also confirmed that latencies for most requests except `didOpen` are distributed well below one millisecond.
-The `didOpen` requests which are associated with the linearization process [@sec:linearization] peak around $1ms$ but longer latencies remain frequent [@fig:latency-distribution].
-Lookig deeper into the individual features, reveals signs of the aforementioned "stacking".
-As discussed in [@sec:special-cases] subsequent requests exhibit increasing processing times especially during peak usage.
-
-This behavior is caused by the architecture of the LSP and NLS' processing method.
-The Language Server Protocol is a synchronous protocol which requires the processing of all requests FIFO order.
-In effect, every request is delayed until previous requests are handled.
-This effect is particularly strong as the server is faced with a high volume.
-In the case of the trace for `didOpen` events the delay effect is greater than for other methods as `didOpen` is associated with a full analysis of the entire file.
-NLS architecture is heaviliy influenced by the desire to reuse as many elements of the Nickel runtime as possible to maintain feature parity with the evolving language core.
-Consequently file updates invoke a complete eager analysis of the contents;
-The entire document is parsed, typechecked and recorded to a linearization everytime.
-In contrast, all other methods rely on the linearization of a document which allows them to use a binary search to efficiently lookup elements in logarithmic time.
-Additionally, all requests regardless of their type are subject to the same queue.
-Given that `didOpen` requests make up $>80%$ of the recorded events, suggests that other events are heavily slowed down colaterally.
-
-Multiple ways exists to address this issue by reducing the average queue size.
-The most approachable way to reduce queue sizes is to reduce the number of requests the server needs to handle.
-The `didOpen` trace elements actually represents the joint processing path of initial file openings, and changes.
-NLS configures clients to signal changes both on save as well as following editor defined "change".
-The fact that it is the editor's responsibility to define what constitutes a changes means that some editors send invoke the server on every key press.
-In [@fig:correlation-opens] signs for such a behavior can be seen as local increases of processing time as the document grows.
-Hence, restricting analysis to happen only as the user saves the document could potentially reduce the load of requests substatially.
-Yet, many users prefered automatic processing to happen while they type.
-To server this pattern, NLS could implement a debouncing mechanism for the processing of document changes.
-The messages associated to document changes and openings are technically no requests but notifications.
-The specification of JSON-RPC which the LSP is based on defines that notifications are not allowing a server response.
-Clients can not rely on the execution of associated procedures.
-In effect, a language server like NLS, where each change notification contains the entire latest document, may skip the processing of changes.
-In practice, NLS could skip such queue items if a more recent version of the file is notified later in the queue.
-The queue size can also be influenced by reducing the processing time.
-Other language servers such as the rust-analyzer [@rust-analyzer] chose to process documents lazily.
-Update requests incrementally change an internal model which other requests use as a basis to invoke targeted analysis, resolve elements and more.
-The entire model is based on in incremental computation model which automates memoization of requests.
-This method however requires rust-analyzer to reimplement core components of rust to support incrementality.
-Therefore if one accepts to implement an incremental model of Nickel (including parsing and type checking) to enable incremental analysis in NLS, switching to a lazy model is a viable method to reduce the processing time of change notifications and shorten the queue.
