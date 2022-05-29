@@ -136,6 +136,7 @@ jobs:
             fi
           else
             echo "Non chapter branch, not committing proposed changes"
+            git reset
           fi
           # TODO: Same logic to review
           # [[ ${{ steps.config.outputs.mode }} == "chapter" ]] && \
