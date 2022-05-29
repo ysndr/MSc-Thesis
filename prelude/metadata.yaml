@@ -4,11 +4,7 @@ documentclass: scrreport
 autoSectionLabels: true
 header-includes:
   - \AtBeginDocument{\floatplacement{codelisting}{H}}
-  - |
-    \usepackage{lscape}
-    \newcommand{\bls}{\begin{landscape}}
-    \newcommand{\els}{\end{landscape}}
-    
+
 title: Implementing a language Server for the Nickel Language
 subtitle: Prestudy
 
