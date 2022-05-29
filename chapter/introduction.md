@@ -86,10 +86,3 @@ To support the chosen approach, a user study will show whether the implementatio
 The reference solution portrayed in this work is specific for the Nickel language.
 Greatest care is given to present the concepts as generically and transferable as possible.
 However, it is not a goal to explicitly cover a problem space larger than the Nickel language, which is a pure functional language based on lambda calculus with JSON data types, gradual typing, higher-order contracts and a record merging operation.
-
-## Research Methodology
-
-What are the scientific methods
-
-
-## Structure of the thesis
