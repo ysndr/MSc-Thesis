@@ -69,9 +69,9 @@ The quantitative study in contrast focuses on measurable performance.
 Similarly to the survey-based evaluation, the quantitative study should reveal insight for different features and tasks separately.
 The focus lies on uncovering potential spikes in latencies, and making empirical observations about the influence of Nickel file sizes.
 
-### Qualitative Evaluation Setup {#sec:qualitative@methods}
+### Qualitative Evaluation Setup {#sec:qualitative-methods}
 
-Inspired by the work of Leimeister in [@leimeister], a survey aims to provide practical insights into the experience of future users.
+Inspired by the work of Leimeister in [@leimeisterLanguageServerIDE2020], a survey aims to provide practical insights into the experience of future users.
 In order to get a clear picture of the users' needs and expectations independently of the experience, the survey consists of two parts -- a pre-evaluation and final survey.
 
 #### Pre-Evaluation
@@ -139,7 +139,7 @@ In the final part participants could elaborate on their answers.
 > What is missing, what did they not expect?
 
 
-### Quantitative {#sec:quantitative@methods}
+### Quantitative {#sec:quantitative-methods}
 
 To address the performance metrics introduced in [@sec:metrics], a quantitative study was conducted, that analyzes latencies in the LSP-Server-Client communication.
 The study complements the subjective reports collected through the survey (cf. [@sec:experience-survey]).
@@ -242,33 +242,33 @@ The general satisfaction with each feature was answered in the same polarized ma
 A slight majority of responses falls into the upper half of the possible spectrum.
 Two of the features reported without function in the preceding questions were given the lowest possible rating.
 
-##### Hover {#sec:hover@res}
+##### Hover {#sec:hover-res}
 
 As apparent in ([@fig:results-comp-experience]), most participants experienced unexpected behavior by the LSP when using the hover functionality.
 In the comments, extraneous debug output and incorrect displaying of the output by the IDE are pointed out as concrete examples.
 However, one answer suggests that the feature was working with "usually useful" output.
 
-##### Diagnostics {#sec:diagnostics@res}
+##### Diagnostics {#sec:diagnostics-res}
 
 While the diagnostics shown by NLS appear to behave unexpectedly for some users in [@fig:results-comp-experience], no user felt deterred from keep using NLS for it as displayed in [@fig:results-comp-expectations].
 Some respondents praised the "quick" and "direct feedback" as well as the visual error markers pointing to the exact locations of possible issues.
 On the contrary, others mentioned "unclear messages" and pointed out that contracts were not checked by the Language Server.
 Moreover, a performance issue was brought up noting that in some situations NLS "queues a lot of work and does not respond".
 
-##### Code Completion {#sec:code-completion@res}
+##### Code Completion {#sec:code-completion-res}
 
 Comments about the Code Completion feature were unanimously critical.
 Some participants noted the little gained "value over the token based completion built into the editor" while others specifically pointed at "missing type information and docs".
 Additionally, record field completion was found to be missing, albeit highly valued.
 
-##### Document Navigation {#sec:document-navigation@res}
+##### Document Navigation {#sec:document-navigation-res}
 
 Results and comments about the Go-To-Definition and Find-References were polarized.
 Some users experienced unexpected behavior or were unable to use the feature at all (cf. [@fig:results-comp-experience]).
 Similarly, the comments on one hand suggest that "the feature works well and is quick" while on the other mention inconsistencies and unavailability.
 More specifically, cross file navigation was named an important missing feature.
 
-##### General Performance {#sec:general-performance@res}
+##### General Performance {#sec:general-performance-res}
 
 The responses to the general performance suggest that NLS' performance is largely dependent on its usage.
 On unmodified files queries were reported to evaluate "instantaneously".
@@ -362,7 +362,7 @@ The survey also hinted performance issues that were solidified by the results of
 
 ### Diagnostics
 
-First, participants criticized [@sec:diagnostics@res] the diagnostics feature for some unhelpful error messages and specifically for not taking into account Nickel's hallmark feature, Contracts [@sec:Contracts].
+First, participants criticized [@sec:diagnostics-res] the diagnostics feature for some unhelpful error messages and specifically for not taking into account Nickel's hallmark feature, Contracts [@sec:Contracts].
 While Contracts are a central element of Nickel and relied upon to validate data, the language server does not actually warn about contract breaches.
 Yet, while contracts and their application looks similar to types, contracts are a dynamic language element which are dynamically applied during evaluation.
 Therefore, it is not possible to determine whether a value conforms to a contract without evaluation of the contract.
@@ -458,7 +458,7 @@ Clients can not rely on the execution of associated procedures.
 In effect, a language server like NLS, where each change notification contains the entire latest document, may skip the processing of changes.
 In practice, NLS could skip such queue items if a more recent version of the file is notified later in the queue.
 The queue size can also be influenced by reducing the processing time.
-Other language servers such as the rust-analyzer [@rust-analyzer] chose to process documents lazily.
+Other language servers such as the rust-analyzer [@therustprogramminglanguageBringingGreatIDE] chose to process documents lazily.
 Update requests incrementally change an internal model which other requests use as a basis to invoke targeted analysis, resolve elements and more.
 The entire model is based on in incremental computation model which automates memorization of requests.
 This method however requires rust-analyzer to reimplement core components of rust to support incrementally.
