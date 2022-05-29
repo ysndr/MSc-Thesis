@@ -71,7 +71,7 @@ The focus lies on uncovering potential spikes in latencies, and making empirical
 
 ### Qualitative Evaluation Setup {#sec:qualitative-methods}
 
-Inspired by the work of Leimeister in [@leimeister], a survey aims to provide practical insights into the experience of future users.
+Inspired by the work of Leimeister in [@leimeisterLanguageServerIDE2020], a survey aims to provide practical insights into the experience of future users.
 In order to get a clear picture of the users' needs and expectations independently of the experience, the survey consists of two parts -- a pre-evaluation and final survey.
 
 #### Pre-Evaluation
@@ -458,7 +458,7 @@ Clients can not rely on the execution of associated procedures.
 In effect, a language server like NLS, where each change notification contains the entire latest document, may skip the processing of changes.
 In practice, NLS could skip such queue items if a more recent version of the file is notified later in the queue.
 The queue size can also be influenced by reducing the processing time.
-Other language servers such as the rust-analyzer [@rust-analyzer] chose to process documents lazily.
+Other language servers such as the rust-analyzer [@therustprogramminglanguageBringingGreatIDE] chose to process documents lazily.
 Update requests incrementally change an internal model which other requests use as a basis to invoke targeted analysis, resolve elements and more.
 The entire model is based on in incremental computation model which automates memorization of requests.
 This method however requires rust-analyzer to reimplement core components of rust to support incrementally.
