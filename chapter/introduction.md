@@ -52,12 +52,12 @@ This allows developers to focus resources to a single project that is above all 
 Now only a single implementation of a language server is required, instead of an individual plugin for each editor.
 Editor maintainers can concentrate on offering the best possible LSP client support independent of the language.
 
-### Problem Definition
+## Problem Definition
 
 The problem this thesis will address is the current lack of documentation and evaluation of the applied methods for existing Language Servers.
 
-While most of the implementations of LSP servers are freely available as Open Source Software [ref?], the methodology is often poorly documented, especially for smaller languages.
-There are some experience reports [ref: merlin, and others] and a detailed video series on the Rust Analyzer[ref or footnote] project, but implementations remain very opinionated and poorly guided through.
+While most of the implementations of LSP servers are freely available as Open Source Software, the methodology is often poorly documented, especially for smaller languages.
+There are some experience reports[@bourMerlinLanguageServer2018a;OCamlLSP2022;hessDafnyLanguageServer2019] and a detailed video series on the Rust Analyzer[@kladovExplainingRustanalyzer2021] project, but implementations remain very opinionated and poorly guided through.
 The result is that new implementations keep repeating to develop existing solutions.
 
 Moreover, most projects do not formally evaluate the Language Server on even basic requirements.

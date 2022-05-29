@@ -328,7 +328,7 @@ export interface ResultSet {
 An LSIF report is a mere list of `edge` and `vertex` nodes, which allows it to easily extend and connect more subgraphs, corresponding to more elements and analytics.
 As a consequence, a subset of LSP capabilities can be provided statically based on the preprocessed LSIF model.
 
-### \*SP, Abstracting software development processes
+### Abstracting software development processes
 
 Since its introduction the Language Server Protocol has become a standard format to provide language tooling for editing source code.
 Meanwhile, as hinted in[@sec:lsp-extensions], the LSP is not able to fully satisfy every use-case sparking the development of various LSP extensions.
