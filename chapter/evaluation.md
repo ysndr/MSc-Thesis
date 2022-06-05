@@ -1,6 +1,6 @@
 # Evaluation
 
-[Section @sec:implementation] described the implementation of the Nickel Language Server addressing the first research question stated in [@sec:research-questions].
+[Section @sec:design-and-implementation] described the implementation of the Nickel Language Server addressing the first research question stated in [@sec:research-questions].
 Proving the viability of the result and answering the second research question demands an evaluation of different factors.
 
 Earlier, the most important metrics of interest were identified as:
@@ -33,24 +33,26 @@ In particular, it details the survey ([@sec:qualitative]) which was conducted wi
 
 ## Evaluation Considerations
 
-Different methods to evaluate the abovementioned metrics were considered.
+The evaluation considers different methods to assess the abovementioned metrics.
 While quantifying user experience yields statistically sound insights about the studied subject, it fails to point out specific user needs.
 Therefore, this work employs a more subjective evaluation based on a standardized experience report focusing on individual features.
 Contrasting the expectations highlights well executed, immature or missing features.
 This allows more actionable planning of the future development to meet user expectations.
 
-On the other hand it is more approachable to track runtime performance objectively through time measurements.
-In fact, runtime behavior was a central assumption underlying the server architecture. 
-As discussed in [@sec:considerations] NLS follows an eager, non-incremental processing model.
-While incremental implementations are more efficient, as they do not require entire files to be updated, they require explicit language support, i.e., an incremental parser and analysis.
+Runtime performance on the other hand is a quantifiable metric that is tracked objectively through time measurements.
+Runtime behavior was a central assumption during the conception of the underlying server architecture.
+As discussed in [@sec:code-analysis] NLS follows an eager, non-incremental processing model.
+<!-- While incremental implementations are more efficient, as they do not require entire files to be updated, they require explicit language support, i.e., an incremental parser and analysis.
 Implementing these functions exceeds the scope of this work.
 Choosing a non-incremental model on the other hand allowed reusing entire modules of the Nickel language.
 The analysis itself can be implemented both in a lazy or eager fashion.
 Lazy analysis implies that the majority of information is resolved only upon request instead of ahead of time.
 That is, an LSP request is delayed by the analysis before a response is made.
 Some lazy models also support memorizing requests, avoiding recomputing previously requested values.
-However, eager approaches preprocess the file ahead of time and store the analysis results such that requests can be handled mostly through value lookups.
-To fit Nickels' type-checking model and considering that in a typical Nickel workflow, the analysis should still be reasonably efficient, the eager processing model was chosen over a lazy one.
+However, eager approaches preprocess the file ahead of time and store the analysis results such that requests can be handled mostly through value lookups. -->
+Measuring the latency under realistic use, allows drawing conclusions about the implementation of this model.
+
+<!-- To fit Nickels' type-checking model and considering that in a typical Nickel workflow, the analysis should still be reasonably efficient, the eager processing model was chosen over a lazy one. -->
 
 ## Methods
 
@@ -61,7 +63,7 @@ Usability proves hard to quantify, as it is tightly connected to subjective perc
 The structure of the survey is guided by two additional objectives, endorsing the separation of individual features.
 On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
 This data is important for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) and a generic basis for other projects. 
-On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:implementation]), the implementation of this central structure is an essential consideration.
+On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:lsp-server-implementation]), the implementation of this central structure is an essential consideration.
 The survey should therefore also uncover apparent problems with this architecture.
 This entails the use of language abstractions (cf. [@sec:linearization]) and the integration of Nickel core functions such as the type checking procedure.
 
@@ -72,30 +74,36 @@ The focus lies on uncovering potential spikes in latencies, and making empirical
 ### Qualitative Evaluation Setup {#sec:qualitative-methods}
 
 Inspired by the work of Leimeister in [@leimeisterLanguageServerIDE2020], a survey aims to provide practical insights into the experience of future users.
-In order to get a clear picture of the users' needs and expectations independently of the experience, the survey consists of two parts -- a pre-evaluation and final survey.
+In order to get a clear picture of the users' needs and expectations independently of the experience, the evaluation consists of three parts.
+The center of the evaluation is a two-hour-long online workshop during which participants are introduced to the Nickel language.
+As part of the workshop participants solve small exercises with the NLS installed.
+The workshop is framed by two surveys.
+Prior to the practical experience a survey assesses the general expectations to the Language Server.
+After the workshop the participants document their experience with the NLS.
+Both surveys are available to Tweag employees through Google Forms.
 
-#### Pre-Evaluation
 
+#### Pre-Workshop Evaluation
 
-##### Expected features
-
-The pre-evaluation introduced participants in brief to the concept of language servers and asked them to write down their understanding of several LSP features.
+The Pre-Workshop Survey introduced participants in brief to the concept of language servers and asked them to write down their understanding of several LSP features.
 In total, six features were surveyed corresponding to the implementation as outlined in [@sec:capability], namely:
 
-##### Expected behavior
 
-1. Code completion
+1. Code completion\
    Suggest identifiers, methods or values at the cursor position.
-2. Hover information
+2. Hover information\
    Present additional information about an item under the cursor, i.e., types, contracts and documentation.
-3. Jump to definition
+3. Jump to definition\
    Find and jump to the definition of a local variable or identifier.
-4. Find references
+4. Find references\
    List all usages of a defined variable.
-5. Workspace symbols
+5. Workspace symbols\
    List all variables in a workspace or document.
-6. Diagnostics
+6. Diagnostics\
    Analyze source code, i.e., parse and type check and notify the LSP Client if errors arise.
+
+
+Items first introduce a feature on a high level followed by asking the participant to describe their ideal implementation of the feature.
 The item for the "Hover" feature for instance reads as follows:
 
 > Editors can show some additional information about code under the cursor.
@@ -103,18 +111,23 @@ The item for the "Hover" feature for instance reads as follows:
 >
 > What kind of information do you expect to see when hovering code? Does the position or kind of element matter? If so, how?
 
-Items first introduce a feature on a high level followed by asking the participant to describe their ideal implementation of the feature.
+In total the survey was filled in by eight individuals working at Tweag.
+Out of these, five were part of the team developing the Nickel Language.
 
 #### Experience Survey
 
-For the final survey, interested participants at Tweag were invited to a workshop introducing Nickel.
-<!-- As a preparation, they were asked to install the LSP. -->
-The workshop allowed participants unfamiliar with the Nickel language to use the language and experience NLS in a more natural setting.
-Following the workshop, participants filled in a second survey which focused on three main aspects:
+Interested participants at Tweag were invited to a workshop introducing Nickel which was attended by four.
+During this remote workshop participants were asked to solve simple coding exercises supported by the Language Server and the moderator.
+The two-hour-long workshop allowed participants unfamiliar with the Nickel language to use the language and experience NLS in a more natural setting.
+Following the workshop, participants filled in a second survey.
+In this survey participants described their perception of NLS' performance and stability.
+Both items were represented by linear scales that span from "Very slow response" to "Very quick response" and "Never Crashed" to "Always Crashed" respectively.
+Additionally, for every single surveyed feature the survey focuses on three main aspects:
 
-First, the general experience of every individual feature.
-Without weighing their in expectations, the participants were asked to give a short statement of their experience.
-The item consists of a loose list of statements with the aim to achieve a rough quality classification:
+##### General Experience
+
+Without weighing their in expectations, the participants were asked to give a short statement about their experience of the individual features.
+The item consists of a list of statements representing distinct quality classifications:
 
 > - [ ] The feature did not work at all 
 > - [ ] The feature behaved unexpectedly
@@ -122,26 +135,29 @@ The item consists of a loose list of statements with the aim to achieve a rough 
 > - [ ] The feature worked without an issue
 > - [ ] Other
 
-The following items survey the perceived performance and stability.
-The items were implemented as linear scales that span from "Very slow response" to "Very quick response" and "Never Crashed" to "Always Crashed" respectively.
+##### Satisfaction of Expectations
+
 The second category asked participants to explicitly reflect on their expectations:
 
-> ◯ The feature did not work at all\
-> ◯ Little of my expectation was met\
-> ◯ Some expectations were met, enough to keep using NLS for this feature\
-> ◯ Most to all expectations were met
-> ◯ NLS surpassed the expectations
-> ◯ Other
+> - [ ] The feature did not work at all
+> - [ ] Little of my expectation was met
+> - [ ] Some expectations were met, enough to keep using NLS for this feature
+> - [ ] Most to all expectations were met
+> - [ ] NLS surpassed the expectations
+> - [ ] Other
 
-In the final part participants could elaborate on their answers.
 
-> Why were they (not) satisfied?\
+##### Comments
+
+In the final part participants could elaborate on the answers given in the preceding items.
+
+> Why were they (not) satisfied?
+> 
 > What is missing, what did they not expect?
-
 
 ### Quantitative {#sec:quantitative-methods}
 
-To address the performance metrics introduced in [@sec:metrics], a quantitative study was conducted, that analyzes latencies in the LSP-Server-Client communication.
+To address the performance metrics introduced in [@sec:evaluation-considerations], a quantitative study was conducted, that analyzes latencies in the LSP-Server-Client communication.
 The study complements the subjective reports collected through the survey (cf. [@sec:experience-survey]).
 The evaluation is possible due to the inclusion of a custom tracing module in NLS.
 The tracing module is used to create a report for every request, containing the processing time and a measure of the size of the analyzed document.
@@ -154,10 +170,13 @@ Consequently, the performance evaluation is independent of the LSP client (edito
 Unlike differences in hardware which affects all operations similarly, LSP clients may implement different behaviors that may cause editor-specific biases.
 For instance, the LSP does not specify the frequency at which file changes are detected, which in turn can lead to request queuing depending on the editor used.
 
+All participants of the Workshop were asked to enable tracing during the session and submit the recorded trace file.
+However, not a single trace file was submitted.
+Therefore, the study is based on a trace file recorded individually by the lead developer of Nickel who used the Language server while to author a number of small and more extensive Nickel files.
+
 ## Results
 
 ### Qualitative
-
 
 As outlined in [#sec:qualitative-study-outline], the qualitative study consists of two parts conducted before and after an introductory workshop.
 The pre-evaluation aimed to catch the users' expected features and behaviors, while the main survey asked users about their concrete experiences with the NLS.
@@ -167,7 +186,8 @@ The pre-evaluation aimed to catch the users' expected features and behaviors, wh
 In the initial free assessment of expected features (c.f. [#sec:expected-features]) the participants unanimously identified four of the six language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications, @langserverorg]): Type-information on hover, automatic diagnostics, Code Completion and Jump-to-Definition.
 
 The other two features, Find-References and Workspace/Document Symbols on the contrary were sparingly commented.
-Some participants noted that they did not use these capabilities.
+No participant mentioned Find-References.
+The Symbols feature had one response distinguishing different symbol types to be shown while another noted that they did not use this capability.
 
 ##### Type-information on hover
 
@@ -220,8 +240,8 @@ It first looks at a summary of the data, before diving into the comments for eac
 User responses regarding general experience, fulfillment of expectations and general satisfaction.
 :::
 
-The above figures show the turnout of three items from the survey for each of the relevant features.
-Neither of them shows clear trends with positive and negative results distributed almost evenly between positive and negative sentiment.
+[Figures @fig:results-comp-experience;-@fig:results-comp-satisfaction,;-@fig:results-comp-expectations] show the turnout of three items from the survey for each of the relevant features.
+Neither of them exhibits clear trends with positive and negative results distributed almost evenly between positive and negative sentiment.
 
 
 The first graph ([@fig:results-comp-experience]) represents the participants' general experience with the relevant features.
@@ -258,7 +278,7 @@ Moreover, a performance issue was brought up noting that in some situations NLS 
 ##### Code Completion {#sec:code-completion-res}
 
 Comments about the Code Completion feature were unanimously critical.
-Some participants noted the little gained "value over the token based completion built into the editor" while others specifically pointed at "missing type information and docs".
+One participant noted the little gained "value over the token based completion built into the editor" while two others specifically pointed at "missing type information and docs".
 Additionally, record field completion was found to be missing, albeit highly valued.
 
 ##### Document Navigation {#sec:document-navigation-res}
@@ -275,6 +295,66 @@ On unmodified files queries were reported to evaluate "instantaneously".
 However, modifying files caused that "modifications stack up" causing high CPU usage and generally "very slow" responses.
 Besides, documentation was reported as slow to resolve while the server itself was "generally fast".
 
+#### Discussion
+
+##### Diagnostics
+
+First, participants criticized [@sec:diagnostics-res] the diagnostics feature for some unhelpful error messages and specifically for not taking into account Nickel's hallmark feature, Contracts [@sec:Contracts].
+While Contracts are a central element of Nickel and relied upon to validate data, the language server does not actually warn about contract breaches.
+Yet, while contracts and their application looks similar to types, contracts are a dynamic language element which are dynamically applied during evaluation.
+Therefore, it is not possible to determine whether a value conforms to a contract without evaluation of the contract.
+NLS's is integrated with Nickel's type-checking mechanism which precedes evaluation and provides only a static representation of the source code.
+In order to support diagnostics for contracts NLS would need to locally evaluate arbitrary code that makes up contracts.
+However, contracts can not be evaluated entirely locally as they may transitively depend on other contracts.
+This is particularly true for a file's output value.
+Additionally, Contracts can implement any sort of complex computation including unbound recursion.
+Due to these caveats, evaluating contracts as part of NLS's analysis implies the evaluation of the entire code which was considered a possibly significant impact to the performance.
+As laid out above evaluating contracts locally is no option either.
+It is not only challenging to collect the minimal context of the Contract, the context may in fact be the entire program.
+An alternative option is to provide the ability to apply contracts manually using an LSP feature called "Code Lenses".
+Code Lenses are displayed by editors as annotations allowing the user to manually execute an associated action.
+
+<!-- TODO: Add nickels implementation detail of inlining contracts into the executed ast in background? -->
+
+##### Cross File Navigation
+
+In both cases `Jump-To-Definition` and `Find-References` surveyed users requested support for cross file navigation.
+In particular, finding the definition of a record field of an imported record should navigate the editor to the respective file as symbolized in [@lst:imported-record-access].
+
+```{.nickel #lst:imported-record-access caption="Minimal example of cross file referencing"}
+// file_a.ncl
+
+let b = import "./b.ncl" in b.field
+                              |
+                              +------+
+                                     |
+-----------------------------------  |
+                                     |
+// file_b.ncl                        |
+                                     |
+{                                    |
+  field = "field value";             |
+}  ^                                 |
+   +---------------------------------+
+```
+
+The resolution of imported values is done at evaluation time, the AST therefore only contains nodes representing the concept of an import but no not reference elements of that file. 
+NLS does ingest the AST without resolving these imports manually.
+The type checking module underlying NLS still recurses into imported files to check their formal correctness.
+As a result it would be possible for a NLS to resolve these links as an additional step in the post-processing by either inserting artificial linearization items [@sec:linearization] or merging both files' linearization entirely.
+
+##### Autocompletion
+
+Another criticized element of NLS was the autocompletion feature.
+In the survey, participants mentioned the lack of additional information and distinction of elements as well as NLS inability to provide completion for record fields.
+In Nickel, record access is declared by a period.
+An LSP client can be configured to ask for completions when such an access character is entered additionally to manual requests by the user.
+The language server is then responsible to provide a list of completion candidates depending on the context, i.e. the position.
+[Section #sec:completion] describes how NLS resolves this kind of request.
+NLS just lists all identifiers of declarations that are in scope at the given position.
+Notably, it does not take the preceding element into account as additional context.
+To support completing records, the server must first be aware of separating tokens such as the period symbol, check whether the current position is part of a token that is preceded by a separator and finally resolve the parent element to a record.
+
 
 ### Quantitative
 
@@ -284,7 +364,10 @@ This section will first introduce the dataset before looking at the general perf
 
 #### Dataset
 
-The underlying data set consists of 16760 unique trace records.
+The underlying data set consists of 16761 unique trace records, contributed by the lead developer of Nickel.
+The traces were generated during the work on different Nickel files of varying size during the course of one day.
+It is a record of both the development of entire new files and work on a bigger Nickel based project.
+
 Since the `textDocument/didOpen` method is executed on every update of the source, it greatly outnumbers the other events.
 The final distribution of methods traced is:
 
@@ -295,14 +378,21 @@ The final distribution of methods traced is:
 | `textDocument/hover`      | 227   | yes                 |
 | `textDocument/definition` | 68    | yes                 |
 | `textDocument/references` | 49    | yes                 |
-| ------------------------- | ----- | ------------------- |
+| <hr/> | <hr/> | <hr/> |
 | total                     | 16761 |                     |
 
 : Number of traces per LSP method
 
-![Distribution of linearization based LSP requests](log_analysis/figures/distribution-by-lin-size.svg){#fig:distribution-by-lin-size}
+:::{#fig:distributions}
 
-![Distribution of file analysis requests](log_analysis/figures/distribution-by-file-size.svg){#fig:distribution-by-file-size}
+![Distribution of linearization based LSP requests](log_analysis/figures/distribution-by-lin-size.svg){#fig:distribution-by-lin-size width=50%}
+![Distribution of file analysis requests](log_analysis/figures/distribution-by-file-size.svg){#fig:distribution-by-file-size width=50%}
+
+![Empirical Cumulative Distribution of linearization based LSP requests](log_analysis/figures/ecdf-by-lin-size.svg){#fig:ecdf-by-lin-size width=50%}
+![Empirical Cumulative Distribution of file analysis requests](log_analysis/figures/ecdf-by-file-size.svg){#fig:ecdf-by-file-size width=50%}
+
+Estimated distribution and empirical cumulative distributions of traced method calls.
+:::
 
 
 [Figures @fig:distribution-by-lin-size, @fig:distribution-by-file-size] break up these numbers by method and linearization size or file size respectively.
@@ -310,7 +400,7 @@ The linearization is the linear representation of an enriched AST.
 It is explained in great detail in [@sec:linearization]. 
 The first figure shows a peak number of traces for completion events between $0$ to $1$ linearization items as well as local maxima around a linearization size of $20$ to $30$ and sustained usage of completion requests in files of $90-400$ items.
 Similar to the completion requests (but well outnumbered in total counts), other methods were used mainly in the range between $200$ and $400$ linearization items.
-A visualization of the Empirical Cumulative Distribution Function (ECFD) [@fig:ecdf-distribution-by-lin-size] corroborates these findings.
+A visualization of the Empirical Cumulative Distribution Function (ECDF) [@fig:ecdf-by-lin-size;@fig:ecdf-by-file-size] corroborates these findings.
 Moreover, it shows an additional hike of Jump-to-Definition and Find-References calls at on files with around 1500 linearization items.
 The findings for linearization based methods line up with those depicting linearization events (identified as `textDocument/didOpen`).
 An initial peak referring to rather small input files between $300$ and $400$ bytes in size is followed by a sustained usage of the NLS on files with $2$ to $6$ kilobytes of content topped with a final application on $35$ kilobyte large data.
@@ -351,74 +441,7 @@ Applying the same analysis to the other methods in [@fig:correlation-hovers;@fig
 In case of the `didOpen` method columns are clearly visible too [#fig:correlation-opens].
 However, here they appear leaning as suggesting an increase in computation time as the file grows during a single series of changes to the file.
 
-## Discussion
-
-This section discusses the issues raised during the survey and uncovered through the performance tracing.
-In the first part the individual findings are summarized and if possible grouped by their common cause.
-The second part addresses each cause and connects it to the relevant architecture decisions, while explaining the reason for it and discussing possible alternatives.
-
-During the qualitative evaluation several features did not meet the expectations of the users.
-The survey also hinted performance issues that were solidified by the results of the quantitative analysis.
-
-### Diagnostics
-
-First, participants criticized [@sec:diagnostics-res] the diagnostics feature for some unhelpful error messages and specifically for not taking into account Nickel's hallmark feature, Contracts [@sec:Contracts].
-While Contracts are a central element of Nickel and relied upon to validate data, the language server does not actually warn about contract breaches.
-Yet, while contracts and their application looks similar to types, contracts are a dynamic language element which are dynamically applied during evaluation.
-Therefore, it is not possible to determine whether a value conforms to a contract without evaluation of the contract.
-NLS's is integrated with Nickel's type-checking mechanism which precedes evaluation and provides only a static representation of the source code.
-In order to support diagnostics for contracts NLS would need to locally evaluate arbitrary code that makes up contracts.
-However, contracts can not be evaluated entirely locally as they may transitively depend on other contracts.
-This is particularly true for a file's output value.
-Additionally, Contracts can implement any sort of complex computation including unbound recursion.
-Due to these caveats, evaluating contracts as part of NLS's analysis implies the evaluation of the entire code which was considered a possibly significant impact to the performance.
-As laid out above evaluating contracts locally is no option either.
-It is not only challenging to collect the minimal context of the Contract, the context may in fact be the entire program.
-An alternative option is to provide the ability to apply contracts manually using an LSP feature called "Code Lenses".
-Code Lenses are displayed by editors as annotations allowing the user to manually execute an associated action.
-
-<!-- TODO: Add nickels implementation detail of inlining contracts into the executed ast in background? -->
-
-### Cross File Navigation
-
-In both cases `Jump-To-Definition` and `Find-References` surveyed users requested support for cross file navigation.
-In particular, finding the definition of a record field of an imported record should navigate the editor to the respective file as symbolized in [@lst:imported-record-access].
-
-```{.nickel #lst:imported-record-access caption="Minimal example of cross file referencing"}
-// file_a.ncl
-
-let b = import "./b.ncl" in b.field
-                              |
-                              +------+
-                                     |
------------------------------------  |
-                                     |
-// file_b.ncl                        |
-                                     |
-{                                    |
-  field = "field value";             |
-}  ^                                 |
-   +---------------------------------+
-```
-
-The resolution of imported values is done at evaluation time, the AST therefore only contains nodes representing the concept of an import but no not reference elements of that file. 
-NLS does ingest the AST without resolving these imports manually.
-The type checking module underlying NLS still recurses into imported files to check their formal correctness.
-As a result it would be possible for a NLS to resolve these links as an additional step in the post-processing by either inserting artificial linearization items [@sec:linearization] or merging both files' linearization entirely.
-
-### Autocompletion
-
-Another criticized element of NLS was the autocompletion feature.
-In the survey, participants mentioned the lack of additional information and distinction of elements as well as NLS inability to provide completion for record fields.
-In Nickel, record access is declared by a period.
-An LSP client can to configured to ask for completions when such an access character is entered additionally to manual requests by the user.
-The language server is then responsible to provide a list of completion candidates depending on the context, i.e. the position.
-[Section #sec:completion] describes how NLS resolves this kind of request.
-NLS just lists all identifiers of declarations that are in scope at the given position.
-Notably, it does not take the preceding element into account as additional context.
-To support completing records, the server must first be aware of separating tokens such as the period symbol, check whether the current position is part of a token that is preceded by a separator and finally resolve the parent element to a record.
-
-### Performance
+#### Discussion
 
 In the experience survey performance was pointed out as a potential issue.
 Especially in connection with the diagnostics and hover feature.
