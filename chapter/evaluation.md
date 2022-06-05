@@ -41,7 +41,7 @@ This allows more actionable planning of the future development to meet user expe
 
 Runtime performance on the other hand is a quantifiable metric that is tracked objectively through time measurements.
 Runtime behavior was a central assumption during the conception of the underlying server architecture.
-As discussed in [@sec:code-analysis] NLS follows an eager, non-incremental processing model.
+As discussed in [@sec:code-analysis], NLS follows an eager, non-incremental processing model.
 <!-- While incremental implementations are more efficient, as they do not require entire files to be updated, they require explicit language support, i.e., an incremental parser and analysis.
 Implementing these functions exceeds the scope of this work.
 Choosing a non-incremental model on the other hand allowed reusing entire modules of the Nickel language.
@@ -58,12 +58,12 @@ Measuring the latency under realistic use, allows drawing conclusions about the 
 
 ### Objectives
 
-The qualitative evaluation was conducted with a strong focus on the first metric in [sec:metrics].
+The qualitative evaluation was conducted with a strong focus on the first metric in [@sec:metrics].
 Usability proves hard to quantify, as it is tightly connected to subjective perception, expectations and tolerances.
 The structure of the survey is guided by two additional objectives, endorsing the separation of individual features.
 On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
 This data is important for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) and a generic basis for other projects. 
-On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:lsp-server-implementation]), the implementation of this central structure is an essential consideration.
+On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:LSP-server-implementation]), the implementation of this central structure is an essential consideration.
 The survey should therefore also uncover apparent problems with this architecture.
 This entails the use of language abstractions (cf. [@sec:linearization]) and the integration of Nickel core functions such as the type checking procedure.
 
@@ -178,12 +178,12 @@ Therefore, the study is based on a trace file recorded individually by the lead 
 
 ### Qualitative
 
-As outlined in [#sec:qualitative-study-outline], the qualitative study consists of two parts conducted before and after an introductory workshop.
+As outlined in [@sec:qualitative-study-outline], the qualitative study consists of two parts conducted before and after an introductory workshop.
 The pre-evaluation aimed to catch the users' expected features and behaviors, while the main survey asked users about their concrete experiences with the NLS.
 
 #### Pre-Evaluation
 
-In the initial free assessment of expected features (c.f. [#sec:expected-features]) the participants unanimously identified four of the six language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications, @langserverorg]): Type-information on hover, automatic diagnostics, Code Completion and Jump-to-Definition.
+In the initial free assessment of expected features (c.f. [@sec:expected-features]) the participants unanimously identified four of the six language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications;@langserverorg]): Type-information on hover, automatic diagnostics, Code Completion and Jump-to-Definition.
 
 The other two features, Find-References and Workspace/Document Symbols on the contrary were sparingly commented.
 No participant mentioned Find-References.
@@ -299,7 +299,7 @@ Besides, documentation was reported as slow to resolve while the server itself w
 
 ##### Diagnostics
 
-First, participants criticized [@sec:diagnostics-res] the diagnostics feature for some unhelpful error messages and specifically for not taking into account Nickel's hallmark feature, Contracts [@sec:Contracts].
+First, participants criticized [@sec:diagnostics-res] the diagnostics feature for some unhelpful error messages and specifically for not taking into account Nickel's hallmark feature, Contracts [@sec:contracts].
 While Contracts are a central element of Nickel and relied upon to validate data, the language server does not actually warn about contract breaches.
 Yet, while contracts and their application looks similar to types, contracts are a dynamic language element which are dynamically applied during evaluation.
 Therefore, it is not possible to determine whether a value conforms to a contract without evaluation of the contract.
@@ -422,7 +422,7 @@ Finally, document linearization as associated with the `textDocument/didOpen` me
 ![Runtime latencies of hover requests at different linearization sizes](log_analysis/figures/correlation-hovers.svg){#fig:correlation-hovers width=50%}
 
 ![Runtime latencies of find-references requests at different linearization sizes](log_analysis/figures/correlation-references.svg){#fig:correlation-references width=50%}
-![Runtime latencies of jump-to-definition requests at different linearization sizes](log_analysis/figures/correlation-definitions.svg){#fig:correlation-definition width=50%}
+![Runtime latencies of jump-to-definition requests at different linearization sizes](log_analysis/figures/correlation-definitions.svg){#fig:correlation-definitions width=50%}
 
 
 Runtime latencies of different linearization based methods 
@@ -438,10 +438,12 @@ The height of these columns varies from one to five orders of magnitude.
 The item density shows that especially high columns form whenever the server receives a higher load of requests.
 Additionally, color coding the individual requests by time reveals that the trace points of each column were recorded at a short time interval.
 Applying the same analysis to the other methods in [@fig:correlation-hovers;@fig:correlation-references; @fig:correlation-definitions] returns similar findings, although the columns remain more compact in comparison to the Completions method.
-In case of the `didOpen` method columns are clearly visible too [#fig:correlation-opens].
+In case of the `didOpen` method columns are clearly visible too [@fig:correlation-opens].
 However, here they appear leaning as suggesting an increase in computation time as the file grows during a single series of changes to the file.
 
 #### Discussion
+
+
 
 In the experience survey performance was pointed out as a potential issue.
 Especially in connection with the diagnostics and hover feature.
@@ -453,6 +455,8 @@ However, the data distribution also confirmed that latencies for most requests e
 The `didOpen` requests which are associated with the linearization process [@sec:linearization] peak around $1ms$ but longer latencies remain frequent [@fig:latency-distribution].
 Looking deeper into the individual features, reveals signs of the aforementioned "stacking".
 As discussed in [@sec:special-cases] subsequent requests exhibit increasing processing times especially during peak usage.
+
+![Distribution of latencies by request type](log_analysis/figures/distribution-latencies.svg){#fig:correlation-opens width=50%}
 
 This behavior is caused by the architecture of the LSP and NLS' processing method.
 The Language Server Protocol is a synchronous protocol which requires the processing of all requests FIFO order.
