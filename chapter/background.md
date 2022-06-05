@@ -343,7 +343,7 @@ Records on a syntax level are Dictionaries, uniquely associating an identifier w
 
 These data types constitute a static subset of Nickel which allows writing JSON compatible expressions as shown in [@lst:nickel-static].
 
-```{.nickel #lst:nickel-static caption="Example of a static Nickel expression"}
+```{.nickel #lst:nickel-static caption="Example of a static Nickel expression. Specifically, a record (object) with two fields. All values are statically defined, i.e. not the result of a computation at runtime."}
 {
   list = [ 1, "string", null],
   "some key" = "value"
@@ -362,49 +362,66 @@ Span information of identifiers is preserved by the parser and encoded in the `I
 
 ##### Variable Reference
 
-```{.nickel #lst:nickel-let-binding caption="Let bindings and functions in nickel"}
+```{.nickel #lst:nickel-let-binding caption="Schema of let bindings and functions in Nickel."}
 
 // simple bindings
 let name = <expr> in <expr>
 let func = fun arg => <expr> in <expr>
 
-// or with patterns
+// bindings with patterns
 let name @ { field, with_default = 2 } = <expr> in <expr>
+           ^
+           + Pattern +
+                     v
 let func = fun arg @ { field, with_default = 2 } => 
   <expr> in 
   <expr>
 ```
 
+
 Let bindings in their simplest form merely bind a name to a value expression and expose the name to the inner expression.
 Hence, the `Let` node contains the binding and links to both implementation and scope subtrees.
 The binding can be a simple name, a pattern or both by naming the pattern as shown in [@lst:nickel-let-binding].
+Patterns are a shortcut to directly access the fields of a record.
+As function arguments they also serve to enforce the structure of a function input by asserting specific fields of the function.
 
 
 ```{.nickel #lst:nickel-args-function caption="Parsed representation of functions with multiple arguments"}
-fun first second => first + second
-// ...is parsed as
-fun first =>
-  fun second => first + second
+fun firstArg secondArg thirdArg
+  => firstArg + secondArg + thirdArg
+
+// ...is represented as
+
+fun firstArg =>
+  fun secondArg => 
+    fun thirdArg =>
+      firstArg + secondArg + thirdArg
 ```
 
 Functions in Nickel are curried lambda expressions.
-A function with multiple arguments gets broken down into nested single argument functions as seen in [@lst:nickel-args-function].
+A function with multiple arguments is internally represented as nested single argument functions.
+[Listing @lst:nickel-args-function] visualizes this concept.
 Function argument name binding therefore looks the same as in `let` bindings.
 
 ##### Meta Information
 
-One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
-Complementing type information, it is possible to annotate values with contracts and additional metadata such as contracts, documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
-
+One key feature of Nickel is its gradual typing system, which implies that values can be explicitly typed.
+Complementing type information, it is possible to annotate values with additional metadata such as contracts, documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
+Values are annotated using the pipe character `|` followed by either a contract that is asserted to hold for the value or other metadata as indicated by the keyword following the annotation symbol. 
+In [@lst:nickel-meta] a contract (cf. @sec:Contracts) named `Contract` is defined as a record with two fields `foo` and `hello`.
+The `foo` field is furthermore restricted to be of type `Num` (or more precisely, to comply with the `Num` Contract), and documented as *"I am foo"* using the keyword `doc`.
+The field `hello` is restricted to be of type `Str` and has a default value `"world"`.
+A record annotated with `Contract` is now expected to provide a value for `foo` of type `Num` and optionally a field `hello` of type `Str`.
 
 ```{.nickel #lst:nickel-meta caption="Example of a static Nickel expression"}
 let Contract = { 
+  
   foo | Num 
       | doc "I am foo",
+  
   hello | Str
         | default = "world"
 }
-| doc "Just an example Contract"
 in 
 let value | #Contract = { foo = 9, }
 in value == { foo = 9, hello = "world", } 
