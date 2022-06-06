@@ -127,7 +127,13 @@ jobs:
           # [[ ${{ steps.config.outputs.mode }} == "chapter" ]] && \
           git stash push
           git switch ${{env.PREVIEW_BRANCH}}
-          git merge --squash origin/${{ steps.config.outputs.ref }} -Xtheirs
+          
+          # Try merge with the new files taking precendence
+          # note: may fail if a file gets deleted in the merged branch
+          #       in that case, manually delete the conflicting files
+          git merge --squash origin/${{ steps.config.outputs.ref }} -X theirs || true
+          git diff --name-only --diff-filter=U | xargs git rm
+
           if [[ ${{ steps.config.outputs.mode }} == "chapter" ]]; then
             if [[ -z $(git diff --cached --exit-code) ]]; then
               echo "No files changed"
