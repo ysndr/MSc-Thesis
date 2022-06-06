@@ -1,0 +1,176 @@
+name: "Build and push preview"
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+    branches:
+      - main # PR into main
+      - "chapter/**" # PR on chapter branches
+
+concurrency: preview
+
+env:
+  PREVIEW_PATH: "./previews"
+  PREVIEW_BRANCH: "preview"
+
+jobs:
+  check_disabled:
+    name: Check if preview generation is paused
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.skip.outputs.skip }}
+    steps:
+      - id: skip
+        if: contains(github.event.pull_request.labels.*.name, 'no-preview') 
+        run: |
+            echo "::set-output name=skip::true"
+            echo "::warning title=Preview Disabled::Remove the \`no-preview\` label to resume building previews"
+
+
+  build:
+    name: Build Preview
+    runs-on: ubuntu-latest
+    needs: check_disabled
+    if: (! needs.check_disabled.outputs.skip)
+    steps:
+      - name: Read config
+        id: config
+        run: |
+          branch=${{ github.head_ref }}
+          input="${branch%%#*}"
+          pdf_output="${{ env.PREVIEW_PATH }}/${branch}.pdf"
+          pdf_output_url=$(python -c "import urllib.parse; import sys; print(urllib.parse.quote(sys.argv[1]))" "$pdf_output")
+          mode=$([[ "$input" == "chapter/"* ]] && echo "chapter" || echo "all")
+
+          tag="${branch#*#}"
+
+          echo "::set-output name=env::$branch"
+          echo "::set-output name=ref::$branch"
+          echo "::set-output name=input::$input"
+          echo "::set-output name=pdf_output::$pdf_output"
+          echo "::set-output name=pdf_output_url::$pdf_output_url"
+          echo "::set-output name=mode::$mode"
+          echo "::set-output name=tag::$tag"
+
+      - name: Start preview deployment
+        uses: bobheadxi/deployments@v0.6.2
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          no_override: true
+          env: ${{ steps.config.outputs.env }}
+          ref: ${{ steps.config.outputs.ref }}
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v15
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: "0"
+      - name: Setup environment
+        run: |
+
+          git config user.name "Preview Action"
+          git config user.email "notifications+thesis@ysndr.de"
+
+          # create PREVIEW_BRANCH branch if not exists
+          if [[ ! $(git rev-parse --verify origin/"${{env.PREVIEW_BRANCH}}") ]]; then
+            git branch "$PREVIEW_BRANCH" origin/main
+          else
+            # update PREVIEW_BRANCH to match main again if it does exist
+            git checkout ${{env.PREVIEW_BRANCH}}
+            git merge origin/main -X theirs
+            git checkout -
+          fi
+
+          mkdir -vp ${{env.PREVIEW_PATH}}/$(dirname ${{ steps.config.outputs.input }})
+
+      - name: Compile Chapter ${{steps.config.outputs.env}}
+        if: steps.config.outputs.mode == 'chapter'
+        run: |
+          nix develop --impure -c \
+              compile-chapter-preview ${{ steps.config.outputs.input }}.md ${{ steps.config.outputs.pdf_output }}
+
+      - name: Archive ${{ steps.config.outputs.input }}
+        if: steps.config.outputs.mode == 'chapter'
+        uses: actions/upload-artifact@v2
+        with:
+          name: chapter-plain
+          path: ${{ steps.config.outputs.pdf_output }}
+          
+      # other changes to the document not on chapter branches will be deployed as preview
+      # of the full document
+      - name: Compile PR preview
+        if: steps.config.outputs.mode == 'all'
+        run: |
+          nix develop --impure -c compile-thesis ${{ steps.config.outputs.pdf_output }}
+          nix develop --impure -c compile-toc ${{ env.PREVIEW_PATH }}/${{steps.config.outputs.input}}.toc.pdf
+
+      - name: Archive PR preview
+        if: steps.config.outputs.mode == 'all'
+        uses: actions/upload-artifact@v2
+        with:
+          name: preview-complete
+          path: ${{ steps.config.outputs.pdf_output }}
+
+      - name: Prepare preview branch
+        run: |
+          git add ${{env.PREVIEW_PATH}}
+          # TODO: review this logic
+          # [[ ${{ steps.config.outputs.mode }} == "chapter" ]] && \
+          git stash push
+          git switch ${{env.PREVIEW_BRANCH}}
+          git merge --squash origin/${{ steps.config.outputs.ref }} -Xtheirs
+          if [[ ${{ steps.config.outputs.mode }} == "chapter" ]]; then
+            if [[ -z $(git diff --cached --exit-code) ]]; then
+              echo "No files changed"
+            else
+              git commit --no-edit 
+            fi
+          else
+            echo "Non chapter branch, not committing proposed changes"
+            git reset
+          fi
+          # TODO: Same logic to review
+          # [[ ${{ steps.config.outputs.mode }} == "chapter" ]] && \
+          git checkout stash -- ${{ env.PREVIEW_PATH }}
+          exit 0
+
+      - name: Compile document preview
+        if: steps.config.outputs.mode == 'chapter'
+        run: |
+          nix develop --impure -c compile-thesis ${{env.PREVIEW_PATH}}/latest.pdf
+          nix develop --impure -c compile-toc ${{env.PREVIEW_PATH}}/latest.toc.pdf
+
+      - name: Archive document preview
+        if: steps.config.outputs.mode == 'chapter'
+        uses: actions/upload-artifact@v2
+        with:
+          name: preview-complete
+          path: ${{env.PREVIEW_PATH}}/latest.pdf
+
+      - name: Commit and push to branch
+        run: |
+          git add ${{env.PREVIEW_PATH}}
+          git commit -m "Build single and combined preview for \"${{ steps.config.outputs.env }}\"" -m ${{github.sha}} || echo "No files changed"
+          git push -u origin ${{env.PREVIEW_BRANCH}}
+
+          echo "PREVIEW_REF=$(git rev-parse --verify --short ${{env.PREVIEW_BRANCH}})" >> $GITHUB_ENV
+
+      - name: Update deployment status
+        uses: bobheadxi/deployments@v0.6.2
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          auto_inactive: false
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: "https://github.com/${{github.repository}}/tree/${{env.PREVIEW_REF}}/${{ steps.config.outputs.pdf_output_url }}"
