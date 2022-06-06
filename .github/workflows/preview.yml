@@ -111,7 +111,7 @@ jobs:
         if: steps.config.outputs.mode == 'all'
         run: |
           nix develop --impure -c compile-thesis ${{ steps.config.outputs.pdf_output }}
-          nix develop --impure -c compile-toc ${{steps.config.outputs.input}}.toc.pdf
+          nix develop --impure -c compile-toc ${{ env.PREVIEW_PATH }}/${{steps.config.outputs.input}}.toc.pdf
 
       - name: Archive PR preview
         if: steps.config.outputs.mode == 'all'
