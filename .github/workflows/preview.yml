@@ -86,7 +86,7 @@ jobs:
           else
             # update PREVIEW_BRANCH to match main again if it does exist
             git checkout ${{env.PREVIEW_BRANCH}}
-            git merge origin/main
+            git merge origin/main -X theirs
             git checkout -
           fi
 
