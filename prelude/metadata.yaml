@@ -1,5 +1,29 @@
 ---
+documentclass: scrreport
+
 autoSectionLabels: true
 header-includes:
   - \AtBeginDocument{\floatplacement{codelisting}{H}}
+  - |
+    \usepackage{lscape}
+    \newcommand{\bls}{\begin{landscape}}
+    \newcommand{\els}{\end{landscape}}
+
+author:
+  - "**Student:** Yannik Sander"
+  - "**Supervisor (Tweag):** Yann Hamdaoui"
+  - "**Supervisor (KTH):** Martin Monperrus"
+  - "**Examiner:** Roberto Guanciale"
+date: \today
+
+title: Design and Implementation of the Language Server Protocol for the Nickel Language
+abstract: |
+  The expansive Language Integration, i.e. code completion, debugging as well as static code analysis, refactoring and more, has typically been the hallmark of Integrated Development Environments (IDE).
+  Typical IDEs however focus on a selection of established languages to integrate which stifles the adoption of new languages.
+  Contrasting IDEs, modular text editors allow for plugin driven integration of languages as contributed by their respective communities.
+  Yet, providing language integration to multiple platforms requires repeated efforts for each one.
+  The Language Server Protocol aims to be a solution to this problem by connecting a language specific Language Server to editors which act as generic clients.
+  This work presents the design of a transferable Language Server architecture and its implementation for the Nickel languages.
+  The product is finally evaluated quantitatively for its performance and qualitatively for its perception by future users.
+
 ...
