@@ -1,8 +1,22 @@
 ---
+documentclass: scrreport
+
 autoSectionLabels: true
 header-includes:
   - \AtBeginDocument{\floatplacement{codelisting}{H}}
+  - |
+    \usepackage{lscape}
+    \newcommand{\bls}{\begin{landscape}}
+    \newcommand{\els}{\end{landscape}}
 
+author:
+  - "**Student:** Yannik Sander"
+  - "**Supervisor (Tweag):** Yann Hamdaoui"
+  - "**Supervisor (KTH):** Martin Monperrus"
+  - "**Examiner:** Roberto Guanciale"
+date: \today
+
+title: Design and Implementation of the Language Server Protocol for the Nickel Language
 abstract: |
   The expansive Language Integration, i.e. code completion, debugging as well as static code analysis, refactoring and more, has typically been the hallmark of Integrated Development Environments (IDE).
   Typcal IDEs however focus on a selection of estabished languages to integrate which stifles the adoption of new languages.
