@@ -3,6 +3,8 @@
 [Section @sec:design-and-implementation] described the implementation of the Nickel Language Server addressing the first research question stated in [@sec:research-questions].
 Proving the viability of the result and answering the second research question demands an evaluation of different factors.
 
+## Metrics
+
 Earlier, the most important metrics of interest were identified as:
 
 Usability
@@ -63,7 +65,7 @@ Usability proves hard to quantify, as it is tightly connected to subjective perc
 The structure of the survey is guided by two additional objectives, endorsing the separation of individual features.
 On one hand, the survey should inform the future development of NLS; which feature has to be improved, which bugs exist, what do users expect.
 This data is important for NLS both as an LSP implementation for Nickel (affecting the perceived maturity of Nickel) and a generic basis for other projects. 
-On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:LSP-server-implementation]), the implementation of this central structure is an essential consideration.
+On the other hand, since all features are essentially queries to the common linearization data structure (cf. [@sec:lsp-server-implementation]), the implementation of this central structure is an essential consideration.
 The survey should therefore also uncover apparent problems with this architecture.
 This entails the use of language abstractions (cf. [@sec:linearization]) and the integration of Nickel core functions such as the type checking procedure.
 
@@ -178,12 +180,12 @@ Therefore, the study is based on a trace file recorded individually by the lead 
 
 ### Qualitative
 
-As outlined in [@sec:qualitative-study-outline], the qualitative study consists of two parts conducted before and after an introductory workshop.
+As outlined in [@sec:qualitative-methods], the qualitative study consists of two parts conducted before and after an introductory workshop.
 The pre-evaluation aimed to catch the users' expected features and behaviors, while the main survey asked users about their concrete experiences with the NLS.
 
 #### Pre-Evaluation
 
-In the initial free assessment of expected features (c.f. [@sec:expected-features]) the participants unanimously identified four of the six language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications;@langserverorg]): Type-information on hover, automatic diagnostics, Code Completion and Jump-to-Definition.
+In the initial free assessment of expected features (c.f. [@sec:pre-workshop-evaluation]) the participants unanimously identified four of the six language server capabilities that guided the implementation of the project (c.f. [@sec:commands-and-notifications;@sourcegraphLangserverOrg]): Type-information on hover, automatic diagnostics, Code Completion and Jump-to-Definition.
 
 The other two features, Find-References and Workspace/Document Symbols on the contrary were sparingly commented.
 No participant mentioned Find-References.
@@ -240,7 +242,7 @@ It first looks at a summary of the data, before diving into the comments for eac
 User responses regarding general experience, fulfillment of expectations and general satisfaction.
 :::
 
-[Figures @fig:results-comp-experience;-@fig:results-comp-satisfaction,;-@fig:results-comp-expectations] show the turnout of three items from the survey for each of the relevant features.
+[Figures @fig:results-comp-experience;-@fig:results-comp-satisfaction;-@fig:results-comp-expectations] show the turnout of three items from the survey for each of the relevant features.
 Neither of them exhibits clear trends with positive and negative results distributed almost evenly between positive and negative sentiment.
 
 
@@ -359,7 +361,7 @@ To support completing records, the server must first be aware of separating toke
 ### Quantitative
 
 The quantitative evaluation focuses on the performance characteristics of NLS.
-As described in [@sec:eval-methods-quantitative] a tracing module was embedded into the NLS binary which recorded the runtime together with the size of the analyzed data, i.e., the number of linearization items [@sec:linearization] or size of the analyzed file.
+As described in [@sec:quantitative-methods] a tracing module was embedded into the NLS binary which recorded the runtime together with the size of the analyzed data, i.e., the number of linearization items [@sec:linearization] or size of the analyzed file.
 This section will first introduce the dataset before looking at the general performance and finally looking into particular cases.
 
 #### Dataset
@@ -452,7 +454,7 @@ While commands resolved "instantaneously" on unmodified files, editing a file ca
 An analysis of the measured runtime of $16761$ requests confirmed that observation.
 Both Hover and Update requests showed a wide range of latencies with some reaching more than two minutes.
 However, the data distribution also confirmed that latencies for most requests except `didOpen` are distributed well below one millisecond.
-The `didOpen` requests which are associated with the linearization process [@sec:linearization] peak around $1ms$ but longer latencies remain frequent [@fig:latency-distribution].
+The `didOpen` requests which are associated with the linearization process (c.f. [@sec:linearization]) peak around $1ms$ but longer latencies remain frequent: [@fig:distribution-latencies].
 Looking deeper into the individual features, reveals signs of the aforementioned "stacking".
 As discussed in [@sec:special-cases] subsequent requests exhibit increasing processing times especially during peak usage.
 
