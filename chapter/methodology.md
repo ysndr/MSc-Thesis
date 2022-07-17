@@ -13,7 +13,7 @@ The following points are considered key objectives of this thesis implemented in
 
 The usefulness of a language server correlates with its performance.
 It may cause stutters in the editor, or prompt users to wait for responses when upon issuing LSP commands.
-Different studies suggest that interruptions are detrimentatl to programmers productivity [@interruption-1, @interruption-2]. The more often and longer a task is interrupted the higher the frustration.
+Different studies suggest that interruptions are detrimental to programmers productivity [@interruption-1, @interruption-2]. The more often and longer a task is interrupted the higher the frustration.
 Hence, as called for in RQ.1 (cf. [@sec:research-questions]), a main criterion for the language server is its performance.
 
 Speaking of language servers there are two tasks that require processing, and could potentially cause interruptions.
@@ -28,7 +28,7 @@ Moreover, the order of requests has to be maintained.
 Since many requests are issued implicitly by the editor, e.g., hover requests, there is a risk of request queuing which could delay the processing of explicit commands.
 It is therefore important to provide nearly instantaneous replies to requests.
 
-It is to mention that the LSP defines "long running" requests, that may run in the background.
+It is to mention that the LSP defines "long-running" requests, that may run in the background.
 This concept mitigates queuing but can lead to similarly bad user experience as responses appear out of order or late.
 
 ### Capability
@@ -69,8 +69,7 @@ Also, the Language servers should not depend on the implementation of Nickel (e.
 ## Design Decisions
 
 [Section @sec:considerable-dimensions] introduced several considerations with respect to the implementation of language servers.
-Additionally, in [@sec:representative-lsp-projects] presents examples of different servers which guided the decisions made while implementing the NLS. 
-Additionally, in [@sec:representative-lsp-projects] presents examples of different servers which guided the decisions made while implementing the NLS. 
+Additionally, in [@sec:representative-lsp-projects] presents examples of different servers which guided the decisions made while implementing the NLS.  
 
 ### Programming language
 
@@ -82,7 +81,7 @@ In fact, using any other language was never considered since that would have req
 
 Additionally, Rust has proven itself as a language for LSP Servers.
 Lastly, Rust has already been employed by multiple LSP servers [@lib.rs#language-servers] which created a rich ecosystem of server abstractions.
-For instance the largest and most advaced LSP implementation in Rust -- the Rust Analyzer [@rust-analyzer] -- has contributed many tools such as an LSP server interface [@lsp-server-interface] and a refactoring oriented syntax tree represation [@rowan].
+For instance the largest and most advanced LSP implementation in Rust -- the Rust Analyzer [@rust-analyzer] -- has contributed many tools such as an LSP server interface [@lsp-server-interface] and a refactoring oriented syntax tree representation [@rowan].
 Additionally, lots of smaller languages [@gluon, @slint, @mojom] implement Language Servers in Rust.
 Rust appears to be a viable choice even for languages that are not originally implemented in Rust, such as Nix [@nix, @rninx-lsp].
 
@@ -98,7 +97,7 @@ The developer in turn needs to be aware of the implications of stack or heap loc
 A different kind of safety is *type* safety which is an implication of Rust's strong type system and `trait` based generics.
 Type-safe languages such as Rust enforce explicit usage of data types for variables and function definitions.
 Type annotations ensure that methods and fields can be accessed as part of the compilation saving users from passing incompatible data to functions.
-This eliminating a common runtime failures as seen in dynamic languages like Python or JavaScript.
+This eliminates common runtime failures as they occur in dynamic languages like Python or JavaScript.
 Finally, as Rust leverages the LLVM infrastructure and requires no runtime, its performance rivals the traditional C languages.
 
 
@@ -121,9 +120,9 @@ Incremental parsing, type-checking and analysis can still be implemented as a se
 Code analysis approaches as introduced in [@sec:considerable-dimensions] can have both *lazy* and *eager* qualities.
 Lazy solutions are generally more compatible with an incremental processing model, since these aim to minimizing the change induced computation.
 NLS prioritizes to optimize for efficient queries to a pre-processed data model.
-Similar to the file processing argument in [@sec:file-pressng], it is assumed that Nickel project's size allows for efficient enough eager analysis prioritizing a more straight forward implementation over optimized performance.
+Similar to the file processing argument in [@sec:file-processing], it is assumed that Nickel project's size allows for efficient enough eager analysis prioritizing a more straight forward implementation over optimized performance.
 
-An example workflow of both lazy and eager processing is examplified in the sequence diagrams [@fig:nls-lazy-processing-seq] and [@fig:nls-eager-processing-seq] respectively.
+An example workflow of both lazy and eager processing is exemplified in the sequence diagrams [@fig:nls-lazy-processing-seq] and [@fig:nls-eager-processing-seq] respectively.
 As mentioned in the previous paragraph, it is assumed that the performance gains of direct lookup after an "Ahead of time analysis", outperform the lazy analysis in terms of responsiveness.
 At the same time the initial analysis is expected to complete in reasonably short time for typical Nickel workflows.
 
@@ -151,7 +150,7 @@ The core group labeled "Language Server", contains modules concerning both the s
 The analysis is base on an internal representation of source code called `Linearization` which can be in one of two states, namely `Building` or `Completed`.
 Either state manages an array of items (`LinearizationItems`) that are derived from AST nodes as well as various metadata facilitating the actions related to the state.
 The `LinearizationItem` is an abstract representation of code units represented by AST nodes or generated to support an AST derived item.
-Items associate a certain span with its type, metadata, scope and a unique id, making it referable to.
+Items associate a certain span with its type, metadata, scope and a unique ID, making it referable to.
 Additionally, `LinearizationItem`s are assigned a `TermKind` which distinguishes different functions of the item in the context of the linearization.
 The building of the linearization is abstracted in the `Linearizer` trait.
 Implementors of this trait convert AST nodes to linearization items and append said items to a shared linearization in the building state.
@@ -285,31 +284,31 @@ Any other kind of structure, for instance, primitive values (Strings, numbers, b
 
 To separate the phases of the elaboration of the linearization in a type-safe way, the implementation is based on type-states[@typestate].
 Type-states were chosen over an enumeration based approach for the additional flexibility they provide to build a generic interface.
-First, type-states allow to implement separate utility methods for either state and enforce specific states on the type level.
+First, type-states allow implementing separate utility methods for either state and enforce specific states on the type level.
 Second the `Linearization` struct provides a common context for all states like an enumeration, yet statically determining the Variant.
 Additionally, the `Linearizer` trait can be implemented for arbitrary `LinearizationState`s.
 This allows other LSP implementations to base on the same core while providing, for example, more information during the building phase.
-The unit type `()` is a so called "zero sized type" [@zero-sized-type), it represents the absence of a value.
+The unit type `()` is a so-called "zero sized type" [@zero-sized-type], it represents the absence of a value.
 NLS provides a `Linearizer` implementation based on unit types and empty method definitions.
 As a result, the memory footprint of this linearizer is effectively zero and most method calls will be removed as part of compile time optimizations. 
 
 NLS defines two type-state variants according to the two phases of the linearization: `Building` and `Completed`.
 
 
-building phase:
+Building phase:
   ~ A linearization in the `Building` state is a linearization under construction.
     It is a list of `LinearizationItem`s of unresolved type, appended as they are created during a depth-first traversal of the AST.
   ~ During this phase, the `id` affected to a new item is always equal to its index in the array.
   ~ The Building state also records the definitions in scope of each item in a separate mapping.
 
-post-processing phase:
+Post-Processing phase:
   ~ Once fully built, a Building instance is post-processed to get a `Completed` linearization.
   ~ Although fundamentally still represented by an array, a completed linearization is optimized for search by positions (in the source file) thanks to sorting and the use of an auxiliary map from `id`s to the new index of items.
   ~ Additionally, missing edges in the usage graph have been created and the types of items are fully resolved in a completed linearization.
 
 Type definitions of the `Linearization` as well as its type-states `Building` and `Completed` are listed in [@lst:nickel-definition-lineatization;@lst:nls-definition-building-type;@lst:nls-definition-completed-type].
 As hinted above, the `Linearization` struct acts as the overarching context only.
-Therefore it is similar to an enumeration where the concrete variants are unknown but statically determined at compile time.
+Therefore, it is similar to an enumeration where the concrete variants are unknown but statically determined at compile time.
 The `LinearizationState`s can be implemented according to the needs of the Linearizer implementation of the LSP server built on top of the core module.
 Note that only the former is defined as part of the Nickel libraries, the latter are specific implementations for NLS.
 
@@ -462,7 +461,7 @@ Every item generated by the same linearizer is associated with the `ScopeId` of 
 A scope branch during the traversal of the AST is indicated through the `Linearizer::scope()` method.
 The `Linearizer::scope()` method creates a new linearizer instance with a new `ScopeId`.
 A `ScopeId` in turn is a "scope path", a list of path elements where the prefix is equal to the parent scope's `ScopeId`.
-[Listing @lst:nickel-scope-example] shows the scopes for a simple expression in Nickel explictly.
+[Listing @lst:nickel-scope-example] shows the scopes for a simple expression in Nickel explicitly.
 
 
 
@@ -779,14 +778,14 @@ The complete process looks as follows:
 3. NLS then stores the `id` of the parent as well as the fields and the offsets of the corresponding items (`n-4` and `[(apiVersion, n-3), (containers, n-2), (metadata, n-1)]` respectively in the example [@fig:nls-lin-records]).
 4. The `scope` method will be called in the same order as the record fields appear.
    Using this fact, the `scope` method moves the data stored for the next evaluated field into the freshly generated `Linearizer`
-5. **(In the sub-scope)** The `Linearizer` associates the `RecordField` item with the (now known) `id` of the field's value.
+5. **In the sub-scope** The `Linearizer` associates the `RecordField` item with the (now known) `id` of the field's value.
    The cached field data is invalidated such that this process only happens once for each field.
 
 
 ##### Variable Reference
 
 The usage of a variable is always expressed as a `Var` node that holds an identifier.
-Registering a name usage is a multi-step process.
+Registering a name usage is a multistep process.
 
 First, NLS tries to find the identifier in its scope-aware name registry.
 If the registry does not contain the identifier, NLS will linearize the node as `Unbound`.
@@ -821,7 +820,7 @@ digraph G {
     node [shape=record]
     spline=false
     /* Entities */
-    record_x [label="Record|\{y,z\}"]
+    record_x [label="Record|\{y, z\}"]
     field_y [label="Field|y"]
     field_z [label="Field|z"]
 
@@ -1016,7 +1015,7 @@ If no field with that name is present or the parent points to a `Structure` or `
 Nickel features type inference in order to relieve the programmer of the burden of writing a lot of redundant type annotations.
 In a typed block, the typechecker is able to guess the type of all the values, even when they are not explicitly annotated by the user.
 To do so, the typechecker generates constraints derived from inspecting the AST, and solve them along the way.
-As a consequence, when a node is first encountered by NLS, its type is not necessarily  known.
+As a consequence, when a node is first encountered by NLS, its type is not necessarily known.
 There, the typechecker associate to the new node a so-called unification variable, which is a placeholder for a later resolved type.
 This unification variable is handed down to the `Linearizer`.
 
@@ -1028,7 +1027,7 @@ Similar to runtime processing, NLS needs to resolve the final types separately. 
 
 #### Resolving by position
 
-As part of the post-processing step discussed in [@sec:post-processing], the `LinearizationItem`s in the completed linearization are reorderd by their occurence of the corresponding AST node in the source file.
+As part of the post-processing step discussed in [@sec:post-processing], the `LinearizationItem`s in the completed linearization are reordered by their occurrence of the corresponding AST node in the source file.
 To find items in this list three preconditions have to hold:
 
 1. Each element has a corresponding span in the source
@@ -1143,7 +1142,7 @@ This section describes how NSL uses the linearization described in [@sec:lineari
 
 ### Server Interface
 
-As mentioned in [@sec:programming-language] the Rust language ecosystem maintains several porjects supporting the development of LSP compliant servers.
+As mentioned in [@sec:programming-language] the Rust language ecosystem maintains several projects supporting the development of LSP compliant servers.
 NLS is based on the `lsp-server` crate [@lsp-server-crate], a contribution by the Rust Analyzer, which promises long-term support and compliance with the latest LSP specification.
 
 Referring to [@fig:class-diagram], the `Server` module represents the main server binary.
