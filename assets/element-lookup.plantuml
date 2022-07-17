@@ -1,0 +1,47 @@
+@startuml
+start
+floating note right
+    **Inputs:**
+    linearization
+    cursor position (file, location)
+end note
+
+
+:binary search linearization:
+
+""item.file == file"" and 
+""item.position == position"";
+
+if (element found) then (exact match at ""idx"")
+    while (linearization[idx+1].position == position) 
+    :set ""idx = idx+1"";
+    endwhile
+    stop
+else (possible match)
+    repeat
+        :set  ""idx = idx-1"";
+        if (""linearization[idx]"" in ""file"") then (possible match)
+            if (position inside span of ""linearization[idx]"") then (match)
+                stop
+            else (no match, check next element)
+            endif
+        else (no match)
+        
+            note right
+                items are ordered by file
+                reading an item from a different ""file"" means:
+                all items from the matching file
+                have been visited without a match
+            end note
+        endif
+    repeat while (idx > 0) is (check next preceding element)
+    end
+    floating note right
+       no match in all preceding items
+    end note
+endif
+
+
+
+
+@enduml

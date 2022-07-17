@@ -1,0 +1,225 @@
+@startuml
+skinparam linetype ortho
+skinparam groupInheritance 2
+
+package "Language Server Abstraction" {
+
+    package Analysis {
+
+        class Linearizer << (T,coral) >> {
+            -- Associated Types --
+            type Building;
+            type Completed;
+            type CompletionExtra;
+
+            -- Methods --
+            + add_term(\n\
+            &mut self,\n\
+            &mut Linearization<Self::Building>,\n\
+            &Term,\n\
+            TermPos,\n\
+            TypeWrapper
+            )
+
+            +complete(Linearization<Self::Building>)\n\t-> Linearization<Self::Completed>
+
+        }
+
+        class Linearization<T: LinearizationState> << (S,steelblue) >> {
+            - state : T
+            - update_file(FileId, String)
+        }
+
+
+        class LinearizationState << (T,coral) >> {}
+
+        class Building << (S,steelblue) >> {
+            + Vec<LinearizationItem<Unresolved>>,
+            + scope: HashMap<Scope, Vec<ID>>,
+        }
+
+        class Completed << (S,steelblue) >> {
+            + Vec<LinearizationItem<Unresolved>>,
+            - scope: HashMap<Scope, Vec<ID>>,
+            - id_to_index: HashMap<ID, usize>,
+
+            --
+            + get_item(&self, usize) \n\
+            -> Option<&LinearizationItem<Resolved>>
+            + get_in_scope(&self, LinearizationItem<Resolved>)\n\
+            -> Vec<&LinearizationItem<Resolved>>
+            + item_at(&self,&Location) \n\
+            -> Option<&LinearizationItem<Resolved>>
+        }
+
+        class LinearizationItem<S: ResolutionState> << (S,steelblue) >> {
+            + id: usize,
+            + pos: RawSpan,
+            + ty: S,
+            + kind: TermKind,
+            + scope: Scope,
+            + meta: Option<MetaValue>,
+        }
+
+
+        class StubHost << (S,steelblue) >> {
+        }
+
+        class "Linearizer for StubHost" as impl_linearizer_for_StubHost << (I,lime) >> {
+            -- Associated Types --
+            type Building = ();
+            type Completed = ();
+        }
+
+    }
+
+    package "LSP Implementations" {
+        class Handler <R: RequestParams> << (T,coral) >> {
+            + handle(Server, R, &Linearization<Completed>)
+        }
+
+        class GoToRef << (S,steelblue) >> {}
+        class GoToDef << (S,steelblue) >> {}
+        class Complete << (S,steelblue) >> {}
+        class Symbols << (S,steelblue) >> {}
+        class Hover << (S,steelblue) >> {}
+    }
+
+
+    package "Support Types" {
+        class Scope << (S,steelblue) >> {}
+        class ScopeId << (S,steelblue) >> {}
+        class Environment << (S,steelblue) >> {}
+        class TermKind << (S,steelblue) >> {}
+    }
+}
+
+package nls {
+
+    class Server << (S,steelblue) >> {
+        - cache: HashMap<FileId, Linearization<Completed>>
+
+        ~ receive(Request)
+        ~ reply(Response)
+    }
+
+    class AnalysisHost << (S,steelblue) >> {
+        - env: Environment,
+        - scope: Scope,
+        - next_scope_id: ScopeId,
+        - meta: Option<MetaValue>,
+        - let_binding: Option<ID>,
+        - access: Option<Vec<Ident>>,
+        - {field} record_fields: Option<(ID, Vec<(ID, Ident)>)>,
+    }
+
+    class "Linearizer for AnalysisHost" as impl_linearizer_for_AnalysisHost << (I,lime) >> {
+        -- Associated Types --
+        type Building = Building;
+        type Completed = Completed;
+    }
+
+}
+
+package Nickel {
+
+    package types {
+
+        circle MetaValue << (S,steelblue) >> {}
+
+        circle Term << (S,steelblue) >> {}
+
+        circle RawSpan << (S,steelblue) >> {}
+
+        circle Ident << (S,steelblue) >> {}
+
+        circle TypeWrapper << (S,steelblue) >> {}
+
+    }
+
+    class Parser << (S,steelblue) >> {
+        parse(String) -> Term
+    }
+
+    class TypeChecker<S: Linearizer> << (S,steelblue) >> {
+        type_check(S, Term)
+    }
+
+    class "Nickel" as Nickel_bin << (S,steelblue) >>  {
+
+    }
+
+}
+
+AnalysisHost ..|> Linearizer
+impl_linearizer_for_AnalysisHost . (AnalysisHost, Linearizer) : "Implementation"
+
+StubHost ..|> Linearizer
+impl_linearizer_for_StubHost . (StubHost, Linearizer) : "Implementation"
+
+' impl_linearizer_for_AnalysisHost ..> Building
+' impl_linearizer_for_AnalysisHost ..> Completed
+
+
+
+Completed ..|> LinearizationState
+Completed o--> "*" LinearizationItem
+' Completed o--> Scope
+
+
+Building o--> "*" LinearizationItem
+Building ..|> LinearizationState
+
+' Building o--> Scope
+
+' AnalysisHost o--> Scope
+' AnalysisHost o--> ScopeId
+' AnalysisHost o--> Environment
+' AnalysisHost o--> MetaValue
+' AnalysisHost o--> Ident
+
+Linearizer *..|> Linearization
+' Linearizer ..> Term
+' Linearizer ..> TypeWrapper
+' Linearizer ..> Ident
+
+
+' LinearizationItem o--> RawSpan
+' LinearizationItem o--> Scope
+' LinearizationItem o--> TermKind
+' LinearizationItem o--> MetaValue
+
+Scope o--> ScopeId
+
+Server o--> Completed
+Server ..> AnalysisHost
+Server ..> TypeChecker
+Server ..> Parser : "S = AnalysisHost"
+
+Server ..> GoToRef
+Server ..> GoToDef
+Server ..> Complete
+Server ..> Symbols
+Server ..> Hover
+
+GoToRef ..|> "R = GoToRefParams" Handler
+GoToDef  ..|>"R = GoToDefParams" Handler
+Complete  ..|>"R = CompletionParams" Handler
+Symbols ..|>"R = SymbolsParams" Handler
+Hover ..|> "R = HoverParams" Handler
+
+TypeChecker *..|> Linearizer
+
+Nickel_bin ..> StubHost
+Nickel_bin ..Parser : "S = StubHost"
+Nickel_bin ..> TypeChecker
+' Parser ..> Term
+
+
+
+
+
+
+
+
+@enduml
