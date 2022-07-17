@@ -456,7 +456,7 @@ The `didOpen` requests which are associated with the linearization process [@sec
 Looking deeper into the individual features, reveals signs of the aforementioned "stacking".
 As discussed in [@sec:special-cases] subsequent requests exhibit increasing processing times especially during peak usage.
 
-![Distribution of latencies by request type](log_analysis/figures/distribution-latencies.svg){#fig:correlation-opens width=50%}
+![Distribution of latencies by request type](log_analysis/figures/distribution-latencies.svg){#fig:distribution-latencies width=50%}
 
 This behavior is caused by the architecture of the LSP and NLS' processing method.
 The Language Server Protocol is a synchronous protocol which requires the processing of all requests FIFO order.
@@ -475,7 +475,7 @@ The most approachable way to reduce queue sizes is to reduce the number of reque
 The `didOpen` trace elements actually represents the joint processing path of initial file openings, and changes.
 NLS configures clients to signal changes both on save and following editor defined "change".
 The fact that it is the editor's responsibility to define what constitutes a change means that some editors send invoke the server on every key press.
-In [@fig:correlation-opens] signs for such a behavior can be seen as local increases of processing time as the document grows.
+In [@fig:distribution-latencies] signs for such a behavior can be seen as local increases of processing time as the document grows.
 Hence, restricting analysis to happen only as the user saves the document could potentially reduce the load of requests substantially.
 Yet, many users preferred automatic processing to happen while they type.
 To server this pattern, NLS could implement a debouncing mechanism for the processing of document changes.
