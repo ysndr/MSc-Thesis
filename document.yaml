@@ -5,3 +5,7 @@ variables:
 number-sections: true
 
 top-level-division: chapter
+
+metadata:
+  bibliography: ./Thesis.bib
+  csl: ./citation-style.csl

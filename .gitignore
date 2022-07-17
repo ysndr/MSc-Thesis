@@ -1,3 +1,4 @@
 **/*.pdf
 !previews/**/*.pdf
+plantuml-images/
 .direnv/
