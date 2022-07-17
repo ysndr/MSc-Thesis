@@ -14,7 +14,7 @@ The Language Server Protocol is a JSON-RPC based communication specification com
 The LSP decouples the development of clients and servers, allowing developers to focus on either side.
 The LSP defines several capabilities -- standardized functions which are remotely executed by the language server.
 LSP Clients are often implemented as editor extensions facilitating abstraction libraries helping with the interaction with the protocol and editor interface.
-Language Servers analyse source code sent by the client and may implement any number of 
+Language Servers analyze source code sent by the client and may implement any number of 
 capabilities relevant to the language.
 Since the LSP is both language and editor independent, the same server implementation can serve all LSP compliant clients eliminating the need to redundantly recreate the same code intelligence for every editor.
   
@@ -25,7 +25,7 @@ If supported by both server and client, the LSP now supports more than 24 langua
 
 ### JSON-RPC
 
-the LSP uses JSON-RPC to communicate between a language server and a client.
+The LSP uses JSON-RPC to communicate between a language server and a client.
 JSON-RPC (v2) [@JSONRPCSpecification2013] is a JSON based lightweight transport independent remote procedure call [@birrellImplementingRemoteProcedure1984] protocol. 
 
 RPC is a paradigm that allows clients to virtually invoke a method at a connected process.
@@ -57,10 +57,10 @@ The largest group are commands that are relevant in the scope of the currently o
 In total the LSP defines 33 [@microsoftLanguageServerProtocol2020] of such "Language Features".
 Editors will notify the server about file changes and client side interaction, i.e., opening, closing and renaming files using "Document Synchronization" methods.
 While most commands are defined in the document scope, i.e., a single actively edited file, the LSP allows clients to communicate changes to files in the opened project.
-This so called workspace comprises on or more root folders managed by the editor and all files contained in them.
+This so-called workspace comprises on or more root folders managed by the editor and all files contained in them.
 "Workspace Features" allow the server to intercept file creation, renaming or deletion to make changes to existing sources in other files.
 Use cases of these features include updating import paths, changing class names and other automations that are not necessary local to a single file.
-In addition, the LSP specifies so called "Window Features" which allow the server to control parts of the user interface of the connected editor.
+In addition, the LSP specifies so-called "Window Features" which allow the server to control parts of the user interface of the connected editor.
 For instance, servers may instruct clients to show notifications and progress bars or open files.
 
 
@@ -92,7 +92,7 @@ The completion can be invoked manually or upon entering language defined trigger
 The completion request contains the current cursor position, allowing the language server to resolve contextual information based on an internal representation of the document.
 In the example ([@fig:lsp-capability-complete]) the completion feature suggests related identifiers for the incomplete function call "`pr`*`int`*".
 
-![](examples/complete.png){#fig:lsp-capability-hover caption="Completion options resolved by the Python language server in Visual Studio Code"}
+![Completion options resolved by the Python language server in Visual Studio Code](examples/complete.png){#fig:lsp-capability-complete}
 
 
 #### Hover
@@ -104,7 +104,7 @@ If the language server has indexed any information corresponding to the position
 Language servers typically use this to communicate type-signatures or documentation.
 An example can be seen in [@fig:lsp-capability-hover].
 
-![](examples/hover.png){#fig:lsp-capability-hover caption="Hover information displayed by the Python language server in Visual Studio Code"}
+![Hover information displayed by the Python language server in Visual Studio Code](examples/hover.png){#fig:lsp-capability-hover}
 
 
 #### Jump to Definition
@@ -115,7 +115,7 @@ The LSP allows users to navigate their code by the means of symbols by finding t
 Symbols can be for instance variable names or function calls.
 As seen in [@fig:lsp-capability-definition], editors can use the available information to enrich hover overlays with the hovered element's definition.
 
-![](examples/definition.png){#fig:lsp-capability-hover caption="Hover information enriched with the definition. Python language server in Visual Studio Code"}
+![Hover information enriched with the definition. Python language server in Visual Studio Code](examples/definition.png){#fig:lsp-capability-definition}
 
 
 #### Find References
@@ -125,13 +125,13 @@ As seen in [@fig:lsp-capability-definition], editors can use the available infor
 Finding references is the inverse operation to the previously discussed *Jump to Definition* ([cf. @sec:jump-to-definition]).
 For a given symbol definition, for example variable, function, function argument or record field the LSP provides all usages of the symbol allowing users to inspect or jump to the referencing code position.
 
-![](examples/references.png){#fig:lsp-capability-hover caption="Listing of all references to the method "hello". Python language server in Visual Studio Code"}
+![Listing of all references to the method "hello". Python language server in Visual Studio Code](examples/references.png){#fig:lsp-capability-jump-to-definition}
 
-#### Workspace/Document symbols
+#### Workspace/Document Symbols
 
 *RPC Method: [`textDocument/workspaceSymbol`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workspace_symbol) or [`textDocument/documentSymbol`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol)*
 
-The symbols capability is defined as both a "Language Feature" and "Workspace Feature" which mainly differ in the scope they represent.
+The Symbols capability is defined as both a "Language Feature" and "Workspace Feature" which mainly differ in the scope they represent.
 The `textDocument/documentSymbol` command lists symbols solely found in the currently opened file, while the `workspace/symbol` takes into account all files in the opened set of folders.
 The granularity of the listed items is determined by the server and possibly different for either scope.
 For instance, document symbols could be as detailed as listing any kind of method or property found in the document, while workspace symbols take visibility rules into account which might expose public entities only.
@@ -160,7 +160,7 @@ An incremental approach makes use of an internal representation of the source co
 
 Additionally, to facilitate the parsing, an incremental approach must be able to provide a parser with the right context to correctly parse a changed fragment of code.
 In practice, most language servers process file changes by re-indexing the entire file, discarding the previous internal state entirely.
-This is a more approachable method, as it poses less requirements to the architects of the language server.
+This is a more approachable method, as it poses fewer requirements to the architects of the language server.
 Yet, it is far less performant.
 Unlike incremental processing (which updates only the affected portion of its internal structure), the smallest changes, including adding or removing lines effect the _reprocessing of the entire file_.
 While sufficient for small languages and codebases, non-incremental processing quickly becomes a performance bottleneck.
@@ -177,7 +177,7 @@ This is essential in complex languages that would otherwise perform a great amou
 
 
 Configuration languages such as XML[@w3cExtensibleMarkupLanguage2008], JSON[@charollaisECMA4042ndEdition2017], or YAML[@YAMLAinMarkup] are textual representations of structural data used to configure parameters of a system or application.
-The objective of such languages is to be machine readable, yet also intuitive enough for humans to write.
+The objective of such languages is to be machine-readable, yet also intuitive enough for humans to write.
 
 ### Common Configuration Languages
 
@@ -185,12 +185,12 @@ The objective of such languages is to be machine readable, yet also intuitive en
 
 According to the JSON specification [@charollaisECMA4042ndEdition2017] the language was designed as a data-interchange format that is easy to read and write both for humans and machines.
 Since it is a subset of the JavaScript language, its use is particularly straight forward and wide spread in JavaScript based environments such as web applications.
-But due to its simplicity implementations are available and for all major languages,  motivating its use for configuration files.
+But due to its simplicity implementations are available and for all major languages, motivating its use for configuration files.
 
 #### YAML
 
 YAML is another popular language, mainly used for configuration files.
-According to its goals it should be human readable and independent of the programming language making use of it.
+According to its goals it should be human-readable and independent of the programming language making use of it.
 It should be efficient to parse and easy to implement while being expressive and extensible.
 
 YAML also features a very flexible syntax which allows for many alternative ways to declare semantically equivalent data.
@@ -206,17 +206,17 @@ Yet, YAML is compatible with JSON since as subset of its specification defines a
 ### Applications of Configuration Languages 
 
 Applications of configuration languages are ubiquitous especially in the vicinity of software development.
-While XML and JSON are often used by package managers [@Pereira2016 , @Varanasi2014, @adermannComposer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@Vemula2017;@hellerAutomatingWorkflowsGitHub2021;@arefeen2019continuous] or machine configurations in software defined networks such as Kubernetes[@burnsKubernetesRunning] and docker compose [@Jangla2018].
+While XML and JSON are often used by package managers [@Pereira2016;@Varanasi2014, @adermannComposer], YAML is a popular choice for complex configurations such as CI/CD pipelines [@Vemula2017;@hellerAutomatingWorkflowsGitHub2021;@arefeen2019continuous] or machine configurations in software defined networks such as Kubernetes[@burnsKubernetesRunning] and docker compose [@Jangla2018].
 
 Such formats are used due to some significant advantages compared to other binary formats such as databases.
 Most strikingly, the textual representation allows inspection of a configuration without the need of a separate tool but a text editor.
-Moreover textual configuration can be version controlled using VCS software like Git which allows changes to be tracked over time.
+Moreover, textual configuration can be version controlled using VCS software like Git which allows changes to be tracked over time.
 Linux service configurations (files in `/etc`) and MacOS `*.plist` files which can be serialized as XML or a JSON-like format, especially exemplify that claim.
 
 ### Configuration Programming Languages
 
 Despite the above-mentioned formats being simple to parse and widely supported [@charollaisECMA4042ndEdition2017], their static nature rules out any dynamic content such as generated fields, functions and the possibility to factorize and reuse.
-Moreover, content validation has to be developed separately, which led to the design of complementary schema specification languages like json-schema [@pezoaFoundationsJSONSchema2016] or XSD [@w3cW3CXMLSchema].
+Besides, content validation has to be developed separately, which led to the design of complementary schema specification languages like json-schema [@pezoaFoundationsJSONSchema2016] or XSD [@w3cW3CXMLSchema].
 
 These qualities require an evaluated language.
 In fact, some applications make heavy use of config files written in the native programming language which gives them access to language features and existing analysis tools.
@@ -229,7 +229,7 @@ Alternatively to using high level general purpose languages, this demand is addr
 Dhall [@DhallConfigurationLanguage], Cue [@CUE] or jsonnet [@JsonnetDataTemplating] are such domain specific languages, that offer varying support for string interpolation, (strict) typing, functions and validation.
 Most of these languages are used as a templating system which means a configuration file in a more portable format is generated using an evaluation of the more expressive configuration source.
 The added expressiveness manifests in the ability to evaluate expression and the availability of imports, variables and functions.
-These features allow to refactor and simplify repetitive configuration files.
+These features allow refactoring and simplify repetitive configuration files.
 
 ### Infrastructure as Code
 
@@ -317,11 +317,11 @@ This suggests that techniques[@tzvetkovIntegratingAWSCloudFormation2020] to auto
 
 ### Nickel
 
-The Nickel[@Nickel2022] language is a configuration programming language as defined in  [@sec:configuration-programming-languages] with the aims of providing composable, verifiable and validatable configuration files.
+The Nickel[@Nickel2022] language is a configuration programming language as defined in [@sec:configuration-programming-languages] with the aims of providing composable, verifiable and validatable configuration files.
 Nickel implements a pure functional language with JSON-like data types and turing-complete lambda calculus.
 The language draws inspiration from existing projects such as Cue [@CUE], Dhall [@DhallConfigurationLanguage] and most importantly Nix [@Nix2022].
 However, Nickel sets itself apart from the existing projects by combining and advancing their strengths.
-The language addresses concerns drawn from the experiences with Nix which employs a sophisticated modules system to provide type-safe, composed (system) configuration files.
+The language addresses concerns drawn from the experiences with Nix which employs a sophisticated module system to provide type-safe, composed (system) configuration files.
 Nickel implements gradual type annotations, with runtime checked contracts to ensure even complex configurations remain correct.
 Additionally, considering record merging on a language level facilitates modularization and composition of configurations.
 
@@ -393,7 +393,7 @@ Function argument name binding therefore looks the same as in `let` bindings.
 
 ##### Meta Information
 
-One key feature of Nickel is its gradual typing system [ref again?], which implies that values can be explicitly typed.
+One key feature of Nickel is its gradual typing system [@siekGradualTypingFunctional2006], which implies that values can be explicitly typed.
 Complementing type information, it is possible to annotate values with contracts and additional metadata such as contracts, documentation, default values and merge priority using a special syntax as displayed in [@lst:nickel-meta].
 
 
@@ -562,7 +562,7 @@ enableGollum & setGollumPort
 ```
 
 However, if both operands contain a field with the same name that is not a mergeable record, the operation fails since both fields have the same priority making it impossible for Nickel to chose one over the other (cf. [@lst:nickel-merging-failing-names])
-Specifying one of the fields as a `default` value allows a single override (cf. [@lst:nickel-merging-default] ).
+Specifying one of the fields as a `default` value allows a single override (cf. [@lst:nickel-merging-default]).
 In future versions of Nickel ([@hamdaouiRFC001Overriding2022]) it will be possible to specify priorities in even greater detail and provide custom merge functions. 
 
 ```{.nickel #lst:nickel-merging-failing-names caption="Failing merge of two records with common field"}
@@ -587,9 +587,9 @@ error: non mergeable terms
 
 #### Gradual typing
 
-The typing approach followed by Nickel was introduce by Siek and Taha [@siekGradualTypingFunctional2006] as a combination of static and dynamic typing.
+The typing approach followed by Nickel was introduced by Siek and Taha [@siekGradualTypingFunctional2006] as a combination of static and dynamic typing.
 The choice between both type systems is traditionally debated since either approach imposes specific drawbacks.
-Static typing lacks the flexibility given by fully dynamic systems yet allow to ensure greater correctness by enforcing value domains.
+Static typing lacks the flexibility given by fully dynamic systems, yet ensures greater correctness by enforcing value domains.
 While dynamic typing is often used for prototyping, once an application or schema stabilizes, the ability to validate data schemas is usually preferred, often requiring the switch to a different statically typed language.
 Gradual typing allows introducing statically checked types to a program while allowing other parts of the language to remain untyped and thus interpreted dynamically.
 
