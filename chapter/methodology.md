@@ -13,7 +13,7 @@ The following points are considered key objectives of this thesis implemented in
 
 The usefulness of a language server correlates with its performance.
 It may cause stutters in the editor, or prompt users to wait for responses when upon issuing LSP commands.
-Different studies suggest that interruptions are detrimental to programmers productivity [@interruption-1, @interruption-2]. The more often and longer a task is interrupted the higher the frustration.
+Different studies suggest that interruptions are detrimental to programmers productivity [@abadTaskInterruptionSoftware2018, @jenkinsConcerningInterruptions2006]. The more often and longer a task is interrupted the higher the frustration.
 Hence, as called for in RQ.1 (cf. [@sec:research-questions]), a main criterion for the language server is its performance.
 
 Speaking of language servers there are two tasks that require processing, and could potentially cause interruptions.
@@ -33,7 +33,7 @@ This concept mitigates queuing but can lead to similarly bad user experience as 
 
 ### Capability
 
-The second objective is to provide an LSP server that offers the most common LSP features as identified by [@langserver-org].
+The second objective is to provide an LSP server that offers the most common LSP features as identified by [@sourcegraphLangserverOrg].
 Concretely, these capabilities are:
 
 1. Code completion
@@ -68,31 +68,31 @@ Also, the Language servers should not depend on the implementation of Nickel (e.
 
 ## Design Decisions
 
-[Section @sec:considerable-dimensions] introduced several considerations with respect to the implementation of language servers.
-Additionally, in [@sec:representative-lsp-projects] presents examples of different servers which guided the decisions made while implementing the NLS.  
+[Section @sec:key-objectives] introduced several considerations with respect to the implementation of language servers.
+Additionally, [@sec:language-servers] presents examples of different servers which guided the decisions made while implementing the NLS.  
 
 ### Programming language
 
-Rust ([@rust]) was chosen as the implementing language of NLS primarily since Nickel itself is written in Rust.
+Rust[@matsakisRustLanguage2014] was chosen as the implementing language of NLS primarily since Nickel itself is written in Rust.
 Being written in the same language as the Nickel interpreter allows NLS to integrate existing components for language analysis.
 This way, changes to the Nickel syntax or code analysis impose minimal adaptation of the Language Server.
 
 In fact, using any other language was never considered since that would have required a separate implementation of integral parts of Nickel, which are actively being developed.
 
 Additionally, Rust has proven itself as a language for LSP Servers.
-Lastly, Rust has already been employed by multiple LSP servers [@lib.rs#language-servers] which created a rich ecosystem of server abstractions.
-For instance the largest and most advanced LSP implementation in Rust -- the Rust Analyzer [@rust-analyzer] -- has contributed many tools such as an LSP server interface [@lsp-server-interface] and a refactoring oriented syntax tree representation [@rowan].
-Additionally, lots of smaller languages [@gluon, @slint, @mojom] implement Language Servers in Rust.
-Rust appears to be a viable choice even for languages that are not originally implemented in Rust, such as Nix [@nix, @rninx-lsp].
+Lastly, Rust has already been employed by multiple LSP servers which created a rich ecosystem of server abstractions.
+For instance the largest and most advanced LSP implementation in Rust -- the Rust Analyzer[@therustprogramminglanguageBringingGreatIDE] -- has contributed many tools such as an LSP server interface [@Lspserver2022] and a refactoring oriented syntax tree representation[@Rowan2022].
+Additionally, lots of smaller languages[@gluon-langGluonlangGluon;@SlintFastEasy;@googlechrometeamMojoDocsGo] implement Language Servers in Rust.
+Rust appears to be a viable choice even for languages that are not originally implemented in Rust, such as Nix [@Nix2022, @Rnixlsp2022].
 
-In Rust `traits` [@traits] are the fundamental concept used to abstract methods from the underlying data.  
+In Rust `traits`[@scharliTraitsComposableUnits2002] are the fundamental concept used to abstract methods from the underlying data.  
 Traits are definitions of shared behavior.
 Similar to interfaces in other languages, a trait defines a set of methods.
 One implements a trait for a certain type, by defining the behavior in the context of the type.
-Rust's support for generics[@generics] allows constraining arguments and structure fields to implementors of a certain trait allowing to abstract concrete behavior from its interface.
+Rust's support for generics[@blandyProgrammingRust2nd2021] allows constraining arguments and structure fields to implementors of a certain trait allowing to abstract concrete behavior from its interface.
 
 Rust also excels due to its various safety features and performance, for the following reasons.
-Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@rust-ownership-model] and explicit memory handling.
+Safety comes in form of *memory* safety, which is enforced by Rust's ownership model[@blandyProgrammingRust2nd2021] and explicit memory handling.
 The developer in turn needs to be aware of the implications of stack or heap located variables and their size in memory.
 A different kind of safety is *type* safety which is an implication of Rust's strong type system and `trait` based generics.
 Type-safe languages such as Rust enforce explicit usage of data types for variables and function definitions.
@@ -103,10 +103,10 @@ Finally, as Rust leverages the LLVM infrastructure and requires no runtime, its 
 
 ### File processing
 
-Earlier two differnet file processing models were discussed in [@sec:considerable-dimensions], incremental and complete processing.
+Earlier two different file processing models were discussed in [@sec:key-objectives], incremental and complete processing.
 
 LSP implementations may employ so-called incremental parsing, which allows updating only the relevant parts of its source code model upon small changes in the source.
-However, an incremental LSP is not trivial to implement, which is why it is mainly found in more complex servers such as the Rust Analyzer [@rust-analyzer] or the OCaml Language Server [@ocaml-lsp, @merlin].
+However, an incremental LSP is not trivial to implement, which is why it is mainly found in more complex servers such as the Rust Analyzer[@therustprogramminglanguageBringingGreatIDE] or the OCaml Language Server[@OCamlLSP2022; @ocamlcommunityOCamlMerlin].
 
 Implementing an incremental LSP server for Nickel would be impractical.
 NLS would not be able to leverage existing components from the non-incremental Nickel implementation (most notably, the parser).
@@ -117,7 +117,7 @@ Incremental parsing, type-checking and analysis can still be implemented as a se
 
 ### Code Analysis
 
-Code analysis approaches as introduced in [@sec:considerable-dimensions] can have both *lazy* and *eager* qualities.
+Code analysis approaches as introduced in [@sec:key-objectives] can have both *lazy* and *eager* qualities.
 Lazy solutions are generally more compatible with an incremental processing model, since these aim to minimizing the change induced computation.
 NLS prioritizes to optimize for efficient queries to a pre-processed data model.
 Similar to the file processing argument in [@sec:file-processing], it is assumed that Nickel project's size allows for efficient enough eager analysis prioritizing a more straight forward implementation over optimized performance.
@@ -184,7 +184,7 @@ While these types currently appear throughout the entire architecture, in the fu
 The example [@lst:nickel-complete-example] shows an illustrative high level configuration of a server.
 Using Nickel, this file would be used to define the schema of the configuration format of another program.
 Evaluation and validation is done in the context of Nickel, after which the evaluated structure is translated into a more common (but less expressive) format such as YAML or JSON.
-Here, the schema for a configuration of a Kubernetes-like [@kubernetes] tool is defined using contracts, making exemplary use of variables and functions.
+Here, the schema for a configuration of a Kubernetes-like [@burnsKubernetesRunning] tool is defined using contracts, making exemplary use of variables and functions.
 Specifically, it describes a way to provision named containers.
 The user is able to specify container images and opened ports, as well as define metadata of the deployment.
 The configuration is constrained by the `NobernetesConfig` contract.
@@ -282,13 +282,13 @@ The references form an implicit usage graph on top of the linear structure.
 It distinguishes between declarations (`let` bindings, function parameters, records) and variable usages.
 Any other kind of structure, for instance, primitive values (Strings, numbers, boolean, enumerations), is recorded as `Structure`.
 
-To separate the phases of the elaboration of the linearization in a type-safe way, the implementation is based on type-states[@typestate].
+To separate the phases of the elaboration of the linearization in a type-safe way, the implementation is based on type-states[@duarteRetrofittingTypestatesRust2021].
 Type-states were chosen over an enumeration based approach for the additional flexibility they provide to build a generic interface.
 First, type-states allow implementing separate utility methods for either state and enforce specific states on the type level.
 Second the `Linearization` struct provides a common context for all states like an enumeration, yet statically determining the Variant.
 Additionally, the `Linearizer` trait can be implemented for arbitrary `LinearizationState`s.
 This allows other LSP implementations to base on the same core while providing, for example, more information during the building phase.
-The unit type `()` is a so-called "zero sized type" [@zero-sized-type], it represents the absence of a value.
+The unit type `()` is a so-called "zero sized type"[@ExoticallySizedTypes], it represents the absence of a value.
 NLS provides a `Linearizer` implementation based on unit types and empty method definitions.
 As a result, the memory footprint of this linearizer is effectively zero and most method calls will be removed as part of compile time optimizations. 
 
@@ -349,7 +349,7 @@ Consequently, NLS faces the challenge of satisfying multiple goals
 4. Adaptions to Nickel should be minimal not obstruct its development and runtime performance.
 <!-- what is more? -->
 
-To accommodate these goals NLS comprises three different parts as shown in [@fig:nls-nickel-structure].
+To accommodate these goals NLS comprises three different parts as discussed in [@sec:high-level-architecture].
 
 The `Linearizer` trait 
   ~ acts as an interface between Nickel and the language server.
@@ -360,7 +360,7 @@ Nickel's type checking implementation
 A stub implementation
   ~ of the `Linearizer` trait is used during normal operation of the interpreter.
     Since most methods of this implementation are `no-op`s, the compiler is expected to be able to remove most `Linearizer` related method calls in optimized release builds.
-    This promises minimal runtime impact incurred by the integration of lsp APIs.
+    This promises minimal runtime impact incurred by the integration of LSP APIs.
 
 
 #### Usage Graph
@@ -429,7 +429,7 @@ Variable usages
   
     1. `Usage`s that can not (yet) be mapped to a declaration are tagged `Unbound`
     2. A `Resolved` usage introduces a back-link to the complementary `Declaration`
-    3. For record destructuring resolution of the name might need to be `Deferred` to the post-processing as discussed in [@sec:variable-usage-and-static-record-access].
+    3. For record destructuring resolution of the name might need to be `Deferred` to the post-processing as discussed in [@sec:resolving-deferred-access].
 
 Other nodes
   ~ of the AST that do not participate in the usage graph, are linearized as `Structure` -- A wildcard variant with no associated data.
@@ -450,7 +450,7 @@ A variable reference always refers to the closest parent node defining the name 
 Each branch of a node represents a sub-scope of its parent, i.e., new declarations made in one branch are not visible in the other.
 
 When eliminating the tree structure, scopes have to be maintained.
-This is to provide LSP capabilities such as auto-completion [@sec:auto-completion] of identifiers and list symbol names [@sec:document-symbols], which require the item's scope as context.
+This is to provide LSP capabilities such as auto-completion [@sec:code-completion] of identifiers and list symbol names [@sec:document-symbols], which require the item's scope as context.
 Since the bare linear data structure cannot be used to deduce a scope, related metadata has to be tracked separately.
 The language server maintains a register for identifiers defined in every scope.
 This register allows NLS to resolve possible completion targets as detailed in [@sec:resolving-by-scope].
@@ -549,10 +549,10 @@ While data stored in the `Linearizer::Building` state will be accessible at any 
 No instance data is propagated back to the outer scopes `Linearizer`.
 Neither have `Linearizer`s of sibling scopes access to each other's data.
 Yet, the `scope` method can be implemented to pass arbitrary state down to the scoped instance.
-The scope safe storage of the `Linearizer` implemented by NLS, as seen in [@lst:nls-analyisis-host-definition], stores the scope aware register and scope related data.
+The scope safe storage of the `Linearizer` implemented by NLS, as seen in [@lst:nls-analysis-host-definition], stores the scope aware register and scope related data.
 Additionally, it contains fields to allow the linearization of records and record destructuring, as well as metadata ([@sec:records, @sec:variable-usage-and-static-record-access and @sec:metadata]).
 
-```rust
+```{.rust #lst:nls-analysis-host-definition caption="Definition of the AnalysisHost"}
 pub struct AnalysisHost {
     env: Environment,
     scope: Scope,
@@ -666,12 +666,12 @@ This applies for all simple expressions like those exemplified in [@lst:nickel-s
 ##### Declarations
 
 In case of `let` bindings or function arguments name binding is equally simple.
-As discussed in [@sec:let-bindings-and-functions] the `let` node may contain both a name and patterns.
+As discussed in [@sec:variable-reference] the `let` node may contain both a name and patterns.
 For either the linearizer generates `Declaration` items and updates its name register.
 However, type information is available for name bindings only, meaning pattern matches remain untyped.
 
 The same process applies for argument names in function declarations.
-Due to argument currying [@currying], NLS linearizes only a single argument/pattern at a time.
+Due to argument currying [@visserFreshLookName], NLS linearizes only a single argument/pattern at a time.
 
 ##### Records
 
@@ -708,7 +708,7 @@ digraph G {
 }
 ```
 
-[Section @sec:graph-representation] introduced the AST representation of Records.
+[Section @sec:nested-record-access] introduced the AST representation of Records.
 As suggested by [@fig:nickel-record-ast], Nickel does not have AST nodes dedicated to record fields.
 Instead, it associates field names with values as part of the `Record` node.
 Since the language server is bound to process nodes individually, in effect, it will only see the values.
@@ -991,7 +991,7 @@ Since several operations require efficient access to elements by `id`, which aft
 
 #### Resolving deferred access
 
-[Section @sec:variable-usage-and-static-record-access] introduced the `Deferred` type for `Usages`.
+[Section @sec:usage-graph] introduced the `Deferred` type for `Usages`.
 Resolution of usages is deferred if chained destructors are used.
 This is especially important in recursive records where any value may refer to other fields of the record which could still be unresolved.
 
@@ -1143,7 +1143,7 @@ This section describes how NSL uses the linearization described in [@sec:lineari
 ### Server Interface
 
 As mentioned in [@sec:programming-language] the Rust language ecosystem maintains several projects supporting the development of LSP compliant servers.
-NLS is based on the `lsp-server` crate [@lsp-server-crate], a contribution by the Rust Analyzer, which promises long-term support and compliance with the latest LSP specification.
+NLS is based on the `lsp-server` crate[@Lspserver2022], a contribution by the Rust Analyzer, which promises long-term support and compliance with the latest LSP specification.
 
 Referring to [@fig:class-diagram], the `Server` module represents the main server binary.
 It integrates the analysis steps with Nickel's parsing and type-checking routines.
