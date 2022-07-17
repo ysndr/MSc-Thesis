@@ -4,7 +4,7 @@ Integrated Development Environments (IDEs) and other more lightweight code edito
 Yet, improvements of language intelligence, i.e. code completion, debugging as well as static code analysis refactoring and enrichment, have traditionally been subject to both the language and the editor used.
 Language support is thereby brought to IDEs by the means of platform dependent extensions that require repeated efforts for each platform and hence varied a lot in performance, feature-richness and availability.
 <!-- Comparison here? -->
-Recent years have seen different works [refs?] towards editor-independent code intelligence implementations and unified language-independent protocols.
+Recent years have seen different works[@bourMerlinLanguageServer2018a;@sloaneMontoDisintegratedDevelopment2014] towards editor-independent code intelligence implementations and unified language-independent protocols.
 The to-date most successful approach is the Language Server Protocol (LSP).
 The protocol specifies how editors can communicate with language servers which are separate, editor independent implementations of language analyzers.
 It allows to express a wide variance of language intelligence.
@@ -18,20 +18,20 @@ As a side effect, this also allows for developers to stay in their preferred dev
 <!-- graphic here or in the backgroudn chapter -->
 Being independent of the editors, the developer of the language server is free to choose the optimal implementing language.
 In effect, it is possible for language developers to integrate essential parts of the existing language implementation for a language server.
-By now the LSP has become the most popular choice for cross-platform language tooling with implementations [langservers and microsoft] for all major and many smaller languages.
+By now the LSP has become the most popular choice for cross-platform language tooling with implementations [@sourcegraphLangserverOrg;@microsoftLanguageServers] for all major and many smaller languages.
 
 Speaking of smaller languages is significant, as both research communities and industry continuously develop and experiment with new languages for which tooling is unsurprisingly scarce.
-Additionally, previous research [ref], that shows the importance of language tools for the selection of a language, highlights the importance of tooling for new languages to be adopted by a wider community.
+Additionally, previous research [@meyerovichEmpiricalAnalysisProgramming2013], that shows the importance of language tools for the selection of a language, highlights the importance of tooling for new languages to be adopted by a wider community.
 While previously implementing language tools that integrate with the developer's environment was practically unfeasible for small projects due to the incompatibility between different extension systems, leveraging the LSP reduces the amount of work required considerably.
 
-The Nickel[@nickel] language referenced in this work is a new Configuration Programming Language developed by Tweag.
+The Nickel[@Nickel2022] language referenced in this work is a new Configuration Programming Language developed by Tweag.
 It is akin to projects like Cue, Dhall, or Nix in that it is an abstraction over pure data description languages such as JSON, YAML or XML.
 The Nickel project combines the capabilities of the former being a pure functional language based on lambda calculus with JSON data types, gradual typing, higher-order contracts and a record merging operation.
 As such, it is intended to write safe abstractions over configuration files as employed in Infrastructure as Code for instance.
 
 ## Motivation
 
-Since its release, the LSP has grown to be supported by a multitude of languages and editors[@langservers @lsp-website], solving a long-standing problem with traditional IDEs.
+Since its release, the LSP has grown to be supported by a multitude of languages and editors[@sourcegraphLangserverOrg; @microsoftLanguageServers], solving a long-standing problem with traditional IDEs.
 
 Before the inception of language servers, implementing specialized features for every language of interest was the sole responsibility of the developers of code editors.
 Under the constraint of limited resources, editors had to position themselves on a spectrum between specializing on integrated support for a certain subset of languages and being generic over the language providing only limited support.
@@ -65,7 +65,7 @@ Naïvely, that is, the server should be *performant* enough not to slow down the
 
 ## Research Questions
 
-To guide future implementations of language servers for primarily small scale languages the research presented in this thesis aims to answer the following research questions at the example of the Nickel Project^[https://nickel-lang.org]:
+To guide future implementations of language servers for primarily small scale languages the research presented in this thesis aims to answer the following research questions at the example of the Nickel Project[@Nickel2022]:
 
 RQ.1
   ~ a) How to develop a language server for a new language that
@@ -76,7 +76,7 @@ RQ.2
 
 
 The goal of this research is to describe a reusable approach for representing programs that can be used to query data to answer requests on the Language Server Protocol efficiently. 
-The research is conducted on an implementation of the open source language Nickel[^https://nickel-lang.org] which provides the *Diagnostics*, *Jump to \** and *Hover* features as well as limited *Auto-Completion* and *Symbol resolution*.
+The research is conducted on an implementation of the open source language Nickel[@Nickel2022] which provides the *Diagnostics*, *Jump to \** and *Hover* features as well as limited *Auto-Completion* and *Symbol resolution*.
 Although implemented for and with integration of the Nickel runtime, the objective is to keep the internal format largely language independent.
 Similarly, the Rust based implementation should be described abstractly enough to be implemented in other languages.
 To support the chosen approach, a user study will show whether the implementation is able to meet the expectations of its users and maintain its performance in real-world scenarios.
