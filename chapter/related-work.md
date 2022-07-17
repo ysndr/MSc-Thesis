@@ -138,7 +138,7 @@ This is to ensure API compatibility between plugins and the compiler.
 
 #### Ocaml LSP
 
-Similarly, the Ocaml language service builds on top of existing infrastructure by relying on the Merlin project introduced in[@sec:Merlin].
+Similarly, the Ocaml language service builds on top of existing infrastructure by relying on the Merlin project introduced in [@sec:merlin].
 Here, the advantages of employing existing language components have been explored even before the LSP.
 
 #### Rust-Analyzer
@@ -225,7 +225,7 @@ Such LSP-capable web editors make integrating DSLs directly into web application
 The LSP defines a large range of commands and capabilities which is continuously being extended by the maintainers of the protocol.
 Yet, occasionally server developers find themselves in need of functionality not yet present in the protocol.
 For example the LSP does not provide commands to exchange binary data such as files.
-In[@sec:language-independence] the CodeCompass Language Server was introduced.
+In [@sec:runtime-independent-lsp-implementations] the CodeCompass Language Server was introduced.
 A stern feature of this server is the ability to generate and show diagrams in SVG format.
 However, the LSP does not define the concept of *requesting diagrams*.
 In particular Mészáros et al. describe different shortcomings of the LSP :
@@ -272,7 +272,7 @@ The LSIF format encodes a graphical structure which mimics LSP types.
 Vertices represent higher level concepts such as `document`s, `range`s, `resultSet`s and actual results.
 The relations between vertices are expressed through the edges.
 
-For instance, hover information as introduced in[@sec:hover] for the interface declaration in[@lst:lsif-code-sample] can be represented using the LSIF.
+For instance, hover information as introduced in [@sec:hover] for the interface declaration in [@lst:lsif-code-sample] can be represented using the LSIF.
 [Figure @fig:lsif-example] visualizes the result (cf[@lst:lsif-result-sample]).
 Using this graph an LSIF tool is able to resolve statically determined hover information by performing the following steps.
 
@@ -331,7 +331,7 @@ As a consequence, a subset of LSP capabilities can be provided statically based 
 ### Abstracting software development processes
 
 Since its introduction the Language Server Protocol has become a standard format to provide language tooling for editing source code.
-Meanwhile, as hinted in[@sec:lsp-extensions], the LSP is not able to fully satisfy every use-case sparking the development of various LSP extensions.
+Meanwhile, as hinted in [@sec:lsp-extensions], the LSP is not able to fully satisfy every use-case sparking the development of various LSP extensions.
 Following the success of language servers, similar advances have been made in other parts of the software development process.
 
 For instance, many Java build tools expose software build abstractions through the Build Server Protocol[@scalacenterBuildServerProtocol], allowing IDEs to integrate more languages more easily by leveraging the same principle as the LSP.
