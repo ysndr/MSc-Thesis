@@ -181,7 +181,7 @@ However, since rnix does not implement an interpreter for nix expressions the rn
 While language servers are commonly used to provide code based analytics and actions such as refactoring, it also proved suitable as a general interface for existing external tools.
 These programs may provide common LSP features or be used to extend past the LSP.
 
-#### CPAchecker
+##### CPAchecker
 
 The work presented by Leimeister in[@leimeisterLanguageServerIDE2020] exemplifies how LSP functionality can be provided by external tools.
 The server can be used to automatically perform software verification in the background using CPAchecker[@beyerCPAcheckerToolConfigurable2009].
@@ -191,7 +191,7 @@ Additionally, it is possible to execute resource intensive verification through 
 The LSP server supports both modes of operation.
 While it can interface directly with the Java modules provided by the CPAchecker library, it is also  able to utilize an HTTP-API provided by a server instance of the verifier.
 
-#### CodeCompass
+##### CodeCompass
 
 Similar to the work by Leimeister (c.f [@sec:cpachecker]), in [@meszarosDeliveringComprehensionFeatures2019] Mészáros et al. present a proof of concept leveraging the LSP to integrate (stand-alone) code comprehension tools with the LSP compliant VSCode editor.
 Code comprehension tools support the work with complex code bases by "providing various textual information, visualization views and source code metrics on multiple abstraction levels".
