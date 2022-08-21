@@ -458,7 +458,7 @@ The `didOpen` requests which are associated with the linearization process (c.f.
 Looking deeper into the individual features, reveals signs of the aforementioned "stacking".
 As discussed in [@sec:special-cases] subsequent requests exhibit increasing processing times especially during peak usage.
 
-![Distribution of latencies by request type](log_analysis/figures/distribution-latencies.svg){#fig:distribution-latencies width=50%}
+![Distribution of latencies by request type](log_analysis/figures/distribution-latencies.svg){#fig:distribution-latencies width=66%}
 
 This behavior is caused by the architecture of the LSP and NLS' processing method.
 The Language Server Protocol is a synchronous protocol which requires the processing of all requests FIFO order.
