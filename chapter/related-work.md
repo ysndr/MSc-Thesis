@@ -350,5 +350,3 @@ Following the named protocols, Jeanjean et al. envision a future[@jeanjeanIDECod
 Taking this idea further, they call for a Protocol Specification that allows to describe language protocols on a higher level.
 Such a protocol, they claim, could enable editor maintainers to implement protocol clients more easily by utilizing automated generation from Language Service Protocol Specifications.
 Additionally, it could allow different Language Services to interact with and depend on other services.
-
-## References
