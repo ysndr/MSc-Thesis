@@ -16,7 +16,7 @@ It may cause stutters in the editor, or prompt users to wait for responses when 
 Different studies suggest that interruptions are detrimental to programmers productivity [@abadTaskInterruptionSoftware2018, @jenkinsConcerningInterruptions2006]. The more often and longer a task is interrupted the higher the frustration.
 Hence, as called for in RQ.1 (cf. [@sec:research-questions]), a main criterion for the language server is its performance.
 
-Speaking of language servers there are two tasks that require processing, and could potentially cause interruptions.
+Speaking of language servers, there are two tasks that require processing, and could potentially cause interruptions.
 
 Upon source code changes, a language server may reprocess the code to gather general information, and provide diagnostics.
 Since, for this the LSP uses notifications, and language servers generally run as separate processes, delays in processing may not directly affect the programmer.
