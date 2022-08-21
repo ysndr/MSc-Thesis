@@ -63,3 +63,17 @@ Hence, it is conceivable to implement a translation into LSIF to be used by supp
 Finally, while the project is structured to be transferred to other languages, this feature has not been assessed.
 Future projects should include the implementation of a language server based on the abstractions presented here.
 Only such work could verify the generalizability of the architecture underlying NLS.
+
+## Analysis of the Impact on the Society, Ethics and Sustainability
+
+As a tool targeting exclusively software developers, and in reality only a subset thereof, the direct impact on the society as a whole this tool has, is negligible.
+This project aims to (1) improve the workflow of Nickel Developers directly and (b) enable developers to provide the same to their peers using another language.
+Therefore, the impact of this tool is limited to an improved productivity and work experience of the developers using this work's artifacts.
+
+Nickel as well as its language server and the related academic work presented here are publicly available.
+The creators of that work are hence unable to control or assess the application of their tools, whether ethical or not.
+Considering privacy, the project associated to this work, NLS, includes an optional usage logging mode which has access to a user's entire interaction with the tool including source code, file names, etc.
+However, no personal data is exposed, and the logs are never transferred from the user's machine.
+
+In terms of sustainability, the performance analysis reported in [#sec:quantitative] showed that NLS currently, processes requests very inefficiently.
+To the user this appears as surging latencies as well as significantly increased power consumption due to constant (unnecessary) computation.
