@@ -87,9 +87,12 @@ The reference solution portrayed in this work is specific for the Nickel languag
 Greatest care is given to present the concepts as generically and transferable as possible.
 However, it is not a goal to explicitly cover a problem space larger than the Nickel language, which is a pure functional language based on lambda calculus with JSON data types, gradual typing, higher-order contracts and a record merging operation.
 
-## Research Methodology
-
-What are the scientific methods
-
 
 ## Structure of the thesis
+
+This thesis is structured in four parts:
+First, the necessary background for this work is illustrated ([@sec:background]), which includes an introduction to the Language Server Protocol, as well as the Nickel Language and its application domain.
+The following chapter ([@sec:related-work]) reviews different existing projects related to the history of language servers and the candidate approaches to considered for NLS.
+Given both the technological and academic background, the next chapter ([@sec:design-and-implementation]) details the Nickel Language Server, its considerations and implementation.
+In [Section @sec:evaluation] the work of the previous chapter is evaluated and discussed.
+Finally, the conclusion follows in [Section @sec:conclusion].
