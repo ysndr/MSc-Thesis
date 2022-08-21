@@ -59,3 +59,7 @@ It's open how type checking and other diagnostics can be integrated into this pr
 Additionally, some platforms start to use the static Language Server Index Format (LSIF) to provide code aware navigation in static contexts such as websites where running a language server is impractical.
 The Linearization already represents a static view on a file that underlies all LSP methods.
 Hence, it is conceivable to implement a translation into LSIF to be used by supported platforms.
+
+Finally, while the project is structured to be transferred to other languages, this feature has not been assessed.
+Future projects should include the implementation of a language server based on the abstractions presented here.
+Only such work could verify the generalizability of the architecture underlying NLS.
