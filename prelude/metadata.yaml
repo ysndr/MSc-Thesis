@@ -2,4 +2,8 @@
 autoSectionLabels: true
 header-includes:
   - \AtBeginDocument{\floatplacement{codelisting}{H}}
+  - |
+    \usepackage{lscape}
+    \newcommand{\bls}{\begin{landscape}}
+    \newcommand{\els}{\end{landscape}}
 ...
