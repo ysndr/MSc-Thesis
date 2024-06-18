@@ -1,0 +1,44 @@
+@startuml
+
+actor User
+participant NLS
+' participant Cache
+
+User -> NLS: LSP Request
+activate NLS
+
+' NLS -> Cache: Request cached?
+
+' alt cache found
+
+' Cache --> NLS: Cached Response
+
+' else cache not found
+
+' Cache --> NLS: Cache Failure
+
+NLS -> NLS: Prepare Context
+
+{start} NLS -> Analysis: Pass Context
+activate Analysis
+
+...
+
+note right of Analysis
+    Possible analysis:
+    - type checking
+    - finding references
+    - find definition
+end note
+{end} Analysis -> NLS: Respond Analysis
+deactivate Analysis
+
+NLS -> NLS: Prepare LSP Response
+
+' NLS -> Cache: Cache Response
+
+' end 
+NLS -> User: Send Response
+deactivate NLS
+
+@enduml

@@ -1,0 +1,55 @@
+@startuml
+
+!pragma teoz true
+
+actor User
+participant NLS
+entity Linearization
+database Cache
+participant Handler
+
+group Ahead of time analysis
+
+[o-> NLS : File update
+
+activate NLS
+
+NLS -> Linearization
+activate Linearization
+...
+Linearization -> NLS
+deactivate Linearization
+
+NLS -> Cache: Store linearization for File
+activate Cache
+Cache -> NLS
+deactivate Cache
+
+NLS ->o?
+deactivate NLS
+
+end
+
+User -> NLS: LSP Request
+activate NLS
+
+NLS -> Cache: lookup linearization
+activate Cache
+
+Cache -> NLS
+deactivate Cache
+
+NLS -> Handler: Pass request and linearization 
+activate Handler
+deactivate NLS
+note right of Handler
+    Performs lookup to
+    immutable linearization.
+end note
+Handler -> User: Send LSP Response
+
+deactivate Handler
+
+
+
+@enduml
