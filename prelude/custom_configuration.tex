@@ -1,0 +1,257 @@
+\input{kthlatex/kththesis/lib/includes}
+\input{kthlatex/kththesis/lib/kthcolors}
+\input{kthlatex/kththesis/lib/defines}  % load some additional definitions to make writing more consistent
+
+
+\ExplSyntaxOn
+\newcommand\typestoredx[2]{\expandafter\__scontents_typestored_internal:nn\expandafter{#1} {#2}}
+\ExplSyntaxOff
+\makeatletter
+\let\verbatimsc\@undefined
+\let\endverbatimsc\@undefined
+\lst@AddToHook{Init}{\hyphenpenalty=50\relax}
+\makeatother
+
+
+%% Information for inside title page
+
+
+\authorsLastname{Sander}
+\authorsFirstname{Yannik}
+\email{yannik@kth.se}
+\kthid{u17ixdyr}
+% As per email from KTH Biblioteket on 2021-06-28 students cannot have an OrCiD reported for their degree project
+\authorsSchool{\schoolAcronym{EECS}}
+%If the student is not in Stockholm, Sweden, add that information here
+% This information will be used when generating the acknowledgements signature.
+%\authorCity{A City}
+%\authorCountry{A Country}
+% pass into \authorCityCountryDate{} the month and year for the acknowledgment
+% If there is a second author and place, the month, and year are the same, the specify the month and year for the first author:
+\authorCityCountryDate{\MONTH\enspace\the\year}
+% if there is a second author and the place is different, then say:
+%\authorCityCountryDate{}
+
+% If there is a second author - add them here:
+% \secondAuthorsLastname{Student}
+% \secondAuthorsFirstname{Fake B.}
+% \secondemail{b@kth.se}
+% \secondkthid{u100002}
+% As per email from KTH Biblioteket on 2021-06-28 students cannot have an OrCiD reported for their degree project
+% \secondAuthorsSchool{\schoolAcronym{ABE}}
+%If the student is not in Stockholm, Sweden, add that information here
+% This information will be used when generating the acknowledgements signature.
+%\secondAuthorCity{A City}
+%\secondAuthorCountry{A Country}
+% pass into \secondAuthorCityCountryDate{} the month and year for the acknowledgement
+%\secondAuthorCityCountryDate{\MONTH\enspace\the\year}
+%\secondAuthorCityCountryDate{}
+
+\supervisorAsLastname{Hamdaoui}
+\supervisorAsFirstname{Yann}
+\supervisorAsEmail{yann.hamdaoui@tweag.io}
+% If the supervisor is from within KTH add their KTHID, School and Department info
+% \supervisorAsKTHID{u100003}
+% \supervisorAsSchool{\schoolAcronym{EECS}}
+% \supervisorAsDepartment{Computer Science}
+% other for a supervisor outside of KTH add their organization info
+\supervisorAsOrganization{Tweag I/O Limited}
+
+%If there is a second supervisor add them here:
+\supervisorBsLastname{Monperrus}
+\supervisorBsFirstname{Martin}
+\supervisorBsEmail{monperrus@kth.se}
+% If the supervisor is from within KTH add their KTHID, School and Department info
+\supervisorBsKTHID{u13jhcyf}
+\supervisorBsSchool{\schoolAcronym{EECS}}
+\supervisorBsDepartment{DIVISION OF THEORETICAL COMPUTER SCIENCE}
+% other for a supervisor outside of KTH add their organization info
+%\supervisorBsOrganization{Timbuktu University, Department of Pseudoscience}
+
+%If there is a third supervisor add them here:
+% \supervisorCsLastname{Supervisor}
+% \supervisorCsFirstname{Third Busy}
+% \supervisorCsEmail{sc@tu.va}
+% If the supervisor is from within KTH add their KTHID, School and Department info
+%\supervisorCsKTHID{u100004}
+%\supervisorCsSchool{\schoolAcronym{ABE}}
+%\supervisorCsDepartment{Public Buildings}
+% other for a supervisor outside of KTH add their organization info
+% \supervisorCsOrganization{Timbuktu University, Department of Pseudoscience}
+
+\examinersLastname{Guanciale}
+\examinersFirstname{Roberto}
+\examinersEmail{robertog@kth.se}
+% If the examiner is from within KTH add their KTHID, School and Department info
+\examinersKTHID{u1f9irum}
+\examinersSchool{\schoolAcronym{EECS}}
+\examinersDepartment{DIVISION OF THEORETICAL COMPUTER SCIENCE}
+% other for a examiner outside of KTH add their organization info
+%\examinersOrganization{Timbuktu University, Department of Pseudoscience}
+
+
+\hostcompany{Tweag I/O Limited} % Remove this line if the project was not done at a host company
+%\hostorganization{CERN}   % if there was a host organization
+
+
+\date{\today}
+
+\courseCycle{2}
+\courseCode{DA240X}
+\courseCredits{30.0}
+
+\programcode{TSEDM}
+\degreeName{Masters degree}
+% Note that the subject area for a Bachelor's thesis (Kandidatexamen) should be either Technology or Architecture
+% If the thesis is in Swedish, these would be: teknik | arkitektur   -- Note the use of lower case
+\subjectArea{Technology}
+% if there is a second degree
+%\secondProgramcode{CINTE}
+%\secondDegreeName{test second degree}
+%\secondSubjectArea{test second subject area}
+
+% Note that in the case of both Both Degree of Master of Science in Engineering and Master's degree
+% there are two cases: "Both" is used when the field of technology (\subjectArea{}) and the main subject (\secondSubjectArea{} are different and the case "Same" when they are the same.
+%% Both case
+%\courseCycle{2}
+%\courseCode{xxxxxx}
+%\courseCredits{30.0}
+%\degreeName{Both Degree of Master of Science in Engineering and Master's degree}
+%\subjectArea{Biotechnology}
+%\secondSubjectArea{Medical Engineering}
+
+%\courseCycle{2}
+%\courseCode{xxxxxx}
+%\courseCredits{30.0}
+%\degreeName{Både civilingenjörsexamen och masterexamen}
+%\subjectArea{bioteknik}
+%\secondSubjectArea{medicinsk teknik}
+
+%% Same case
+%\courseCycle{2}
+%\courseCode{xxxxxx}
+%\courseCredits{30.0}
+%\degreeName{Both Degree of Master of Science in Engineering and Master's degree}
+%\subjectArea{Biotechnology}
+%\secondSubjectArea{Biotechnology}
+
+%\courseCycle{2}
+%\courseCode{xxxxxx}
+%\courseCredits{30.0}
+%\degreeName{Både civilingenjörsexamen och masterexamen}
+%\subjectArea{bioteknik}
+%\secondSubjectArea{bioteknik}
+
+% For a CDATE student the following are likely values:
+%\programcode{CDATE}
+%\courseCycle{2}
+%\courseCode{DA231X}
+%\courseCredits{30.0}
+%\degreeName{Degree of Master of Science in Engineering}
+%\subjectArea{Computer Science and Engineering}
+
+% For a TCSCM student the following are likely values:
+%\programcode{TCSCM}
+%\courseCycle{2}
+%\courseCode{DA231X}
+%\courseCredits{30.0}
+%\degreeName{Master's Programme, Computer Science, 120 credits}
+%\subjectArea{Computer Science}
+
+% For a CMETE student the following are likely values:
+%\programcode{CMETE}
+%\courseCycle{2}
+%\courseCode{DA231X}
+%\courseCredits{30.0}
+%\degreeName{Degree of Master of Science in Engineering}
+%\subjectArea{Media Technology}
+
+% For a CINTE student the following are likely values:
+%\programcode{CINTE}
+%\courseCycle{2}
+%\courseCode{DA231X}
+%\courseCredits{30.0}
+%\degreeName{Degree of Master of Science in Engineering}
+%\subjectArea{Information and Communication Technology}
+
+
+%%%%% for DiVA's National Subject Category information
+%%% Enter one or more 3 or 5 digit codes
+%%% See https://www.scb.se/contentassets/3a12f556522d4bdc887c4838a37c7ec7/standard-for-svensk-indelning--av-forskningsamnen-2011-uppdaterad-aug-2016.pdf
+%%% See https://www.scb.se/contentassets/10054f2ef27c437884e8cde0d38b9cc4/oversattningsnyckel-forskningsamnen.pdf
+%%%%
+%%%% Some examples of these codes are shown below:
+% 102 Data- och informationsvetenskap (Datateknik)    Computer and Information Sciences
+% 10201 Datavetenskap (datalogi) Computer Sciences 
+% 10202 Systemvetenskap, informationssystem och informatik (samhällsvetenskaplig inriktning under 50804)
+% Information Systems (Social aspects to be 50804)
+% 10203 Bioinformatik (beräkningsbiologi) (tillämpningar under 10610)
+% Bioinformatics (Computational Biology) (applications to be 10610)
+% 10204 Människa-datorinteraktion (interaktionsdesign) (Samhällsvetenskapliga aspekter under 50803) Human Computer Interaction (Social aspects to be 50803)
+% 10205 Programvaruteknik Software Engineering
+% 10206 Datorteknik Computer Engineering
+% 10207 Datorseende och robotik (autonoma system) Computer Vision and Robotics (Autonomous Systems)
+% 10208 Språkteknologi (språkvetenskaplig databehandling) Language Technology (Computational Linguistics)
+% 10209 Medieteknik Media and Communication Technology
+% 10299 Annan data- och informationsvetenskap Other Computer and Information Science
+%%%
+% 202 Elektroteknik och elektronik Electrical Engineering, Electronic Engineering, Information Engineering
+% 20201 Robotteknik och automation Robotics
+% 20202 Reglerteknik Control Engineering
+% 20203 Kommunikationssystem Communication Systems
+% 20204 Telekommunikation Telecommunications
+% 20205 Signalbehandling Signal Processing
+% 20206 Datorsystem Computer Systems
+% 20207 Inbäddad systemteknik Embedded Systems
+% 20299 Annan elektroteknik och elektronik Other Electrical Engineering, Electronic Engineering, Information Engineering
+%% Example for a thesis in Computer Science and Computer Systems
+\nationalsubjectcategories{10201, 10205}
+
+\title{Design and Implementation of the Language Server Protocol for the Nickel Language}
+% \subtitle{A subtitle in the language of the thesis}
+
+% give the alternative title - i.e., if the thesis is in English, then give a Swedish title
+\alttitle{Utformning och genomförande av Language Server-protokollet för språket nickel}
+% \altsubtitle{Detta är den svenska översättningen av undertiteln}
+% alternative, if the thesis is in Swedish, then give an English title
+%\alttitle{This is the English translation of the title}
+%\altsubtitle{This is the English translation of the subtitle}
+
+% Enter the English and Swedish keywords here for use in the PDF meta data _and_ for later use
+% following the respective abstract.
+% Try to put the words in the same order in both languages to facilitate matching. For example:
+\EnglishKeywords{Language Server Protocol, Coda Analysis, IDE}
+\SwedishKeywords{Language Server Protocol, Coda Analysis, IDE}
+
+%%%%% For the oral presentation
+%% Add this information once your examiner has scheduled your oral presentation
+\presentationDateAndTimeISO{2022-07-05 13:00}
+\presentationLanguage{eng}
+\presentationRoom{via Zoom https://kth-se.zoom.us/j/62672647970}
+% \presentationAddress{Isafjordsgatan 22 (Kistagången 16)}
+\presentationCity{Stockholm}
+
+% When there are multiple opponents, separate their names with '\&'
+% Opponent's information
+\opponentsNames{Nan Yang}
+
+% Once a thesis is approved by the examiner, add the TRITA number
+% The TRITA number for a thesis consists of two parts a series (unique to each school)
+% and the number in the series which is formatted as the year followed by a colon and
+% then a unique series number for the thesis - starting with 1 each year.
+% \trita{TRITA-EECS-EX}{2022:00}
+
+% Put the title, author, and keyword information into the PDF meta information
+\input{kthlatex/kththesis/lib/pdf_related_includes}
+
+% \usepackage[
+%     type={CC},
+%     %modifier={by-nc-nd},
+%     %version={4.0},
+%     modifier={by-nc},
+%     imagemodifier={-eu-88x31},  % to get Euro symbol rather than Dollar sign
+%     hyphenation={RaggedRight},
+%     version={4.0},
+%     %modifier={zero},
+%     %version={1.0},
+% ]{doclicense}

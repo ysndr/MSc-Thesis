@@ -1,0 +1,17 @@
+{
+"Author1": {"Last name": "Sander", "First name": "Yannik", "Local User Id": "u17ixdyr", "E-mail": "yannik@kth.se", "organisation": {"L1": "School of Electrical Engineering and Computer Science" }},
+"Cycle": "2", "Course code": "DA240X", "Credits": "30.0",
+"Degree1": {"Educational program": "Master's Programme, Software Engineering of Distributed Systems, 120 credits","programcode": "TSEDM" ,"Degree": "Masters degree" ,"subjectArea": "Technology" },
+"Title": {"Main title": "Design and Implementation of the Language Server Protocol for the Nickel Language", "Language": "eng" }, "Alternative title": {"Main title": "Utformning och genomförande av Language Server-protokollet för språket nickel", "Language": "swe" },
+"Supervisor1": {"Last name": "Hamdaoui", "First name": "Yann", "E-mail": "yann.hamdaoui@tweag.io", "Other organisation": "Tweag I/O Limited" },
+"Supervisor2": {"Last name": "Monperrus", "First name": "Martin", "Local User Id": "u13jhcyf", "E-mail": "monperrus@kth.se", "organisation": {"L1": "School of Electrical Engineering and Computer Science" ,"L2": "DIVISION OF THEORETICAL COMPUTER SCIENCE" }},
+"Examiner1": {"Last name": "Guanciale", "First name": "Roberto", "Local User Id": "u1f9irum", "E-mail": "robertog@kth.se", "organisation": {"L1": "School of Electrical Engineering and Computer Science" ,"L2": "DIVISION OF THEORETICAL COMPUTER SCIENCE" }},
+"Cooperation": {"Partner_name": "Tweag I/O Limited"},
+"National Subject Categories": "10201, 10205",
+"Other information": {"Year": "2022", "Number of pages": "1,122" },
+"Copyrightleft": "copyright",
+"Series": {\relax , },
+"Opponents": {"Name": "Nan Yang"},
+"Presentation": {"Date": "2022-07-05 13:00" ,"Language": "eng" ,"Room": "via Zoom https://kth-se.zoom.us/j/62672647970" ,"City": "Stockholm" },
+"Number of lang instances": "1",
+}

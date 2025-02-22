@@ -1,0 +1,75 @@
+% This file contains the LaTeX to add information to the PDF file (specifically, author(s), title(s), and keywords
+% It uses the hyperref package and should be be included before the \begin{document}
+%
+% I want to acknowledge the inspiration of Karl Voit's template for TU Graz that inspired me to add the PDF document information
+% For more information about his template see https://github.com/novoid/LaTeX-KOMA-template
+% Note that this template does not use anything from his template other than the names of the information for the PDF meta fields, i.e., mytitle, myauthor, and mykeywords together with the idea of defining the corresponding newcommand to set the relevant hyperref parameters.
+
+\makeatletter
+\ifx\@subtitle\@empty
+    \newcommand{\mytitle}{\@title}
+\else
+    \newcommand{\mytitle}{\@title: \@subtitle}
+\fi
+\makeatother
+
+\hypersetup{
+     pdftitle={\mytitle}        % Title field
+}
+
+\makeatletter
+\ifx\@secondAuthorsLastname\@empty
+    \newcommand{\myauthor}{\@authorsFirstname\space\@authorsLastname} 
+\else
+    \ifinswedish
+    \newcommand{\myauthor}{\@authorsFirstname\space\@authorsLastname\space\relax och\space\@secondAuthorsFirstname \@secondAuthorsLastname}
+    \else
+        \newcommand{\myauthor}{\@authorsFirstname\space\@authorsLastname\space\relax and\space\@secondAuthorsFirstname \@secondAuthorsLastname}
+    \fi
+\fi
+\makeatother
+
+\hypersetup{
+     pdfauthor={\myauthor}      % Author field
+}
+
+% Put the alternative title (and subtitle) into the PDF Subject meta
+\makeatletter
+\ifx\@altsubtitle\@empty\relax
+    \newcommand{\myalttitle}{\@alttitle}
+\else
+    \newcommand{\myalttitle}{\@alttitle: \@altsubtitle}
+\fi
+\makeatother
+
+\hypersetup{
+     pdfsubject={\myalttitle}        % Subject field
+}
+
+\makeatletter
+\ifx\@EnglishKeywords\@empty
+    \ifx\@SwedishKeywords\@empty
+        \newcommand{\mykeywords}{}
+    \else
+    \newcommand{\mykeywords}{\@SwedishKeywords}
+    \fi
+\else
+    \ifx\@SwedishKeywords\@empty
+        \newcommand{\mykeywords}{\@EnglishKeywords}
+    \else
+        \ifinswedish
+            \newcommand{\mykeywords}{\@SwedishKeywords, \@EnglishKeywords}
+        \else
+            \newcommand{\mykeywords}{\@EnglishKeywords, \@SwedishKeywords}
+        \fi
+    \fi
+\fi
+\makeatother
+
+\hypersetup{
+     pdfkeywords={\mykeywords}        % Keywords field
+}        
+% I have _not_ set the following fields:
+%    pdfcreator             % Creator field
+%    pdfproducer            % Producer field
+ 

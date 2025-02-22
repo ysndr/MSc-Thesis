@@ -1,0 +1,65 @@
+\makeatletter
+\newcommand{\DeclareLatinAbbrev}[2]{%
+  \DeclareRobustCommand{#1}{%
+    \@ifnextchar{.}{\textit{#2}}{%
+      \@ifnextchar{,}{\textit{#2.}}{%
+        \@ifnextchar{!}{\textit{#2.}}{%
+          \@ifnextchar{?}{\textit{#2.}}{%
+            \@ifnextchar{)}{\textit{#2.}}{%
+              {\textit{#2.,\ }}}}}}}}%
+}
+\makeatother
+\DeclareLatinAbbrev{\eg}{e.g}
+\DeclareLatinAbbrev{\Eg}{E.g}
+\DeclareLatinAbbrev{\ie}{i.e}
+\DeclareLatinAbbrev{\Ie}{I.e}
+\DeclareLatinAbbrev{\etc}{etc}
+\DeclareLatinAbbrev{\etal}{et~al}
+
+\def\first {$(i)$\xspace}
+\def\Second{$(ii)$\xspace}
+\def\third {$(iii)$\xspace}
+\def\fourth{$(iv)$\xspace}
+\def\fifth {$(v)$\xspace}
+\def\sixth {$(vi)$\xspace}
+\def\seventh{$(vii)$\xspace}
+\def\eighth{$(viii)$\xspace}
+
+%%% custom definitions
+%% Coloring the links!
+\newcommand\myshade{75} % Usage: red!\myshade!black
+
+\definecolor{ForestGreen} {RGB}{34,  139,  34}
+\definecolor{HeraldRed2}   {rgb}{0.81, 0.12, 0.15}
+
+\newcommand{\refscolor} {blue}
+\newcommand{\linkscolor}{HeraldRed2}
+\newcommand{\urlscolor} {ForestGreen}
+
+%% Some definitions of used colors
+%\definecolor{darkblue}{rgb}{0.0,0.0,0.3} %% define a color called darkblue
+%\definecolor{darkred}{rgb}{0.4,0.0,0.0}
+%\definecolor{red}{rgb}{0.7,0.0,0.0}
+%\definecolor{lightgrey}{rgb}{0.8,0.8,0.8} 
+%\definecolor{grey}{rgb}{0.6,0.6,0.6}
+%\definecolor{darkgrey}{rgb}{0.4,0.4,0.4}
+%\definecolor{aqua}{rgb}{0.0, 1.0, 1.0}
+
+% For runin headings
+\newcommand{\smartparagraph}[1]{\vspace{.05in}\noindent\textbf{#1}}
+
+%% Table of Contents (ToC) depth 
+\setcounter{secnumdepth}{4} % how many sectioning levels to assign numbers to
+\setcounter{tocdepth}{4}    % how many sectioning levels to show in ToC
+
+%% Limit hyphenation
+\hyphenpenalty=9000
+\tolerance=5000
+% Reduce hyphenation as much as possible:
+%\hyphenpenalty=15000
+%\tolerance=1000
+
+% For notes by the authors to themselves
+\newcommand*{\todoinline}[1]{\textcolor{red}{TODO: #1}}
+
+%\DeclareUnicodeCharacter{2003}{\quad}

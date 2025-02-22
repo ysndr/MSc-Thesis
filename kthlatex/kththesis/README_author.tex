@@ -1,0 +1,458 @@
+\documentclass[examplethesis.tex]{subfiles}
+\begin{document}
+\ifxeorlua
+\lstdefinestyle{latexExampleForAuthors}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    extendedchars=true,
+    inputencoding=utf8,
+    tabsize=2,
+    columns=flexible,
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
+      courseCode, courseCredits, programcode, degreeName, subjectArea,
+      nationalsubjectcategories, todo, ifbiblatex, subsection}
+}
+\else
+\lstdefinestyle{latexExampleForAuthors}{
+language=[LaTeX]{TeX},
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    basicstyle=\small\tt,
+    keywordstyle=\color{blue}\sf,
+    identifierstyle=\color{magenta},
+    commentstyle=\color{cyan},
+    backgroundcolor=\color{yellow!15},
+    extendedchars=false,
+    inputencoding=utf8,
+    tabsize=2,
+    columns=flexible,
+    morekeywords={subtitle, alttitle, altsubtitle, hostcompany, courseCycle,
+      courseCode, courseCredits, programcode, degreeName, subjectArea,
+      nationalsubjectcategories, todo, ifbiblatex, subsection},
+% Support for Swedish, German and Portuguese umlauts
+  literate=%
+  {Ö}{{\"O}}1
+  {Ä}{{\"A}}1
+  {Å}{{\AA{}}}1
+  {Ü}{{\"U}}1
+  {ß}{{\ss}}1
+  {ü}{{\"u}}1
+  {ö}{{\"o}}1
+  {ä}{{\"a}}1
+  {å}{{\aa{}}}1
+  {á}{{\'a}}1
+  {ã}{{\~a}}1
+  {é}{{\'e}}1
+  {è}{{\`e}}1
+  {€}{\euro}1%
+  {’}{{\char13}}1
+  {-}{{\textendash}}1
+  {–}{{\textendash}}1
+  {…}{{\ldots}}1,
+}
+\fi
+
+
+\chapter{README\_author - the starting place for authors}
+\label{ch:READMEauthor}
+
+This document, written by Gerald Q. Maguire Jr, describes the thesis template that I have developed for use at KTH Royal Institute of Technology (KTH). It is important to note that the template is \textbf{not prescriptive}, as not every thesis will have all of the parts that the template shows. However, if there is something that you decide to leave out, you should make a conscious decision to do so and you should consider the impact this may have on your thesis being approved by the examiner.
+
+Fundamental to the design of the template are several key factors:
+\begin{itemize}
+    \item Helping students be successful in their degree project,
+    \item Helping students produce a high-quality thesis, and
+    \item Supporting all of the (relevant) phases of the degree project process.
+\end{itemize}
+
+\noindent\textbf{This document is a work in progress.}
+
+
+\section{Advice for Author or Authors}
+\label{sec:authors}
+One of the hardest problems an author faces is getting started writing, \ie the blank sheet of paper - empty file barrier. The template provides a \mbox{non-blank} starting point; hence, avoiding the blank paper barrier. Additionally, the template provides some initial structure, basically an Introduction, Methods, Results, and Discussion (IMRAD) structure, so that there are hints of were to place material. Moreover, there are places (and notes) about material that the student should consider adding; for example, the ``required reflections'' section in the final chapter.
+
+The template (located in the file \texttt{examplethesis.tex}) also provides some examples of commonly occurring types of content, so that one can easily find examples of how to include a figure, table, code listing, \etc. These examples are not meant to be exhaustive and quite often the student will probably need to learn new \LaTeX\ commands in the course of writing their thesis.
+
+As an author, the first step is to configure the \LaTeX\ engine that you will use to process the files - see \Cref{sec:latexEngine}. The second step will be to configure the template - see \Cref{sec:authorConfigs}. The third step will be to make sure that the information about you, your adviser(s), and examiner are correct in the file \texttt{custom\_configuration.tex} - this information uses the macros described in \Cref{sec:authorMacros}. Now that you have a lot of the administrative details taken care of it is time to start to write - see \Cref{sec:startingToWrite}.
+
+Note that if your are using Overleaf, it is a good idea to rename the project to a name that includes your own name. This will make it easier for your adviser(s) and examiner to find your project in the list of projects that they may have in Overleaf.
+
+
+If you have more detailed questions about the template itself - 
+\iflabelexists{ch:READMEnotes}{see \Cref{ch:READMEnotes}.}
+{You have to include the \texttt{README\_notes/README\_notes.tex} file when compiling.}
+
+\section{Author configuration of the \LaTeX\ engine}
+\label{sec:latexEngine}
+The template should work with pdflatex, XeLaTeX, and LuaLaTeX.  If you are using Overleaf, I strongly recommend the use of XeLaTeX ---  as this will get the \texttt{Arial} fonts correct for the KTH cover. If you are running the compiler on your local machine and you use XeLaTeX \textbf{and} you have \texttt{Arial} as a system font, then it will be able to use it. Similarly, for LuaLaTeX. For pdflatex I have used \textbackslash fontfamily{helvet}, \ie Helvetica, as it is a sans serif font.
+
+One student reported problems with fontspec not loading the fonts properly when running locally with macOS 12.4, TeXLive 2022, LaTeX Workshop on VS Code, and xelatex - the solution is described at \url{https://tug.org/TUGboat/tb39-2/tb122robertson-fontspec.pdf}.
+
+
+\section{Author configuration of the template}
+\label{sec:authorConfigs}
+The template is designed to handle a thesis written in English or Swedish.
+You can set the default language to `english' or `swedish' by passing an option to the documentclass. Note that the language options is written in all lower case letters; for example, to set the document's language to English:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\documentclass[english]{kththesis}
+\end{lstlisting}
+
+To set the document's language to Swedish:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\documentclass[swedish]{kththesis}
+\end{lstlisting}
+
+The language option `swedish' sets the conditional \texttt{\textbackslash ifinswedish} to true.  Among many other things, this conditional is used to configure the KTH cover and the title page to use the chosen language.
+
+The two most common bibliographic engines are supported, \ie BibTeX and BibLaTeX. To set the language to English and use the bibliographic engine to BibTeX you would say:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\documentclass[english, bibtex]{kththesis}
+\end{lstlisting}
+To set the language to Swedish and use the bibliographic engine to BibLaTeX you would say:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\documentclass[swedish, biblatex]{kththesis}
+\end{lstlisting}
+
+The above illustrates that you can pass multiple options to the document class separated by commas. Also note that the options were passed as all lower case letters.
+
+You can of course also modify the formatting of the citations and bibliography. See for example the following code snippet:
+
+\begin{lstlisting}[style=latexExampleForAuthors]
+\ifbiblatex
+    %\usepackage[language=english,bibstyle=authoryear, citestyle=authoryear, maxbibnames=99]{biblatex}
+    %\usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+    \usepackage[bibstyle=authoryear,citestyle=authoryear, maxbibnames=99,language=english]{biblatex}
+    % alternatively you might use another style, such as IEEE
+    %\usepackage[style=ieee]{biblatex}
+    \addbibresource{references.bib}
+    %\DeclareLanguageMapping{norsk}{norwegian}
+\else
+    % The line(s) below are for BibTeX
+    \bibliographystyle{bibstyle/myIEEEtran}
+    %\bibliographystyle{apalike}
+\fi
+\end{lstlisting}
+
+To optimize for digital output (this changes the color palette) add the option: \texttt{digitaloutput}. There are also options for A4 or G6 paper: \texttt{a4paper} or \texttt{g5paper} (respectively). The is an option for \texttt{nomenclature}, to produce and refer to equations
+\ifnomenclature
+as shown in \Cref{ch:NomenclatureExamples}
+\fi
+.  Finally, there are options for a 1\textsuperscript{st} cycle thesis or 2\textsuperscript{nd} cycle thesis: \texttt{bachelor} and \texttt{master} (respectively); however, these two options are \textbf{not} currently used.
+
+One of the first things that the author(s) will want to do is add the working title and subtitle to the thesis. This is done using the \textbackslash title, \textbackslash subtitle, \textbackslash alttitle, and \textbackslash altsubtitle macros as shown below:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\title{This is the title in the language of the thesis}
+\subtitle{A subtitle in the language of the thesis}
+
+% give the alternative title - i.e., if the thesis is in English,
+% then give a Swedish title
+\alttitle{Detta är den svenska översättningen av titeln}
+\altsubtitle{Detta är den svenska översättningen av undertiteln}
+% alternative, if the thesis is in Swedish, then give an English title
+%\alttitle{This is the English translation of the title}
+%\altsubtitle{This is the English translation of the subtitle}   
+\end{lstlisting}
+
+Setting these values once and then using them in many places reduces the work to change them while at the same time ensuring consistency. 
+
+Some additional configuration that the author(s) might do is to set the values of the macros related to the course cycle, course code, date of the thesis, number of credits, degree/exam name, subject area, and if the degree is done external to KTH to set the host information. Consider the snippet below for a student admitted to the ``Bachelor's Programme in Information and Communication Technology (TCOMK)'' program and enrolled in the degree project course ``IA150X Degree Project in Information and Communication Technology, First Cycle 15.0 credits'' and working at a company ``Företaget AB'':
+\begin{lstlisting}[style=latexExampleForAuthors]
+\hostcompany{Företaget AB} % Remove this line if the project was not done at a host company
+
+\date{\today}
+
+\courseCycle{1}
+\courseCode{IA150X}
+\courseCredits{15.0}
+
+\programcode{TCOMK}
+\degreeName{Bachelors degree}
+% Note that the subject area for a Bachelor's thesis (Kandidatexamen)
+% should be either Technology or Architecture
+% If the thesis is in Swedish, these would be: teknik | arkitektur
+% -- Note the use of lower case for the Swedish subject area
+\subjectArea{Technology}
+\end{lstlisting}
+
+Note that in the above macros you have to give the English or Swedish names in the arguments to \textbackslash degreeName and \textbackslash subjectArea - as shown below:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\degreeName{Kandidatexamen}
+\subjectArea{teknik}
+\end{lstlisting}
+
+For a CDATE student enrolled in the course ``DA231X Degree Project in Computer Science and Engineering, Second Cycle 30.0 credits'', the cycle, program, course code, degree, and subject area information would be:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\programcode{CDATE}
+\courseCycle{2}
+\courseCode{DA231X}
+\courseCredits{30.0}
+\degreeName{Degree of Master of Science in Engineering}
+\subjectArea{Computer Science and Engineering}
+\end{lstlisting}
+
+You can find a list of the program codes and school acronyms in the file:\linebreak[4] \texttt{lib/schools\_and\_programs.ins}.
+
+There are a set of rules about what is to be displayed on the KTH cover. These can be found at \url{https://www.kth.se/social/group/sprakkommitten/page/omrade-for-examensarbete/}.
+
+One of the reasons for many of the macros shown above and below are to collect the information that is needed to report the approved thesis in Digitala Vetenskapliga Arkivet (DiVA) and to report the title(s) and grade in Lokalt adb–baserat dokumentationssystem (LADOK).
+
+National subject categories are a required field in the DiVA record. These categories follow a definition by SCB and HSV.
+While these code refer to research areas, these codes are also used in KTH to indicate the area of the thesis. The guidance that I received from the Linköping library was that one should try to use 5 digit codes when possible. Some examples of these codes are shown in Table~\ref{tab:nationalsubject categories}.
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash nationalsubjectcategories\{\}}}]
+\item [\texttt{\textbackslash nationalsubjectcategories\{\}}] comma separated list of national subject category codes - each a 3 or 5 digit code
+\end{description}
+
+An example for a thesis in Computer Science and Computer Systems:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\nationalsubjectcategories{10201, 10206}
+\end{lstlisting}
+
+You can find the subjects and their codes in:\\ \url{https://www.scb.se/contentassets/3a12f556522d4bdc887c4838a37c7ec7/standard-for-svensk-indelning--av-forskningsamnen-2011-uppdaterad-aug-2016.pdf}\\
+and\\
+\url{https://www.scb.se/contentassets/10054f2ef27c437884e8cde0d38b9cc4/oversattningsnyckel-forskningsamnen.pdf}
+
+\begin{table}[!ht]
+  \begin{center}
+    \caption{Examples of some national subject categories and their codes}
+    \label{tab:nationalsubject categories}
+    \begin{tabular}{p{0.85cm} L{6.2cm} L{6.2cm}} % <-- Alignments: 1st column left, 2nd middle, with vertical lines in between
+      \textbf{Code}  & \textbf{Category (in Swedish)} & \textbf{Category (in English)} \\
+      \hline
+102 & Data- och informationsvetenskap (Datateknik) &   Computer and Information Sciences \\
+      \hline
+10201 & Datavetenskap (datalogi) & Computer Sciences \\
+      \hline
+10202 & Systemvetenskap, informationssystem och informatik (samhällsvetenskaplig inriktning under 50804) &
+Information Systems (Social aspects to be 50804)\\
+      \hline
+10203 & Bioinformatik (beräkningsbiologi) (tillämpningar under 10610) & Bioinformatics (Computational Biology) (applications to be 10610) \\
+      \hline
+10204 & Människa-datorinteraktion (interaktionsdesign) (Samhällsvetenskapliga aspekter under 50803) & Human Computer Interaction (Social aspects to be 50803)\\
+      \hline
+10205 & Programvaruteknik & Software Engineering \\
+      \hline
+10206 & Datorteknik & Computer Engineering \\
+      \hline
+10207 & Datorseende och robotik (autonoma system) & Computer Vision and Robotics (Autonomous Systems) \\
+      \hline
+10208 & Språkteknologi (språkvetenskaplig databehandling) & Language Technology (Computational Linguistics) \\
+      \hline
+10209 & Medieteknik & Media and Communication Technology \\
+      \hline
+10299 & Annan data- och informationsvetenskap & Other Computer and Information Science \\
+      \hline
+      \hline
+202   & Elektroteknik och elektronik & Electrical Engineering, Electronic Engineering, Information Engineering \\
+      \hline
+20201 & Robotteknik och automation & Robotics \\
+      \hline
+20202 & Reglerteknik & Control Engineering \\
+      \hline
+20203 & Kommunikationssystem & Communication Systems \\
+      \hline
+20204 & Telekommunikation & Telecommunications \\
+      \hline
+20205 & Signalbehandling & Signal Processing \\
+      \hline
+20206 & Datorsystem & Computer Systems \\
+      \hline
+20207 & Inbäddad systemteknik & Embedded Systems \\
+      \hline
+20299 & Annan elektroteknik och elektronik & Other Electrical Engineering, Electronic Engineering, Information Engineering \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\FloatBarrier
+
+
+
+\section{Author macros}
+\label{sec:authorMacros}
+It is assumed that there can only be 1 or 2 authors. For many years now 2\textsuperscript{nd} cycle theses are expected to only have one author.
+
+For the author or first author, there are a number of macros defined to store information about the author, so that it can later be used in multiple places -- for example, the KTH cover (produced with \texttt{\textbackslash kthcover)}, the title page (produced with \texttt{\textbackslash titlepage}, the ``For DIVA'' section at the end of the thesis (produced with \linebreak[4]
+\texttt{\textbackslash divainfo\{pg:lastPageofPreface\}\{pg:lastPageofMainmatter\}}), and possibly a JavaScript Object Notation (JSON) file named \texttt{fordiva.json} produced as a by product of the \texttt{\textbackslash divainfo}. Note that the actual section name has DiVA set in all caps - which hopefully should not occur in the thesis! If the string DiVA set in all caps, does have to appear, then the section heading should be preceded by four euro signs and followed by four more euro signs (as is done this this doucment).
+
+The author related macros are:
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash secondAuthorsFirstname\{\}}}]
+\item [\texttt{\textbackslash authorsLastname\{\}}] the last name of the author
+
+\item [\texttt{\textbackslash authorsFirstname\{\}}] the first name of the author
+
+\item [\texttt{\textbackslash email\{\}}] the KTH e-mail address of the author
+
+\item [\texttt{\textbackslash kthid\{\}}] the author's kthid, this generally start with the string ·``u1'' and is a unique identifier for every KTH user.
+
+% As per email from KTH Biblioteket on 2021-06-28 students cannot have an OrCiD reported for their degree project
+\item [\texttt{\textbackslash authorsSchool\{\}}] the value is generally of the form:\linebreak[4] \texttt{\textbackslash schoolAcronym\{EECS\}}. The currently supported school acronyms are: ABE, CBH, EECS, ITM, and SCI. These are defined in the file\linebreak[4] \texttt{schools\_and\_programs.ins}.
+\end{description}
+
+If the first author is not in Stockholm, Sweden when the acknowledgements are written, then add that information via the macros described below.
+This information will be used when generating the acknowledgements signature. The acknowledgements signature is the text at the end of the acknowledgements and it gives the place where the author(s) is/are when writing the acknowledgements and also gives the date and name(s).
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash secondAuthorsFirstname\{\}}}]
+\item [\texttt{\textbackslash authorCity\{A City\}}] specify the city
+
+\item [\texttt{\textbackslash authorCountry\{A Country\}}] specify the country
+
+\item [\texttt{\textbackslash authorCityCountryDate\{\}}] pass into this function the month and year for the acknowledgement. This can be a string such as January 2022 or it can be a \LaTeX\ expression, such as \textbackslash MONTH\textbackslash enspace\textbackslash the\textbackslash year.
+\end{description}
+
+If there is a second author and the place, month, and year are \textbf{all} the same, then specify the month and year for only the \textbf{first} author:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\authorCityCountryDate{\MONTH\enspace\the\year}
+\end{lstlisting}
+
+If there is a second author and the place is different, then say:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\authorCityCountryDate{}
+\end{lstlisting}
+\clearpage
+
+If there is a second author, the macros are:
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash secondAuthorsFirstname\{\}}}]
+\item [\texttt{\textbackslash secondAuthorsLastname\{\}}] the last name of the 2\textsuperscript{nd} author
+\item [\texttt{\textbackslash secondAuthorsFirstname\{\}}] the first name of the 2\textsuperscript{nd} author
+\item [\texttt{\textbackslash secondemail\{\}}] the KTH e-mail address of the 2\textsuperscript{nd} author
+\item [\texttt{\textbackslash secondkthid\{\}}] the 2\textsuperscript{nd} author's kthid
+% As per email from KTH Biblioteket on 2021-06-28 students cannot have an OrCiD reported for their degree project
+\item [\texttt{\textbackslash secondAuthorsSchool\{\}}] the school of the 2\textsuperscript{nd} author
+\end{description}
+
+If the second author is not in the same place as the first author, then add the relevant information using the macros below.  This information will be used when generating the acknowledgements signature.
+\begin{description}[leftmargin=!, labelwidth =\widthof{\texttt{\textbackslash secondAuthorsFirstname\{\}}}]
+\item [\texttt{\textbackslash secondAuthorCity\{A City\}}]  specify the city
+
+\item [\texttt{\textbackslash secondAuthorCountry\{A Country\}}] specify the country
+
+\item [\texttt{\textbackslash secondAuthorCityCountryDate\{\textbackslash MONTH\textbackslash enspace\textbackslash the\textbackslash year\}}]  pass into this function the month and year for the acknowledgement
+\end{description}
+
+If the second author is the same place as the first author, then comment out or delete the \textbackslash secondAuthorCityCountryDate\{\} as shown below:
+\begin{lstlisting}[style=latexExampleForAuthors]
+%\secondAuthorCityCountryDate{}
+\end{lstlisting}
+
+\section{Starting to write}
+\label{sec:startingToWrite}
+
+As you write you will notice "todo" notes in the template. They follow the following conventions:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\generalExpl{Comments/directions/... in English}
+\sweExpl{Text på svenska}
+\engExpl{English descriptions about formatting}
+\sweExpl{warnings}
+\end{lstlisting}
+
+
+\subsection{Working abstract}
+\label{sec:wrtingFirstAbstract}
+I generally recommend that every student start by writing a working abstract, this will help you keep your focus. To find where you can start to enter your abstract look in the \textit{examplethesis.tex} file for the line:
+\begin{lstlisting}[style=latexExampleForAuthors]
+\generalExpl{Enter your abstract here!}
+\end{lstlisting}
+
+There is lots of information already in the template to help you with entering text, equations, \etc in your abstract.
+
+\subsection{Acronyms}
+\label{sec:addingAcronyms}
+You may want to define an acronym to help you with your writing, as this can both reduce the amount of typing and help your reader by providing consistent use of acronyms. The acronyms definitions can be found in the file \textit{lib/acronyms.tex}. The file contains some examples. I generally try to sort the lines to help find which acronyms I already have defined and keep track of the new one(s) I want to add.
+
+\subsection{Some predefined macros to help when writing}
+\label{sec:predefine}
+
+The file \textit{lib/defines.tex} includes some macros that will help you when writing. This includes \textbackslash etc, to give you ``\etc'', \textbackslash eg, \textbackslash ie, and \textbackslash etal.
+The file also defined \textbackslash first, \textbackslash Second, ... \textbackslash eighth to give you \first, \Second, \third, ... \eighth. Note that `Second' is written with an initial capital letter to avoid conflict with the unit `second' in the \texttt{siunitx} package.
+
+\subsection{Additional abstract(s)}
+\label{sec:additionalAbstracts}
+
+All theses at KTH are \textbf{required} to have an abstract in both \textit{English} and \textit{Swedish}. However, in addition to this there are many students who want to add abstracts in additional languages. The template comes pre-configured with places for abstracts in a number of other languages. If there is a language that you want to use that is not already supported there are directions for how to add an additional language. If there are abstracts in languages that you do not want, please delete them or comment them out (see \Cref{sec:hideComment}).
+
+I suggest avoiding the use of the defined acronyms in abstracts other than the English abstract. This is due to the fact that the \texttt{glossaries} package (that is being used to support acronyms) does not directly provide support for multiple languages and because I do not understand how to programmatically create plurals of acronyms in Swedish or other languages.
+
+\subsection{Removing and hiding parts that you do not want}
+\label{sec:hideComment}
+
+It is quite likely that you will find parts of the template that you do not want/need. One way of dealing with this is to delete them and other way is to comment them out. Personally, I like to comment things out, in case I actually do want to be able to read it in the \LaTeX\null file or uncomment it later. To comment out a portion of the file simply use the following environment:
+
+\begin{lstlisting}[style=latexExampleForAuthors]
+\begin{comment}
+    **** what you want to comment out ****
+\end{comment}
+\end{lstlisting}
+
+For example, if you are not interested in the Swedish language \texttt{todo} notes, you can look for lines with ``backgroundcolor=kth-lightblue40'' in them and comment them out (or delete them).
+
+\subsection{Removing the README\_notes}
+At some point you will no longer want this README information. You can remove it by removing the line
+\textbackslash include\{README\_notes/README\_notes\} -- from the \textit{examplethesis.tex} file. You can then remove the \textbf{README\_notes} directory.
+
+Unless you are an examiner or an administrator you can delete the file: \texttt{README\_notes/README\_examiner\_notes.tex} and delete the include of this file from near the end of the template (\ie \textit{examplethesis.tex}. You can also delete the directory \textbf{README\_notes/README\_examiner-figures}.
+
+
+\section[Copyright or Creative Commons License]{Copyright or Creative Commons\\ License}
+\label{sec:copyrightOrCClicense}
+It is possible to have several variants of the bookinfo page:
+\begin{enumerate}[labelwidth =\widthof{\textbf{Creative Commons (CC)}}, leftmargin = !]
+    \item[copyright] If you want to have a bookinfo page, include the line saying \textbackslash bookinfopage.
+    \item[Creative Commons (CC)] If you want to have a bookinfo page but want to have a Creative Commons license, then include \textbackslash bookinfopage and use and configure the \texttt{doclicense} package as described below.
+    \item[none] If you do \textbf{not} want to have a bookinfo page, comment the line saying \textbackslash bookinfopage and add a \textbackslash cleardoublepage.
+\end{enumerate}
+
+For background about Creative Commons licenses see:
+\url{https://www.kb.se/samverkan-och-utveckling/oppen-tillgang-och-bibsamkonsortiet/open-access-and-bibsam-consortium/open-access/creative-commons-faq-for-researchers.html} and \url{https://kib.ki.se/en/publish-analyse/publish-your-article-open-access/open-licence-your-publication-cc}.
+
+Note that the lowercase version of the Creative Commons license has to be used in the modifier, \ie one of: by, by-nc, by-nd, by-nc-nd, by-sa, by-nc-sa, or zero. For the list of supported licenses see the documentation for the \texttt{doclicense} package.
+
+Note that if the \texttt{doclicense} package is used it automatically redefines \texttt{\textbackslash bookinfopage} to be \texttt{\textbackslash bookinfopageCC}.
+
+\subsection{Example configuration to have a CC BY-NC-ND license}
+
+\begin{lstlisting}[style=latexExampleForAuthors]
+\usepackage[
+    type={CC},
+    modifier={by-nc-nd},
+    version={4.0},
+    hyphenation={RaggedRight},
+]{doclicense}
+\end{lstlisting}
+
+Note that the option ``hyphenation={RaggedRight}'' can be used with the configuration of the package to set the license information with a ragged right margin rather that as a fill and justified paragraph.
+
+
+\subsection{Example configuration to have a CC BY-NC-ND license with a Euro symbol rather than a Dollar sign}
+
+\begin{lstlisting}[style=latexExampleForAuthors]
+\usepackage[
+    type={CC},
+    modifier={by-nc-nd},
+    version={4.0},
+    imagemodifier={-eu-88x31},  % to get Euro symbol rather than Dollar sign
+    hyphenation={RaggedRight},
+]{doclicense}
+\end{lstlisting}
+
+
+\subsection{Example configuration to have a CC0 license}
+
+\begin{lstlisting}[style=latexExampleForAuthors]
+\usepackage[
+    type={CC},
+    modifier={zero},
+    version={1.0},
+]{doclicense}
+\end{lstlisting}
+
+
+
+\end{document}

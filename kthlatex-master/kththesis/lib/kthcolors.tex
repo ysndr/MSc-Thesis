@@ -1,0 +1,82 @@
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+% KTH colors for LaTeX documents
+%
+% Started from kthcolors by:
+% Riccardo Sven Risuleo
+% 2016-09-06 11:05:40
+%
+% from https://github.com/KTH-AC/kthcolors
+%
+% Adapted using the colors from "Graphic Profile Manual KTH" version 180604
+% (i.e.. 2018-06-04) 
+% see https://intra.kth.se/en/administration/kommunikation/grafiskprofil/kth-s-grafiska-profil-1.844676
+% 
+% G. Q. Maguire Jr.
+% 2021-07-05
+%
+
+%\NeedsTexFormat{LaTeX2e}[1994/06/01]
+%\ProvidesPackage{kthcolors}[2021/07/85 v3 Latex package with official KTH colors]
+
+\RequirePackage{xcolor}
+%% Primary colors
+%% As of the new manual, there is only 1 primary color; but with three 
+\definecolor{kth-blue}{RGB/cmyk}{25,84,166/0.849,0.494,0,0.349}
+\colorlet{kth-blue80}{kth-blue!80!}
+\colorlet{kth-blue40}{kth-blue!40!}
+
+% these are no longer used as of 2018-06-04
+%\definecolor{kth-red}{RGB/cmyk}{157,16,45/0,0.898,0.713,0.384}
+%\definecolor{kth-green}{RGB/cmyk}{98,146,46/0.329,0,0.685,0.427}
+
+%% Secondary colors
+\definecolor{kth-lightblue}{RGB/cmyk}{36,160,216/0.833,0.259,0,0.153}
+\colorlet{kth-lightblue80}{kth-lightblue!80!}
+\colorlet{kth-lightblue40}{kth-lightblue!40!}
+
+%\definecolor{kth-lightred}{RGB/cmyk}{228,54,62/0,0.763,0.728,0.106}
+\definecolor{kth-lightred}{RGB}{216,84,151}
+\colorlet{kth-lightred80}{kth-lightred!80!}
+\colorlet{kth-lightred40}{kth-lightred!40!}
+
+\definecolor{kth-lightgreen}{RGB/cmyk}{176,201,43/0.124,0,0.786,0.212} % olive
+\colorlet{kth-lightgreen80}{kth-lightgreen!80!}
+\colorlet{kth-lightgreen40}{kth-lightgreen!40!}
+
+% Cool Gray 9C
+%\definecolor{kth-coolgray}{RGB}{101,101,108}
+
+% Cool Gray 10 suggested by Martin Krzywinski (see http://mkweb.bcgsc.ca/colorblind) 
+\definecolor{kth-coolgray}{RGB}{99,102,106}
+\colorlet{kth-coolgray80}{kth-coolgray!80!}
+\colorlet{kth-coolgray40}{kth-coolgray!40!}
+
+% Tertiary colors (yet more colors)
+% All of these are no longer used
+%\definecolor{kth-pink}{RGB/cmyk}{216,84,151/10,0.611,0.301,0.153}
+%\definecolor{kth-yellow}{RGB/cmyk}{250,185,25/0,0.26,0.9,0.0196}
+%\definecolor{kth-darkgray}{RGB/cmyk}{101,101,108/0.0648,0.0648,0,0.576}
+%\definecolor{kth-middlegray}{RGB/cmyk}{189,188,188/0,0.00529,0.00529,0.259}
+%\definecolor{kth-lightgray}{RGB/cmyk}{227,229,227/0.00873,0,0.00873,0.102}
+
+%\DeclareOption{gray}{\colorlet{gray}{kth-darkgray}}
+
+% These versions are designed to meet accessability requirements for digital media
+% Note that the palette is more limited than for the print version of the colors
+\ifdigitaloutput
+    % primary color
+    \definecolor{kth-blue}{HTML}{1954A6} % Deep sea
+    \definecolor{kth-blue80}{HTML}{5E87C0}
+
+    % Secondary colors
+    \definecolor{kth-lightblue}{HTML}{2191C4} % Stratosphere
+    \definecolor{kth-lightred}{HTML}{D02F80} % Fluorescence
+    \definecolor{kth-lightred80}{HTML}{D95599}
+    \definecolor{kth-lightgreen}{HTML}{62922E} % Front-lawn
+    \definecolor{kth-coolgray}{HTML}{65656C} % Office
+    \definecolor{kth-coolgray80}{HTML}{848489}
+\fi
+

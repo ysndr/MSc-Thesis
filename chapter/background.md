@@ -251,7 +251,7 @@ As an additional benefit, configuration code is subject to common software engin
 It can be statically analyzed, refactored and version controlled to ensure reproducibility.
 A subset of IaC is focused on largely declarative configuration based on configuration files that are interpreted and "converted" into imperative platform dependent instructions. 
 
-As a notable instance, the Nix[@Nix2022;dolstraNixSafePolicyFree2004] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@NixOps2022].
+As a notable instance, the Nix[@Nix2022;@dolstraNixSafePolicyFree2004] ecosystem even goes as far as enabling declarative system and service configuration using NixOps[@NixOps2022].
 
 To get an idea of how this would look like, [@lst:nixops-rproxy] shows the configuration for a deployment of the Git based wiki server Gollum[@GollumGitbasedWiki2022] behind a nginx reverse proxy on the AWS network.
 Although this example targets AWS, Nix itself is platform-agnostic and NixOps supports different backends through various plugins.
@@ -265,7 +265,6 @@ Configurations like this are abstractions over many manual steps and the Nix lan
     {
       # Configuration of a specific deployment implementation
       # here: AWS EC2
-
       deployment.targetEnv = "ec2";
       deployment.ec2.accessKeyId = "AKIA...";
       deployment.ec2.keyPair = "...";
@@ -278,14 +277,12 @@ Configurations like this are abstractions over many manual steps and the Nix lan
     { config, pkgs, ... }:
     {
       # Nix based setup of the gollum server
-
       services.gollum = {
         enable = true;
         port = 40273;
       };
       networking.firewall.allowedTCPPorts = [ config.services.gollum.port ];
     };
-
   reverseproxy =
     { config, pkgs, nodes, ... }:
     let
@@ -293,7 +290,6 @@ Configurations like this are abstractions over many manual steps and the Nix lan
     in
     {
       # Nix based setup of a nginx reverse proxy
-
       services.nginx = {
         enable = true;
         virtualHosts."wiki.example.net".locations."/" = {
@@ -301,7 +297,6 @@ Configurations like this are abstractions over many manual steps and the Nix lan
         };
       };
       networking.firewall.allowedTCPPorts = [ 80 ];
-      
       # Instance can override default deployment options 
       deployment.ec2.instanceType = "t1.medium";
     };
